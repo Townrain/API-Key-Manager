@@ -1,0 +1,50 @@
+name: Sync Cherry Studio Data
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每天 UTC 02:00 (北京时间 10:00)
+  workflow_dispatch:  # 手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout our repo
+        uses: actions/checkout@v4
+
+      - name: Checkout Cherry Studio (shallow)
+        uses: actions/checkout@v4
+        with:
+          repository: CherryHQ/cherry-studio
+          path: cherry-studio
+          sparse-checkout: |
+            src/renderer/src/config/models
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Extract model capabilities
+        run: python scripts/extract_model_caps.py
+
+      - name: Extract model lists
+        run: python scripts/extract_models.py
+
+      - name: Run validation tests
+        run: python scripts/validate_caps.py
+
+      - name: Check for changes
+        id: diff
+        run: |
+          git diff --quiet data/model_capabilities.json src/providers/models_registry.py || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/model_capabilities.json src/providers/models_registry.py
+          git commit -m "chore: sync from cherry-studio $(date +%Y-%m-%d)"
+          git push
