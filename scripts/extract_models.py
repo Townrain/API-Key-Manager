@@ -19,7 +19,9 @@ import re
 from pathlib import Path
 from datetime import datetime, timezone
 
-CHERRY_MODELS_FILE = Path("cherry-studio/src/renderer/src/config/models/default.ts")
+import os
+
+CHERRY_MODELS_FILE = Path(os.environ.get("CHERRY_MODELS_DIR", "cherry-studio/src/renderer/src/config/models")) / "default.ts"
 OUTPUT_FILE = Path("src/providers/models_registry.py")
 
 

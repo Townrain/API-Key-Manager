@@ -11,7 +11,9 @@ from pathlib import Path
 from datetime import datetime
 
 # 配置
-CHERRY_MODELS_DIR = Path("cherry-studio/src/renderer/src/config/models")
+import os
+
+CHERRY_MODELS_DIR = Path(os.environ.get("CHERRY_MODELS_DIR", "cherry-studio/src/renderer/src/config/models"))
 OUTPUT_FILE = Path("data/model_capabilities.json")
 SCHEMA_VERSION = 1
 
