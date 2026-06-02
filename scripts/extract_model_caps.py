@@ -1,151 +1,132 @@
 """
-从 Cherry Studio 的 TypeScript 源码中提取模型能力正则，
-转译为 Python 可用的 JSON 格式。
+从 Cherry Studio 的 JSON 数据中提取模型能力，生成 Python 硬编码文件。
+
+Cherry Studio 新路径:
+packages/provider-registry/data/models.json
 
 用法: python scripts/extract_model_caps.py
 """
 
 import json
+import os
 import re
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
-# 配置
-import os
-
-CHERRY_MODELS_DIR = Path(os.environ.get("CHERRY_MODELS_DIR", "cherry-studio/src/renderer/src/config/models"))
+# 新路径：JSON 数据文件
+CHERRY_DATA_DIR = Path(os.environ.get("CHERRY_DATA_DIR", "cherry-studio/packages/provider-registry/data"))
+MODELS_FILE = CHERRY_DATA_DIR / "models.json"
 OUTPUT_FILE = Path("data/model_capabilities.json")
 SCHEMA_VERSION = 1
 
-
-def extract_array_with_regex(content: str, var_name: str) -> list[str]:
-    """使用正则从 TypeScript 源码中提取字符串数组"""
-    # 匹配多种格式的数组定义
-    patterns = [
-        # export const VAR = ['str1', 'str2', ...]
-        rf"(?:export\s+)?const\s+{var_name}\s*=\s*\[(.*?)\]",
-        # const VAR: readonly [...] = [...]
-        rf"(?:export\s+)?const\s+{var_name}\s*(?::\s*[^=]+)?\s*=\s*\[(.*?)\]",
-    ]
-    
-    for pattern in patterns:
-        match = re.search(pattern, content, re.DOTALL)
-        if match:
-            # 提取引号内的字符串（单引号和双引号）
-            items = re.findall(r"'([^']*)'|\"([^\"]*)\"", match.group(1))
-            return [a or b for a, b in items if (a or b)]
-    
-    return []
+# Cherry Studio capabilities 映射到我们的能力类型
+CAPABILITY_MAP = {
+    "vision": ["image-recognition", "video-recognition"],
+    "tooluse": ["function-call"],
+    "reasoning": ["reasoning"],
+    "websearch": ["web-search"],
+    "embedding": ["embedding"],
+}
 
 
-def extract_regex_pattern(content: str, var_name: str) -> str | None:
-    """提取单个正则表达式"""
-    # 匹配: const VAR = /pattern/i 或 new RegExp('pattern', 'i')
-    patterns = [
-        rf"(?:export\s+)?const\s+{var_name}\s*=\s*(/[^\n]+)",
-        rf"(?:export\s+)?const\s+{var_name}\s*=\s*new\s+RegExp\(['\"]([^'\"]+)['\"](?:,\s*['\"]([^'\"]+)['\"])?\)",
-    ]
-    
-    for pattern in patterns:
-        match = re.search(pattern, content)
-        if match:
-            regex_str = match.group(1)
-            
-            # 处理 /pattern/i 格式
-            if regex_str.startswith('/'):
-                # 提取正则内容和标志
-                last_slash = regex_str.rfind('/')
-                if last_slash > 0:
-                    body = regex_str[1:last_slash]
-                    flags = regex_str[last_slash + 1:]
-                    if 'i' in flags:
-                        return f"(?i){body}"
-                    return body
-            
-            # 处理 new RegExp 格式
-            return regex_str
-    
-    return None
+def extract_capabilities_from_json(file_path: Path) -> dict:
+    """从 JSON 文件提取模型能力"""
+    if not file_path.exists():
+        print(f"Error: {file_path} not found")
+        return {}
 
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-def process_vision(content: str) -> dict:
-    """处理 vision.ts"""
-    return {
-        "allowed_patterns": extract_array_with_regex(content, "visionAllowedModels"),
-        "excluded_patterns": extract_array_with_regex(content, "visionExcludedModels")
+    models = data.get("models", [])
+
+    # 收集每种能力的模型 ID
+    capability_models = {
+        "vision": [],
+        "tooluse": [],
+        "reasoning": [],
+        "websearch": [],
+        "embedding": [],
     }
 
+    for model in models:
+        model_id = model.get("id", "")
+        capabilities = model.get("capabilities", [])
+        input_modalities = model.get("inputModalities", [])
+        pricing = model.get("pricing", {})
 
-def process_tooluse(content: str) -> dict:
-    """处理 tooluse.ts"""
-    return {
-        "allowed_patterns": extract_array_with_regex(content, "FUNCTION_CALLING_MODELS"),
-        "excluded_patterns": extract_array_with_regex(content, "FUNCTION_CALLING_EXCLUDED_MODELS")
-    }
+        # 视觉：有 image-recognition 或 video-recognition 能力，或者输入包含 image/video
+        if ("image-recognition" in capabilities or
+            "video-recognition" in capabilities or
+            "image" in input_modalities or
+            "video" in input_modalities):
+            capability_models["vision"].append(model_id)
 
+        # 工具调用：有 function-call 能力
+        if "function-call" in capabilities:
+            capability_models["tooluse"].append(model_id)
 
-def process_embedding(content: str) -> dict:
-    """处理 embedding.ts"""
-    return {
-        "embedding_regex": extract_regex_pattern(content, "EMBEDDING_REGEX"),
-        "rerank_regex": extract_regex_pattern(content, "RERANKING_REGEX")
-    }
+        # 推理：有 reasoning 能力
+        if "reasoning" in capabilities:
+            capability_models["reasoning"].append(model_id)
+
+        # 联网：有 web-search 能力
+        if "web-search" in capabilities:
+            capability_models["websearch"].append(model_id)
+
+        # 嵌入：有 embedding 能力
+        if "embedding" in capabilities:
+            capability_models["embedding"].append(model_id)
+
+    return capability_models
 
 
 def main():
-    print(f"Extracting model capabilities from Cherry Studio...")
-    print(f"Source: {CHERRY_MODELS_DIR}")
-    
-    if not CHERRY_MODELS_DIR.exists():
-        print(f"Error: {CHERRY_MODELS_DIR} not found!")
-        print("Please run: git clone --depth 1 --sparse https://github.com/CherryHQ/cherry-studio.git cherry-studio")
-        print("Then: cd cherry-studio && git sparse-checkout set src/renderer/src/config/models")
+    print("Extracting model capabilities from Cherry Studio JSON...")
+    print(f"Source: {MODELS_FILE}")
+
+    if not MODELS_FILE.exists():
+        print(f"Error: {MODELS_FILE} not found!")
+        print("Please run the cherry-studio checkout first.")
         return 1
-    
-    result = {
+
+    capability_models = extract_capabilities_from_json(MODELS_FILE)
+
+    # 统计
+    total = sum(len(v) for v in capability_models.values())
+    print(f"Extracted {total} capability entries from {len(capability_models)} categories")
+
+    for cap_name, models in capability_models.items():
+        print(f"  {cap_name}: {len(models)} models")
+
+    # 生成输出
+    timestamp = datetime.now(timezone.utc).isoformat()
+    output = {
         "schema_version": SCHEMA_VERSION,
-        "updated_at": datetime.utcnow().isoformat() + "Z",
+        "updated_at": timestamp,
         "source": "https://github.com/CherryHQ/cherry-studio",
         "capabilities": {}
     }
-    
-    # 处理各文件
-    processors = {
-        "vision": ("vision.ts", process_vision),
-        "tooluse": ("tooluse.ts", process_tooluse),
-        "embedding": ("embedding.ts", process_embedding),
-    }
-    
-    success_count = 0
-    for cap_name, (filename, processor) in processors.items():
-        filepath = CHERRY_MODELS_DIR / filename
-        if filepath.exists():
-            content = filepath.read_text(encoding="utf-8")
-            result["capabilities"][cap_name] = processor(content)
-            
-            # 统计提取结果
-            cap_data = result["capabilities"][cap_name]
-            if "allowed_patterns" in cap_data:
-                print(f"  ✓ {cap_name}: {len(cap_data['allowed_patterns'])} allowed, "
-                      f"{len(cap_data.get('excluded_patterns', []))} excluded")
-            elif "embedding_regex" in cap_data:
-                print(f"  ✓ {cap_name}: embedding={bool(cap_data['embedding_regex'])}, "
-                      f"rerank={bool(cap_data['rerank_regex'])}")
-            success_count += 1
-        else:
-            print(f"  ✗ {cap_name}: {filename} not found")
-    
-    if success_count == 0:
-        print("Error: No capabilities extracted!")
-        return 1
-    
-    # 输出
+
+    # 转换为正则匹配格式（精确匹配模型 ID）
+    for cap_name, models in capability_models.items():
+        if models:
+            # 创建精确匹配的正则列表
+            patterns = [re.escape(m) for m in models]
+            output["capabilities"][cap_name] = {
+                "allowed_patterns": patterns,
+                "excluded_patterns": []
+            }
+
+    # 写入文件
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_FILE.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump(output, f, indent=2, ensure_ascii=False)
+
     print(f"\nOutput: {OUTPUT_FILE}")
     print(f"Schema version: {SCHEMA_VERSION}")
-    print(f"Capabilities: {list(result['capabilities'].keys())}")
-    
+    print(f"Capabilities: {list(output['capabilities'].keys())}")
+
     return 0
 
 

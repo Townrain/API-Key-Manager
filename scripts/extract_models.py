@@ -1,92 +1,74 @@
 """
-从 Cherry Studio 提取模型列表，生成 Python 硬编码文件。
+从 Cherry Studio 的 JSON 数据提取模型列表，生成 Python 硬编码文件。
 
-Cherry Studio 的模型定义在:
-src/renderer/src/config/models/default.ts
+Cherry Studio 新路径:
+packages/provider-registry/data/models.json
 
-格式:
-export const SYSTEM_MODELS: Record<string, Model[]> = {
-  openai: [
-    { id: 'gpt-4o', name: 'GPT-4o', provider: 'openai', group: 'GPT 4o' },
-    ...
-  ],
-  ...
-}
+用法: python scripts/extract_models.py
 """
 
 import json
-import re
+import os
 from pathlib import Path
 from datetime import datetime, timezone
 
-import os
-
-CHERRY_MODELS_FILE = Path(os.environ.get("CHERRY_MODELS_DIR", "cherry-studio/src/renderer/src/config/models")) / "default.ts"
+# 新路径：JSON 数据文件
+CHERRY_DATA_DIR = Path(os.environ.get("CHERRY_DATA_DIR", "cherry-studio/packages/provider-registry/data"))
+MODELS_FILE = CHERRY_DATA_DIR / "models.json"
 OUTPUT_FILE = Path("src/providers/models_registry.py")
 
 
-def extract_models_from_ts(file_path: Path) -> dict[str, list[str]]:
-    """从 TypeScript 文件提取模型列表"""
+def extract_models_from_json(file_path: Path) -> dict[str, list[str]]:
+    """从 JSON 文件提取模型列表，按 ownedBy 分组"""
     if not file_path.exists():
         print(f"Error: {file_path} not found")
         return {}
-    
-    content = file_path.read_text(encoding='utf-8')
-    models_map = {}
-    
-    # 匹配 provider 数组块
-    # 格式: providerName: [
-    #   { id: 'model-id', name: '...', ... },
-    #   ...
-    # ]
-    provider_pattern = r"(\w+(?:-\w+)*)\s*:\s*\[(.*?)\]"
-    
-    for match in re.finditer(provider_pattern, content, re.DOTALL):
-        provider_name = match.group(1)
-        provider_block = match.group(2)
-        
-        # 跳过非 provider 的字段
-        if provider_name in ('defaultModel', 'SYSTEM_MODELS'):
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    models = data.get("models", [])
+
+    # 按 ownedBy 分组
+    provider_models = {}
+    for model in models:
+        model_id = model.get("id", "")
+        owned_by = model.get("ownedBy", "unknown")
+
+        if not model_id:
             continue
-        
-        # 提取模型 ID
-        # 格式: { id: 'model-id', ... }
-        id_pattern = r"id:\s*['\"]([^'\"]+)['\"]"
-        model_ids = []
-        
-        for id_match in re.finditer(id_pattern, provider_block):
-            model_id = id_match.group(1)
-            model_ids.append(model_id)
-        
-        if model_ids:
-            models_map[provider_name] = model_ids
-    
-    return models_map
+
+        if owned_by not in provider_models:
+            provider_models[owned_by] = []
+
+        provider_models[owned_by].append(model_id)
+
+    return provider_models
 
 
 def main():
-    print("Extracting models from Cherry Studio...")
-    print(f"Source: {CHERRY_MODELS_FILE}")
-    
-    if not CHERRY_MODELS_FILE.exists():
-        print(f"Error: {CHERRY_MODELS_FILE} not found!")
+    print("Extracting models from Cherry Studio JSON...")
+    print(f"Source: {MODELS_FILE}")
+
+    if not MODELS_FILE.exists():
+        print(f"Error: {MODELS_FILE} not found!")
         print("Please run the cherry-studio checkout first.")
         return 1
-    
-    models_map = extract_models_from_ts(CHERRY_MODELS_FILE)
-    
-    if not models_map:
+
+    provider_models = extract_models_from_json(MODELS_FILE)
+
+    if not provider_models:
         print("Error: No models extracted!")
         return 1
-    
+
     # 统计
-    total_models = sum(len(v) for v in models_map.values())
-    print(f"Extracted {total_models} models from {len(models_map)} providers")
-    
+    total_models = sum(len(v) for v in provider_models.values())
+    print(f"Extracted {total_models} models from {len(provider_models)} providers")
+
     # 生成 Python 文件
     timestamp = datetime.now(timezone.utc).isoformat()
-    models_json = json.dumps(models_map, indent=4, ensure_ascii=False)
-    
+    models_json = json.dumps(provider_models, indent=4, ensure_ascii=False)
+
     output = f'''"""
 Auto-generated model registry from Cherry Studio.
 Source: https://github.com/CherryHQ/cherry-studio
@@ -104,10 +86,10 @@ PROVIDER_MODELS: dict[str, list[str]] = {models_json}
 def get_static_models(provider: str) -> list[str]:
     """
     Get static model list for a provider.
-    
+
     Args:
         provider: Provider name (e.g., 'openai', 'anthropic')
-        
+
     Returns:
         List of model IDs, empty list if provider not found
     """
@@ -122,30 +104,31 @@ def get_all_providers() -> list[str]:
 def search_models(query: str) -> list[dict[str, str]]:
     """
     Search models across all providers.
-    
+
     Args:
         query: Search query (matched against model ID)
-        
+
     Returns:
         List of dicts with 'provider' and 'model_id' keys
     """
     results = []
     query_lower = query.lower()
-    
+
     for provider, models in PROVIDER_MODELS.items():
         for model_id in models:
             if query_lower in model_id.lower():
                 results.append({{"provider": provider, "model_id": model_id}})
-    
+
     return results
 '''
-    
+
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_FILE.write_text(output, encoding='utf-8')
-    
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        f.write(output)
+
     print(f"\nOutput: {OUTPUT_FILE}")
-    print(f"Providers: {', '.join(sorted(models_map.keys()))}")
-    
+    print(f"Providers: {', '.join(sorted(provider_models.keys()))}")
+
     return 0
 
 
