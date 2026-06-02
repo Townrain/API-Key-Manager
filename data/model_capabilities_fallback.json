@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-06-02T00:00:00Z",
+  "source": "hardcoded-fallback",
+  "capabilities": {
+    "vision": {
+      "allowed_patterns": [
+        "gpt-4o", "gpt-4.1", "gpt-5",
+        "chatgpt-4o",
+        "claude-3", "claude-haiku-4", "claude-sonnet-4", "claude-opus-4",
+        "gemini-1\\.5", "gemini-2\\.0", "gemini-2\\.5", "gemini-3",
+        "gemini-(flash|pro|flash-lite)-latest",
+        "o1", "o3", "o4",
+        "qwen-vl", "qwen2-vl", "qwen2\\.5-vl", "qwen3-vl",
+        "qwen3\\.[5-9]", "qwen2\\.5-omni", "qwen3-omni",
+        "qvq",
+        "grok-4", "grok-build",
+        "deepseek-vl",
+        "kimi-k2\\.[56]", "kimi-latest", "kimi-thinking-preview",
+        "gemma-?[3-4]", "gemma3",
+        "doubao-seed-1[.-][68]", "doubao-seed-2[.-]0", "doubao-seed-code",
+        "llama-4", "llama-guard-4",
+        "step-1o", "step-1v",
+        "mimo-v2\\.5", "mimo-v2-omni",
+        "glm-5v-turbo", "glm-4(?:\\.\\d+)?v"
+      ],
+      "excluded_patterns": [
+        "gpt-4-\\d+-preview",
+        "gpt-4-turbo-preview",
+        "gpt-4-32k",
+        "gpt-4-\\d+",
+        "o1-mini",
+        "o3-mini",
+        "o1-preview"
+      ]
+    },
+    "tooluse": {
+      "allowed_patterns": [
+        "gpt-4o", "gpt-4o-mini",
+        "gpt-4", "gpt-4.5",
+        "gpt-oss", "gpt-5",
+        "o1", "o3", "o4",
+        "claude",
+        "qwen", "qwen3",
+        "hunyuan",
+        "deepseek",
+        "glm-4", "glm-4\\.5", "glm-4\\.7", "glm-5",
+        "learnlm",
+        "gemini",
+        "gemma-?4",
+        "grok-3", "grok-4", "grok-build",
+        "doubao-seed-1[.-][68]", "doubao-seed-2[.-]0", "doubao-seed-code",
+        "kimi-k2",
+        "ling-", "ring-",
+        "minimax-m2",
+        "mimo-v2\\.5", "mimo-v2-flash", "mimo-v2-pro", "mimo-v2-omni",
+        "glm-5v-turbo"
+      ],
+      "excluded_patterns": [
+        "aqa",
+        "imagen",
+        "o1-mini",
+        "o1-preview",
+        "gemini-1",
+        "qwen-mt",
+        "gpt-5-chat",
+        "glm-4\\.5v",
+        "deepseek-v3\\.2-speciale",
+        "deepseek-r1"
+      ]
+    },
+    "embedding": {
+      "embedding_regex": "(?i)(?:^text-|embed|bge-|e5-|LLM2Vec|retrieval|uae-|gte-|jina-clip|jina-embeddings|voyage-)",
+      "rerank_regex": "(?i)(?:rerank|re-rank|re-ranker|re-ranking|retrieval|retriever)"
+    },
+    "reasoning": {
+      "allowed_patterns": [
+        "o1", "o3", "o4",
+        "deepseek-r1", "deepseek-reasoner",
+        "qwq", "qvl",
+        "claude-3.7-sonnet", "claude-sonnet-4", "claude-opus-4",
+        "gemini-2.5.*thinking", "gemini-3.*thinking",
+        "grok-3-mini", "grok-4",
+        "hunyuan-t1",
+        "glm-zero",
+        "kimi-k2-thinking",
+        "gemma-4",
+        "doubao-seed.*thinking",
+        "step-r1",
+        "minimax-m1", "minimax-m2",
+        "mimo-v2-flash", "mimo-v2-pro",
+        "magistral"
+      ],
+      "excluded_patterns": []
+    },
+    "websearch": {
+      "allowed_patterns": [
+        "gpt-4o", "gpt-4.1", "gpt-5",
+        "o3", "o4",
+        "claude-3.5-sonnet", "claude-3.7-sonnet", "claude-sonnet-4",
+        "gemini-2", "gemini-3",
+        "sonar",
+        "grok-4",
+        "qwen-turbo", "qwen-max", "qwen-plus", "qwq",
+        "hunyuan"
+      ],
+      "excluded_patterns": [
+        "o1-mini", "o3-mini",
+        "gemini-1",
+        "hunyuan-lite"
+      ]
+    },
+    "free": {
+      "allowed_patterns": [
+        "free",
+        "gpt-3.5-turbo",
+        "gemini-2.0-flash",
+        "claude-3-haiku",
+        "deepseek-v3",
+        "qwen-turbo",
+        "glm-4-flash"
+      ]
+    }
+  }
+}
