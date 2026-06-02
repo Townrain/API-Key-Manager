@@ -19,6 +19,7 @@ jobs:
           path: cherry-studio
           sparse-checkout: |
             src/renderer/src/config/models
+            packages
           fetch-depth: 1
 
       - name: Setup Python
@@ -26,22 +27,51 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Find model definitions
+        id: find
+        run: |
+          # 尝试多个可能的路径
+          if [ -d "cherry-studio/src/renderer/src/config/models" ]; then
+            echo "path=cherry-studio/src/renderer/src/config/models" >> $GITHUB_OUTPUT
+            echo "found=true" >> $GITHUB_OUTPUT
+          elif [ -d "cherry-studio/packages" ]; then
+            # 在 packages 目录中搜索
+            MODEL_FILE=$(find cherry-studio/packages -name "default.ts" -path "*/models/*" 2>/dev/null | head -1)
+            if [ -n "$MODEL_FILE" ]; then
+              echo "path=$(dirname $MODEL_FILE)" >> $GITHUB_OUTPUT
+              echo "found=true" >> $GITHUB_OUTPUT
+            else
+              echo "found=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Extract model capabilities
-        run: python scripts/extract_model_caps.py
+        if: steps.find.outputs.found == 'true'
+        run: |
+          # 设置模型目录路径
+          export CHERRY_MODELS_DIR="${{ steps.find.outputs.path }}"
+          python scripts/extract_model_caps.py
 
       - name: Extract model lists
-        run: python scripts/extract_models.py
+        if: steps.find.outputs.found == 'true'
+        run: |
+          export CHERRY_MODELS_DIR="${{ steps.find.outputs.path }}"
+          python scripts/extract_models.py
 
       - name: Run validation tests
+        if: steps.find.outputs.found == 'true'
         run: python scripts/validate_caps.py
 
       - name: Check for changes
         id: diff
+        if: steps.find.outputs.found == 'true'
         run: |
           git diff --quiet data/model_capabilities.json src/providers/models_registry.py || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit and push
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.find.outputs.found == 'true' && steps.diff.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
