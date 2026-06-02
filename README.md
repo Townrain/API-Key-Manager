@@ -11,6 +11,7 @@
 - **提供商自动检测** - 根据 Key 前缀自动识别服务商
 - **Web 界面** - 赛博朋克风格的管理界面
 - **代理支持** - 支持 HTTP/SOCKS 代理
+- **模型能力同步** - 每日从 Cherry Studio 同步 2619 个模型的能力数据
 
 ## 支持的 AI 服务商
 
@@ -113,10 +114,7 @@ key/
 ├── data/
 │   ├── input/                       # 导入的 JSON 文件
 │   ├── cache/                       # 缓存目录
-│   ├── keys.json                    # 密钥存储
-│   ├── check_results.json           # 验证结果
-│   ├── test_results.json            # 测试结果
-│   ├── model_capabilities.json      # 模型能力配置（自动生成）
+│   ├── model_capabilities.json      # 模型能力配置（自动生成，2619个模型）
 │   └── model_capabilities_fallback.json  # 兜底配置
 ├── scripts/
 │   ├── extract_model_caps.py        # 提取模型能力脚本
@@ -125,11 +123,9 @@ key/
 ├── src/
 │   ├── providers/                   # AI 服务商实现
 │   │   ├── base.py                  # 基类
-│   │   ├── __init__.py              # 注册表
-│   │   ├── models_registry.py       # 静态模型列表（自动生成）
-│   │   ├── openai.py                # OpenAI
-│   │   ├── anthropic.py             # Anthropic
-│   │   └── ...                      # 其他服务商
+│   │   ├── __init__.py              # 注册表（37个提供商）
+│   │   ├── models_registry.py       # 静态模型列表（自动生成，2619个模型）
+│   │   └── ...                      # 具体提供商实现
 │   ├── config.py                    # 配置加载
 │   ├── parser.py                    # JSON 导入
 │   ├── detector.py                  # 提供商检测
@@ -140,10 +136,10 @@ key/
 │   ├── proxy.py                     # 代理检测
 │   └── model_capabilities.py        # 模型能力检测
 ├── templates/
-│   └── index.html                   # Web 界面
-├── config.yaml                      # 配置文件
+│   └── index.html                   # Web 界面（赛博朋克风格）
+├── config.yaml.example              # 配置文件示例
 ├── main.py                          # CLI 入口
-├── web.py                           # Web 入口
+├── web.py                           # Web 入口（FastAPI）
 └── requirements.txt                 # 依赖
 ```
 
@@ -178,12 +174,26 @@ test:
 
 ## 模型管理
 
+### 数据统计
+
+| 类别 | 数量 |
+|------|------|
+| 视觉模型 | 760 |
+| 工具调用模型 | 1269 |
+| 推理模型 | 698 |
+| 联网模型 | 343 |
+| 嵌入模型 | 96 |
+| **总提供商** | 115 |
+| **总模型数** | 2619 |
+
+数据来源：[Cherry Studio](https://github.com/CherryHQ/cherry-studio) 的 `packages/provider-registry/data/models.json`
+
 ### 获取模型 vs 检测可用
 
 | 功能 | 说明 | 速度 |
 |------|------|------|
 | **获取模型** | 从 API 或硬编码列表获取模型列表 | 快（1次API调用） |
-| **检测可用** | 逐个检测模型是否真正可用 | 慢（N次API调用） |
+| **检测可用** | 逐个检测模型是否真正可用 | 慢（N次API调用）
 
 ### 检测可用功能
 
@@ -246,20 +256,24 @@ test:
 
 工作流文件：`.github/workflows/sync-cherry-models.yml`
 
-同步内容：
-- **模型能力**：vision, tooluse, embedding, rerank, reasoning, websearch, free
-- **模型列表**：每个服务商的静态模型列表（无 key 时使用）
+**数据源**：
+- `packages/provider-registry/data/models.json` — 模型能力数据
+
+**同步内容**：
+- **模型能力**：vision (760), tooluse (1269), reasoning (698), websearch (343), embedding (96)
+- **模型列表**：115 个提供商的 2619 个模型（无 key 时使用）
 
 ### 手动同步
 
 ```bash
-# 克隆 Cherry Studio（只拉取模型配置）
+# 克隆 Cherry Studio（只拉取模型数据）
 git clone --depth 1 --sparse https://github.com/CherryHQ/cherry-studio.git cherry-studio
 cd cherry-studio
-git sparse-checkout set src/renderer/src/config/models
+git sparse-checkout set packages/provider-registry/data
 
 # 提取模型能力
 cd ..
+export CHERRY_DATA_DIR="cherry-studio/packages/provider-registry/data"
 python scripts/extract_model_caps.py
 
 # 提取模型列表
