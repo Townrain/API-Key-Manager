@@ -25,3 +25,10 @@ data/logs/
 data/input/
 *.log
 *.jsonl
+
+# 敏感数据（包含 API 密钥）
+data/keys.json
+data/check_results.json
+data/test_results.json
+data/signature_verification_report.json
+config.yaml
