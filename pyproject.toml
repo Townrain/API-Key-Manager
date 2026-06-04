@@ -1,10 +1,10 @@
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "key-manager"
-version = "2.0.0"
+version = "2.1.0"
 description = "Batch manage API keys for 44+ AI providers with CLI and Web interfaces"
 readme = "README.md"
 license = {text = "MIT"}
