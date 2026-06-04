@@ -2829,7 +2829,7 @@
             const resp = await fetch(url, options);
             if (!resp.ok) {
                 let msg = `服务器错误 (${resp.status})`;
-                try { const j = await resp.json(); if (j.error) msg = j.error; } catch {}
+                try { const j = await resp.json(); if (j.error) { msg = (typeof j.error === 'object') ? (j.error.message || JSON.stringify(j.error)) : j.error; } } catch {}
                 throw new Error(msg);
             }
             const ct = resp.headers.get('content-type') || '';
@@ -2911,7 +2911,7 @@
                     <td style="font-size: 12px; color: var(--text-dim);">${k.last_checked ? new Date(k.last_checked).toLocaleString('zh-CN') : '-'}</td>
                     <td style="font-family: 'Fira Code', monospace; font-size: 12px;">${k.tests.max_tokens ? (k.tests.max_tokens >= 1000000 ? (k.tests.max_tokens/1000000).toFixed(1)+'M' : k.tests.max_tokens >= 1000 ? (k.tests.max_tokens/1000)+'K' : k.tests.max_tokens) : '-'}</td>
                     <td style="font-family: 'Fira Code', monospace; font-size: 12px;">${k.tests.max_concurrency || '-'}</td>
-                    <td style="font-family: 'Fira Code', monospace; font-size: 12px; color: var(--text-dim);">${k.balance && k.balance.amount != null ? k.balance.amount + ' ' + (k.balance.currency || '') : '-'}</td>
+                    <td style="font-family: 'Fira Code', monospace; font-size: 12px; color: var(--text-dim);">${k.balance && k.balance.balance != null ? k.balance.balance + ' ' + (k.balance.currency || '') : '-'}</td>
                 </tr>`;
             }).join('');
             updatePagination();
@@ -3097,7 +3097,7 @@
 
                     const te = translateError(data.error || '');
                     const tet = translateErrorType(data.error_type || '');
-                    const balanceHtml = data.balance ? `<div class="result-item"><label>余额</label><value style="color: var(--neon-green);">${data.balance.amount} ${data.balance.currency}</value></div>` : '';
+                    const balanceHtml = data.balance ? `<div class="result-item"><label>余额</label><value style="color: var(--neon-green);">${data.balance.balance} ${data.balance.currency}</value></div>` : '';
                     const errorTypeHtml = data.error_type ? `<div style="margin-top: 8px; padding: 8px 12px; background: var(--glow-red); border-radius: 8px; font-size: 13px;"><span style="color: var(--neon-amber);">⚠ ${tet || data.error_type}</span></div>` : '';
                     resultEl.innerHTML = `
                         <div class="result-card">
@@ -3134,7 +3134,7 @@
                 const params = new URLSearchParams();
                 if (provider) params.set('provider', provider);
                 if (key) params.set('key', key);
-                if (typeFilter && typeFilter !== 'all') params.set('type', typeFilter);
+                if (typeFilter && typeFilter !== 'all') params.set('type_filter', typeFilter);
 
                 const data = await safeFetch(`/api/models?${params}`);
 
@@ -3220,6 +3220,7 @@
                 const resultsEl = document.getElementById('check-results');
                 const availableModels = [];
                 const timeoutModels = [];
+                const errorModels = [];
                 let forceSerialMode = false;  // 被限流后强制串行模式
 
                 while (true) {
@@ -3242,33 +3243,55 @@
                                     progressEl.textContent = `被限流，切换到串行模式...`;
                                     progressEl.style.color = 'var(--neon-amber)';
                                 } else if (data.type === 'model_timeout') {
-                                    // 超时模型显示红色
-                                    timeoutModels.push(data.model);
-                                    progressEl.textContent = `模型 ${data.model} 超时，跳过...`;
-                                    progressEl.style.color = 'var(--neon-amber)';
-                                    
-                                    // 创建容器（如果不存在）
-                                    if (!document.getElementById('timeout-models-tags')) {
-                                        resultsEl.innerHTML += '<div style="margin-top: 8px;"><span style="color: var(--neon-red); font-size: 11px;">超时模型:</span><div class="models-tags" id="timeout-models-tags" style="margin-top: 4px;"></div></div>';
+                                    // 超时模型显示红色 - 去重检查
+                                    if (!timeoutModels.includes(data.model)) {
+                                        timeoutModels.push(data.model);
+                                        progressEl.textContent = `模型 ${data.model} 超时，跳过...`;
+                                        progressEl.style.color = 'var(--neon-amber)';
+                                        
+                                        // 创建容器（如果不存在）
+                                        if (!document.getElementById('timeout-models-tags')) {
+                                            resultsEl.innerHTML += '<div style="margin-top: 8px;"><span style="color: var(--neon-red); font-size: 11px;">超时模型:</span><div class="models-tags" id="timeout-models-tags" style="margin-top: 4px;"></div></div>';
+                                        }
+                                        const timeoutTagsEl = document.getElementById('timeout-models-tags');
+                                        timeoutTagsEl.innerHTML += `<span class="model-chip" style="border-color: var(--neon-red); color: var(--neon-red); background: rgba(255, 68, 68, 0.1);">${data.model}</span> `;
                                     }
-                                    const timeoutTagsEl = document.getElementById('timeout-models-tags');
-                                    timeoutTagsEl.innerHTML += `<span class="model-chip" style="border-color: var(--neon-red); color: var(--neon-red); background: rgba(255, 68, 68, 0.1);">${data.model}</span> `;
                                 } else if (data.type === 'result') {
                                     if (data.available) {
-                                        availableModels.push(data.model);
-                                        // 创建容器（如果不存在）
-                                        if (!document.getElementById('available-models-tags')) {
-                                            resultsEl.innerHTML = '<div><span style="color: var(--neon-green); font-size: 11px;">可用模型:</span><div class="models-tags" id="available-models-tags" style="margin-top: 4px;"></div></div>' + resultsEl.innerHTML;
+                                        // 去重检查
+                                        if (!availableModels.includes(data.model)) {
+                                            availableModels.push(data.model);
+                                            // 从超时列表中移除（如果重试成功）
+                                            const timeoutIdx = timeoutModels.indexOf(data.model);
+                                            if (timeoutIdx > -1) {
+                                                timeoutModels.splice(timeoutIdx, 1);
+                                                // 移除超时标签
+                                                const timeoutTagsEl = document.getElementById('timeout-models-tags');
+                                                if (timeoutTagsEl) {
+                                                    const chips = timeoutTagsEl.querySelectorAll('.model-chip');
+                                                    chips.forEach(chip => {
+                                                        if (chip.textContent === data.model) chip.remove();
+                                                    });
+                                                }
+                                            }
+                                            // 创建容器（如果不存在）
+                                            if (!document.getElementById('available-models-tags')) {
+                                                resultsEl.innerHTML = '<div><span style="color: var(--neon-green); font-size: 11px;">可用模型:</span><div class="models-tags" id="available-models-tags" style="margin-top: 4px;"></div></div>' + resultsEl.innerHTML;
+                                            }
+                                            const tagsEl = document.getElementById('available-models-tags');
+                                            tagsEl.innerHTML += `<span class="model-chip" style="border-color: var(--neon-green); color: var(--neon-green); background: rgba(0, 255, 136, 0.1);">${data.model}</span> `;
                                         }
-                                        const tagsEl = document.getElementById('available-models-tags');
-                                        tagsEl.innerHTML += `<span class="model-chip" style="border-color: var(--neon-green); color: var(--neon-green); background: rgba(0, 255, 136, 0.1);">${data.model}</span> `;
                                     } else if (data.status === 'error') {
-                                        // 检测失败的模型
-                                        if (!document.getElementById('error-models-tags')) {
-                                            resultsEl.innerHTML += '<div style="margin-top: 8px;"><span style="color: var(--neon-magenta); font-size: 11px;">检测失败:</span><div class="models-tags" id="error-models-tags" style="margin-top: 4px;"></div></div>';
+                                        // 检测失败的模型 - 去重检查
+                                        if (!errorModels) errorModels = [];
+                                        if (!errorModels.includes(data.model)) {
+                                            errorModels.push(data.model);
+                                            if (!document.getElementById('error-models-tags')) {
+                                                resultsEl.innerHTML += '<div style="margin-top: 8px;"><span style="color: var(--neon-magenta); font-size: 11px;">检测失败:</span><div class="models-tags" id="error-models-tags" style="margin-top: 4px;"></div></div>';
+                                            }
+                                            const errorTagsEl = document.getElementById('error-models-tags');
+                                            errorTagsEl.innerHTML += `<span class="model-chip" style="border-color: var(--neon-magenta); color: var(--neon-magenta); background: rgba(255, 68, 187, 0.1);">${data.model}</span> `;
                                         }
-                                        const errorTagsEl = document.getElementById('error-models-tags');
-                                        errorTagsEl.innerHTML += `<span class="model-chip" style="border-color: var(--neon-magenta); color: var(--neon-magenta); background: rgba(255, 68, 187, 0.1);">${data.model}</span> `;
                                     } else if (data.status === 'rate_limited') {
                                         // 被限流的模型
                                         if (!document.getElementById('rate-limited-models-tags')) {

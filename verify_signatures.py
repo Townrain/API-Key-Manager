@@ -20,8 +20,8 @@ from rich.panel import Panel
 # Add project path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from src.providers import PROVIDERS, PROVIDER_ERROR_SIGNATURES
-from src.detector import UNIQUE_SIGNATURES
+from key_manager.providers import PROVIDERS, PROVIDER_ERROR_SIGNATURES
+from key_manager.detector import UNIQUE_SIGNATURES
 
 console = Console(force_terminal=True, width=120)
 

@@ -1,0 +1,2345 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "API Key Manager",
+    "description": "Manage and validate API keys for 37+ AI providers. Import, check validity, test token limits and concurrency, query balances, and export working keys.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/import": {
+      "post": {
+        "tags": [
+          "Keys"
+        ],
+        "summary": "Api Import",
+        "description": "Import keys from a JSON file, directory, or inline batch.",
+        "operationId": "api_import_api_import_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/import/upload": {
+      "post": {
+        "tags": [
+          "Keys"
+        ],
+        "summary": "Api Import Upload",
+        "description": "Upload and import a JSON key file.",
+        "operationId": "api_import_upload_api_import_upload_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/keys": {
+      "get": {
+        "tags": [
+          "Keys"
+        ],
+        "summary": "Api List Keys",
+        "description": "List keys with optional filters and pagination.",
+        "operationId": "api_list_keys_api_keys_get",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by provider",
+              "title": "Provider"
+            },
+            "description": "Filter by provider"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by status",
+              "title": "Status"
+            },
+            "description": "Filter by status"
+          },
+          {
+            "name": "batch",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by batch label",
+              "title": "Batch"
+            },
+            "description": "Filter by batch label"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "description": "Items per page",
+              "default": 50,
+              "title": "Page Size"
+            },
+            "description": "Items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeyListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/keys/export": {
+      "get": {
+        "tags": [
+          "Keys"
+        ],
+        "summary": "Api Export Keys",
+        "description": "Export all valid keys.",
+        "operationId": "api_export_keys_api_keys_export_get",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by provider",
+              "title": "Provider"
+            },
+            "description": "Filter by provider"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeyExportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/keys/clear": {
+      "post": {
+        "tags": [
+          "Keys"
+        ],
+        "summary": "Api Clear Keys",
+        "description": "Clear all keys from storage.",
+        "operationId": "api_clear_keys_api_keys_clear_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/check": {
+      "post": {
+        "tags": [
+          "Check"
+        ],
+        "summary": "Api Check",
+        "description": "Run a validation check against all keys (synchronous - returns results directly).",
+        "operationId": "api_check_api_check_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_api_check_api_check_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/check/single": {
+      "post": {
+        "tags": [
+          "Check"
+        ],
+        "summary": "Api Check Single",
+        "description": "Check validity of a single API key.",
+        "operationId": "api_check_single_api_check_single_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckSingleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckSingleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/check/batch": {
+      "post": {
+        "tags": [
+          "Check"
+        ],
+        "summary": "Api Check Batch",
+        "description": "Check validity of multiple keys in batch.",
+        "operationId": "api_check_batch_api_check_batch_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckBatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckBatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test": {
+      "post": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "Api Test",
+        "description": "Run token limit and concurrency tests against all valid keys (async).",
+        "operationId": "api_test_api_test_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/single": {
+      "post": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "Api Test Single",
+        "description": "Test token limit and concurrency for a single key.",
+        "operationId": "api_test_single_api_test_single_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestSingleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestSingleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/token": {
+      "post": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "Api Test Token",
+        "description": "Run token limit tests on all valid keys (async).",
+        "operationId": "api_test_token_api_test_token_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/test/concurrency": {
+      "post": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "Api Test Concurrency",
+        "description": "Run concurrency tests on all valid keys (async).",
+        "operationId": "api_test_concurrency_api_test_concurrency_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/balance": {
+      "post": {
+        "tags": [
+          "Balance"
+        ],
+        "summary": "Api Balance",
+        "description": "Query account balance for a key.",
+        "operationId": "api_balance_api_balance_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BalanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BalanceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/models": {
+      "get": {
+        "tags": [
+          "Models"
+        ],
+        "summary": "Api Models",
+        "description": "Get available models for a provider (static or live).",
+        "operationId": "api_models_api_models_get",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Provider name",
+              "title": "Provider"
+            },
+            "description": "Provider name"
+          },
+          {
+            "name": "type_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Model type filter",
+              "default": "all",
+              "title": "Type Filter"
+            },
+            "description": "Model type filter"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "API key for live model fetch",
+              "title": "Key"
+            },
+            "description": "API key for live model fetch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/models/check": {
+      "post": {
+        "tags": [
+          "Models"
+        ],
+        "summary": "Api Models Check",
+        "description": "Live model availability check (SSE stream).",
+        "operationId": "api_models_check_api_models_check_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/providers": {
+      "get": {
+        "tags": [
+          "Providers"
+        ],
+        "summary": "Api Providers",
+        "description": "List all registered providers.",
+        "operationId": "api_providers_api_providers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProvidersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/providers/detail": {
+      "get": {
+        "tags": [
+          "Providers"
+        ],
+        "summary": "Api Providers Detail",
+        "description": "Get detailed provider information including website and docs URLs.",
+        "operationId": "api_providers_detail_api_providers_detail_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stats": {
+      "get": {
+        "tags": [
+          "Stats"
+        ],
+        "summary": "Api Stats",
+        "description": "Get key statistics broken down by provider.",
+        "operationId": "api_stats_api_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stats/chart": {
+      "get": {
+        "tags": [
+          "Stats"
+        ],
+        "summary": "Api Stats Chart",
+        "description": "Get chart-friendly statistics data.",
+        "operationId": "api_stats_chart_api_stats_chart_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatsChartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/progress": {
+      "get": {
+        "tags": [
+          "Progress"
+        ],
+        "summary": "Api Progress",
+        "description": "Get current operation progress.",
+        "operationId": "api_progress_api_progress_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/progress/stream": {
+      "get": {
+        "tags": [
+          "Progress"
+        ],
+        "summary": "Api Progress Stream",
+        "description": "Stream operation progress via Server-Sent Events.",
+        "operationId": "api_progress_stream_api_progress_stream_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/proxy": {
+      "get": {
+        "tags": [
+          "Keys"
+        ],
+        "summary": "Api Proxy",
+        "description": "Get current proxy configuration and auto-detection status.",
+        "operationId": "api_proxy_api_proxy_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logs": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "summary": "Api Logs",
+        "description": "Get recent log entries.",
+        "operationId": "api_logs_api_logs_get",
+        "parameters": [
+          {
+            "name": "lines",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Number of recent log lines",
+              "default": 100,
+              "title": "Lines"
+            },
+            "description": "Number of recent log lines"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logs/operations": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "summary": "Api Logs Operations",
+        "description": "Get structured operations log.",
+        "operationId": "api_logs_operations_api_logs_operations_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Max operations to return",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Max operations to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logs/files": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "summary": "Api Logs Files",
+        "description": "Get list of available log files.",
+        "operationId": "api_logs_files_api_logs_files_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signature-report": {
+      "get": {
+        "tags": [
+          "Keys"
+        ],
+        "summary": "Api Signature Report",
+        "description": "Get provider detection signature report for debugging/auditing.",
+        "operationId": "api_signature_report_api_signature_report_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BalanceRequest": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key",
+            "description": "API key to query balance for"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Provider name (auto-detected if empty)",
+            "default": ""
+          },
+          "custom_base_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Base Url",
+            "description": "Override provider base URL"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "title": "BalanceRequest",
+        "examples": [
+          {
+            "key": "sk-abc123",
+            "provider": "openai"
+          }
+        ]
+      },
+      "BalanceResponse": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Provider identifier"
+          },
+          "supported": {
+            "type": "boolean",
+            "title": "Supported",
+            "description": "Whether provider supports balance queries",
+            "default": false
+          },
+          "balance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Balance",
+            "description": "Account balance"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency",
+            "description": "Balance currency code"
+          },
+          "key_masked": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key Masked",
+            "description": "Masked key for display"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Error message if query failed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider"
+        ],
+        "title": "BalanceResponse"
+      },
+      "Body_api_check_api_check_post": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "body_json": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Body Json"
+          }
+        },
+        "type": "object",
+        "title": "Body_api_check_api_check_post"
+      },
+      "CheckBatchItem": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key",
+            "description": "API key to check"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Provider name (auto-detected if empty)",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "title": "CheckBatchItem"
+      },
+      "CheckBatchRequest": {
+        "properties": {
+          "keys": {
+            "items": {
+              "$ref": "#/components/schemas/CheckBatchItem"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Keys",
+            "description": "Keys to check"
+          },
+          "timeout": {
+            "type": "integer",
+            "title": "Timeout",
+            "description": "Per-key timeout in seconds",
+            "default": 10
+          },
+          "concurrency": {
+            "type": "integer",
+            "title": "Concurrency",
+            "description": "Maximum concurrent checks",
+            "default": 50
+          },
+          "custom_base_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Base Url",
+            "description": "Override provider base URL for all keys"
+          }
+        },
+        "type": "object",
+        "required": [
+          "keys"
+        ],
+        "title": "CheckBatchRequest",
+        "examples": [
+          {
+            "concurrency": 20,
+            "keys": [
+              {
+                "key": "sk-abc123",
+                "provider": "openai"
+              },
+              {
+                "key": "sk-def456",
+                "provider": "deepseek"
+              }
+            ]
+          }
+        ]
+      },
+      "CheckBatchResponse": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CheckBatchResult"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "Per-key results"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/CheckBatchSummary",
+            "description": "Aggregate summary"
+          }
+        },
+        "type": "object",
+        "title": "CheckBatchResponse"
+      },
+      "CheckBatchResult": {
+        "properties": {
+          "key_masked": {
+            "type": "string",
+            "title": "Key Masked",
+            "description": "Masked key for display"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Provider identifier"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Check result: valid / invalid / error / unknown"
+          },
+          "status_code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Code",
+            "description": "HTTP status code from provider"
+          },
+          "latency_ms": {
+            "type": "number",
+            "title": "Latency Ms",
+            "description": "Response latency in milliseconds",
+            "default": 0
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Error message if check failed"
+          },
+          "error_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Type",
+            "description": "Categorised error type"
+          },
+          "balance": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Balance",
+            "description": "Balance information"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key_masked",
+          "provider",
+          "status"
+        ],
+        "title": "CheckBatchResult"
+      },
+      "CheckBatchSummary": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total keys checked",
+            "default": 0
+          },
+          "valid": {
+            "type": "integer",
+            "title": "Valid",
+            "description": "Number of valid keys",
+            "default": 0
+          },
+          "invalid": {
+            "type": "integer",
+            "title": "Invalid",
+            "description": "Number of invalid keys",
+            "default": 0
+          },
+          "error": {
+            "type": "integer",
+            "title": "Error",
+            "description": "Number of errored keys",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "CheckBatchSummary"
+      },
+      "CheckSingleRequest": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key",
+            "description": "API key to check"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Provider name (auto-detected if empty)",
+            "default": ""
+          },
+          "custom_base_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Base Url",
+            "description": "Override provider base URL"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "title": "CheckSingleRequest",
+        "examples": [
+          {
+            "key": "sk-abc123",
+            "provider": "openai"
+          }
+        ]
+      },
+      "CheckSingleResponse": {
+        "properties": {
+          "key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key",
+            "description": "Full API key"
+          },
+          "key_masked": {
+            "type": "string",
+            "title": "Key Masked",
+            "description": "Masked key for display"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Provider identifier"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name",
+            "description": "Human-readable provider name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Check result: valid / invalid / error / unknown"
+          },
+          "status_code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Code",
+            "description": "HTTP status code from provider"
+          },
+          "latency_ms": {
+            "type": "number",
+            "title": "Latency Ms",
+            "description": "Response latency in milliseconds",
+            "default": 0
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Error message if check failed"
+          },
+          "error_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Type",
+            "description": "Categorised error type"
+          },
+          "balance": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Balance",
+            "description": "Balance information"
+          },
+          "models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Models",
+            "description": "Available models"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key_masked",
+          "provider",
+          "status"
+        ],
+        "title": "CheckSingleResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImportRequest": {
+        "properties": {
+          "file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File",
+            "description": "Path to a JSON file containing keys"
+          },
+          "directory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Directory",
+            "description": "Directory to scan for key files"
+          },
+          "batch": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch",
+            "description": "Inline list of keys to import"
+          }
+        },
+        "type": "object",
+        "title": "ImportRequest",
+        "examples": [
+          {
+            "file": "./data/input/keys.json"
+          },
+          {
+            "batch": [
+              "sk-abc123",
+              "sk-def456"
+            ]
+          }
+        ]
+      },
+      "ImportResponse": {
+        "properties": {
+          "new": {
+            "type": "integer",
+            "title": "New",
+            "description": "Number of newly imported keys",
+            "default": 0
+          },
+          "duplicates": {
+            "type": "integer",
+            "title": "Duplicates",
+            "description": "Number of duplicate keys skipped",
+            "default": 0
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Errors",
+            "description": "Import error messages"
+          }
+        },
+        "type": "object",
+        "title": "ImportResponse"
+      },
+      "KeyExportItem": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key",
+            "description": "Full API key"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Provider identifier"
+          },
+          "max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Tokens",
+            "description": "Maximum token limit"
+          },
+          "max_concurrency": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Concurrency",
+            "description": "Maximum concurrency limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "provider"
+        ],
+        "title": "KeyExportItem"
+      },
+      "KeyExportResponse": {
+        "properties": {
+          "keys": {
+            "items": {
+              "$ref": "#/components/schemas/KeyExportItem"
+            },
+            "type": "array",
+            "title": "Keys",
+            "description": "Exported valid keys"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total exported key count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "KeyExportResponse"
+      },
+      "KeyInfo": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key",
+            "description": "Full API key"
+          },
+          "key_masked": {
+            "type": "string",
+            "title": "Key Masked",
+            "description": "Masked key for display"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Provider identifier"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Key status: valid / invalid / error / unknown"
+          },
+          "last_checked": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Checked",
+            "description": "ISO-8601 timestamp of last check"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error",
+            "description": "Most recent error message"
+          },
+          "error_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Type",
+            "description": "Categorised error type"
+          },
+          "tests": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Tests",
+            "description": "Test results (max_tokens, max_concurrency)"
+          },
+          "models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Models",
+            "description": "Available models"
+          },
+          "sources_count": {
+            "type": "integer",
+            "title": "Sources Count",
+            "description": "Number of import sources",
+            "default": 0
+          },
+          "balance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Balance",
+            "description": "Account balance if available"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "key_masked",
+          "provider",
+          "status"
+        ],
+        "title": "KeyInfo"
+      },
+      "KeyListResponse": {
+        "properties": {
+          "keys": {
+            "items": {
+              "$ref": "#/components/schemas/KeyInfo"
+            },
+            "type": "array",
+            "title": "Keys",
+            "description": "Paginated key list"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total number of keys matching filters",
+            "default": 0
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page",
+            "description": "Current page number",
+            "default": 1
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages",
+            "description": "Total number of pages",
+            "default": 0
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size",
+            "description": "Page size",
+            "default": 50
+          }
+        },
+        "type": "object",
+        "title": "KeyListResponse"
+      },
+      "LogEntry": {
+        "properties": {
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp",
+            "description": "Log entry timestamp"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level",
+            "description": "Log level (INFO, WARNING, ERROR)"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Log message content",
+            "default": ""
+          },
+          "extra": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra",
+            "description": "Additional structured data"
+          }
+        },
+        "type": "object",
+        "title": "LogEntry"
+      },
+      "LogsResponse": {
+        "properties": {
+          "logs": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/LogEntry"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Logs",
+            "description": "Recent log entries"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Number of entries returned",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "LogsResponse"
+      },
+      "ModelsResponse": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Provider identifier"
+          },
+          "models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Models",
+            "description": "Available model identifiers"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total model count",
+            "default": 0
+          },
+          "type_filter": {
+            "type": "string",
+            "title": "Type Filter",
+            "description": "Applied type filter",
+            "default": "all"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "Data source: api / static"
+          },
+          "hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hint",
+            "description": "Hint message for user"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Error message if fetch failed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider"
+        ],
+        "title": "ModelsResponse"
+      },
+      "OperationEntry": {
+        "properties": {
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp",
+            "description": "Operation timestamp"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action",
+            "description": "Operation type (import, check, test, etc.)",
+            "default": ""
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail",
+            "description": "Operation detail",
+            "default": ""
+          },
+          "extra": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra",
+            "description": "Additional structured data"
+          }
+        },
+        "type": "object",
+        "title": "OperationEntry"
+      },
+      "OperationsResponse": {
+        "properties": {
+          "operations": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/OperationEntry"
+                },
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Operations",
+            "description": "Structured operations log"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Number of entries returned",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "OperationsResponse"
+      },
+      "ProgressResponse": {
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "description": "Whether a long-running task is in progress",
+            "default": false
+          },
+          "current": {
+            "type": "integer",
+            "title": "Current",
+            "description": "Current progress counter",
+            "default": 0
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total items to process",
+            "default": 0
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Task status: loading / done / error",
+            "default": ""
+          },
+          "results": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Results",
+            "description": "Final results when complete"
+          }
+        },
+        "type": "object",
+        "title": "ProgressResponse"
+      },
+      "ProviderDetail": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Provider identifier"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "Human-readable provider name"
+          },
+          "prefix": {
+            "type": "string",
+            "title": "Prefix",
+            "description": "Key prefix pattern",
+            "default": "-"
+          },
+          "base_url": {
+            "type": "string",
+            "title": "Base Url",
+            "description": "Provider API base URL",
+            "default": ""
+          },
+          "website_url": {
+            "type": "string",
+            "title": "Website Url",
+            "description": "Provider website URL",
+            "default": ""
+          },
+          "docs_url": {
+            "type": "string",
+            "title": "Docs Url",
+            "description": "Provider documentation URL",
+            "default": ""
+          },
+          "website_name": {
+            "type": "string",
+            "title": "Website Name",
+            "description": "Provider website display name",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "display_name"
+        ],
+        "title": "ProviderDetail"
+      },
+      "ProviderDetailResponse": {
+        "properties": {
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderDetail"
+            },
+            "type": "array",
+            "title": "Providers",
+            "description": "Provider details"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total provider count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "ProviderDetailResponse"
+      },
+      "ProviderInfo": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Provider identifier"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "Human-readable provider name"
+          },
+          "prefix": {
+            "type": "string",
+            "title": "Prefix",
+            "description": "Key prefix pattern",
+            "default": "-"
+          },
+          "base_url": {
+            "type": "string",
+            "title": "Base Url",
+            "description": "Provider API base URL",
+            "default": ""
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Provider type",
+            "default": "ai"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "display_name"
+        ],
+        "title": "ProviderInfo"
+      },
+      "ProvidersResponse": {
+        "properties": {
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderInfo"
+            },
+            "type": "array",
+            "title": "Providers",
+            "description": "Registered providers"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total provider count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "ProvidersResponse"
+      },
+      "StatsChartProviderEntry": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total keys for this provider",
+            "default": 0
+          },
+          "valid": {
+            "type": "integer",
+            "title": "Valid",
+            "description": "Valid keys",
+            "default": 0
+          },
+          "invalid": {
+            "type": "integer",
+            "title": "Invalid",
+            "description": "Invalid keys",
+            "default": 0
+          },
+          "error": {
+            "type": "integer",
+            "title": "Error",
+            "description": "Errored keys",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "StatsChartProviderEntry"
+      },
+      "StatsChartResponse": {
+        "properties": {
+          "providers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/StatsChartProviderEntry"
+            },
+            "type": "object",
+            "title": "Providers",
+            "description": "Per-provider breakdown for charts"
+          },
+          "statuses": {
+            "$ref": "#/components/schemas/StatsChartStatuses",
+            "description": "Global status counts"
+          }
+        },
+        "type": "object",
+        "title": "StatsChartResponse"
+      },
+      "StatsChartStatuses": {
+        "properties": {
+          "valid": {
+            "type": "integer",
+            "title": "Valid",
+            "description": "Total valid keys",
+            "default": 0
+          },
+          "invalid": {
+            "type": "integer",
+            "title": "Invalid",
+            "description": "Total invalid keys",
+            "default": 0
+          },
+          "error": {
+            "type": "integer",
+            "title": "Error",
+            "description": "Total errored keys",
+            "default": 0
+          },
+          "unknown": {
+            "type": "integer",
+            "title": "Unknown",
+            "description": "Total unknown-status keys",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "StatsChartStatuses"
+      },
+      "StatsProviderEntry": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total keys for this provider",
+            "default": 0
+          },
+          "valid": {
+            "type": "integer",
+            "title": "Valid",
+            "description": "Valid keys",
+            "default": 0
+          },
+          "invalid": {
+            "type": "integer",
+            "title": "Invalid",
+            "description": "Invalid keys",
+            "default": 0
+          },
+          "error": {
+            "type": "integer",
+            "title": "Error",
+            "description": "Errored keys",
+            "default": 0
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "Human-readable provider name",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "StatsProviderEntry"
+      },
+      "StatsResponse": {
+        "properties": {
+          "providers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/StatsProviderEntry"
+            },
+            "type": "object",
+            "title": "Providers",
+            "description": "Per-provider statistics"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total key count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "StatsResponse"
+      },
+      "TestSingleRequest": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Key",
+            "description": "API key to test"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Provider name (auto-detected if empty)",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "title": "TestSingleRequest",
+        "examples": [
+          {
+            "key": "sk-abc123",
+            "provider": "openai"
+          }
+        ]
+      },
+      "TestSingleResponse": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Provider identifier"
+          },
+          "key_masked": {
+            "type": "string",
+            "title": "Key Masked",
+            "description": "Masked key for display"
+          },
+          "max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Tokens",
+            "description": "Detected maximum token limit"
+          },
+          "max_concurrency": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Concurrency",
+            "description": "Detected maximum concurrency"
+          },
+          "models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Models",
+            "description": "Available models"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Error message if test failed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "key_masked"
+        ],
+        "title": "TestSingleResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Keys",
+      "description": "Key management operations"
+    },
+    {
+      "name": "Check",
+      "description": "Key validity checking"
+    },
+    {
+      "name": "Test",
+      "description": "Token limit & concurrency testing"
+    },
+    {
+      "name": "Balance",
+      "description": "Account balance queries"
+    },
+    {
+      "name": "Models",
+      "description": "Available model queries"
+    },
+    {
+      "name": "Providers",
+      "description": "Provider registry & details"
+    },
+    {
+      "name": "Stats",
+      "description": "Statistics & charts"
+    },
+    {
+      "name": "Logs",
+      "description": "Operation logs"
+    },
+    {
+      "name": "Progress",
+      "description": "Long-running task progress"
+    }
+  ]
+}

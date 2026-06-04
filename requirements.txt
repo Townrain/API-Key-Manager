@@ -4,3 +4,4 @@ rich>=13.9.0
 fastapi>=0.115.0
 uvicorn>=0.32.0
 python-multipart>=0.0.9
+cryptography>=42.0.0

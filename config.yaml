@@ -1,0 +1,86 @@
+# ============================================
+# API Key Manager Configuration
+# ============================================
+
+# ---- Import Scan ----
+scan:
+  directories:
+    - "./data/input"
+  recursive: true
+
+# ---- Network Proxy ----
+# Set your proxy here for API access (e.g. clash, v2ray)
+# proxy: "http://127.0.0.1:7890"
+# proxy: "socks5://127.0.0.1:7890"
+proxy: ""  # 禁用代理，不自动检测
+
+# ---- Health Check ----
+check:
+  interval_hours: 6
+  timeout_seconds: 30
+  concurrency: 100
+  retry_failed: true
+  retry_count: 2
+
+# ---- Token/Concurrency Test ----
+test:
+  token_test: true
+  token_auto_detect: true
+  token_steps:
+    - 1024
+    - 2048
+    - 4096
+    - 8192
+    - 16384
+    - 32768
+    - 65536
+    - 131072
+    - 262144
+    - 524288
+    - 1048576
+  token_max_manual: null
+
+  concurrency_test: true
+  concurrency_steps:
+    - 1
+    - 5
+    - 10
+    - 20
+    - 50
+    - 100
+  concurrency_timeout_seconds: 120
+
+# ---- Storage Paths ----
+storage:
+  keys_file: "./data/keys.json"
+  check_results_file: "./data/check_results.json"
+  test_results_file: "./data/test_results.json"
+  logs_dir: "./data/logs"
+
+# ---- Webhooks ----
+# Receive notifications when events occur
+# webhooks:
+#   - url: "https://example.com/webhook"
+#     events:
+#       - "key.imported"
+#       - "key.checked"
+#       - "key.tested"
+#       - "key.deleted"
+#       - "batch.check.completed"
+#       - "batch.test.completed"
+#       - "error.occurred"
+#     secret: "your-webhook-secret"  # Optional: for HMAC-SHA256 signature
+#     active: true
+#     max_retries: 3
+
+# ---- Rate Limiting ----
+# Limit API requests per IP per minute (0 = disabled)
+rate_limit:
+  requests_per_minute: 60
+
+# ---- API Authentication ----
+# Protect API endpoints with a Bearer token
+# Set via config or env var KEY_MANAGER_API_KEY
+# When empty or commented out, authentication is disabled
+# auth:
+#   api_key: "your-secret-api-key"
