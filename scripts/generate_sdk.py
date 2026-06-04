@@ -954,7 +954,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "key-manager-sdk"
+name = "api-key-manager-sdk"
 version = "1.0.0"
 description = "Python SDK for API Key Manager"
 readme = "README.md"
@@ -999,7 +999,7 @@ Version: {version}
 ### Python
 
 ```bash
-pip install key-manager-sdk
+pip install api-key-manager-sdk
 ```
 
 Or from source:

@@ -614,7 +614,7 @@ npm install
 ```
 
 ```typescript
-import { KeyManagerClient } from 'key-manager-sdk';
+npm install @api-key-manager/sdk
 
 const client = new KeyManagerClient({ baseUrl: 'http://localhost:18001' });
 
