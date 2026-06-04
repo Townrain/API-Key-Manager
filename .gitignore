@@ -31,4 +31,4 @@ data/keys.json
 data/check_results.json
 data/test_results.json
 data/signature_verification_report.json
-config.yaml
+# config.yaml 作为模板保留，不忽略
