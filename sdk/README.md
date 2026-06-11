@@ -9,7 +9,7 @@ Version: 1.0.0
 ### Python
 
 ```bash
-pip install key-manager-sdk
+pip install api-key-manager-sdk
 ```
 
 Or from source:
