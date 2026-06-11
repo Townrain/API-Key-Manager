@@ -62,10 +62,16 @@ class KeyManager:
         """Save keys to encrypted storage."""
         self._store.save(data)
     
-    def detect_provider(self, key: str) -> list[str]:
+    async def detect_provider(self, key: str) -> list[str]:
         """Auto-detect provider from key prefix."""
-        return detect_provider(key)
-    
+        import httpx
+        from key_manager.detector import detect_provider as _detect_provider
+        
+        timeout = self.config.get("check", {}).get("timeout_seconds", 30)
+        proxy = self.config.get("proxy") or None
+        async with httpx.AsyncClient(timeout=timeout, proxy=proxy) as client:
+            result = await _detect_provider(client, key)
+            return [result] if result else []
     def list_keys(
         self, 
         provider: str | None = None,
@@ -139,7 +145,7 @@ class KeyManager:
         from key_manager.providers import PROVIDERS
         
         if not provider:
-            providers = self.detect_provider(key)
+            providers = await self.detect_provider(key)
             if not providers:
                 return {"valid": False, "error": "Could not detect provider"}
             provider = providers[0]
