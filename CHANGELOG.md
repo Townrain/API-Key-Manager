@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2026-06-11
+
+### Fixed
+
+- **Webhook Method Names** — Fixed all 7 webhook endpoints to use correct `WebhookManager` methods (`list_all`, `register`, `get`, `update`, `unregister`, `get_delivery_log`, `clear_delivery_log`). Previously, web.py called non-existent methods (`list_webhooks`, `add_webhook`, etc.) causing runtime crashes.
+- **SSRF Validation** — Wired up `validate_custom_base_url()` to `check/single` and `balance` endpoints. Previously, the SSRF protection function existed but was never called in production code.
+- **Unicode Cleanup** — Removed 32 lines of garbled unicode characters (芒聲聬, 芒聰聙) from web.py section headers and fixed garbled Chinese text in API response hints.
+- **Validator Import** — Fixed wrong import path in validator.py:63 (`from src.providers.base` → `from key_manager.providers.base`).
+- **StorageError Consistency** — Removed duplicate `StorageError` class from storage.py, now uses unified version from errors.py with proper `ErrorCode`.
+- **Proxy Dead Code** — Removed 3 duplicate `get_proxy()` function definitions in proxy.py (lines 58-70 after return statement).
+- **Auth Timing Attack** — Changed auth middleware comparison from `==` to `hmac.compare_digest()` for timing-safe authentication.
+
+### Security
+
+- **SSRF Protection** — `custom_base_url` parameter is now validated against provider domain whitelist before use.
+- **Constant-Time Auth** — Bearer token comparison now uses `hmac.compare_digest()` to prevent timing attacks.
 ## [2.1.0] - 2026-06-03
 
 ### Added

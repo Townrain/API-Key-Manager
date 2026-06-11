@@ -159,10 +159,11 @@ python web.py
 ### 安全防护
 
 - **路径遍历防护** - 导入端点验证路径在允许目录内
-- **SSRF 防护** - `custom_base_url` 验证域名白名单，阻止私有 IP
+- **SSRF 防护** - `custom_base_url` 验证域名白名单，阻止私有 IP，已接入 `check/single` 和 `balance` 端点
 - **时序安全认证** - 使用 `hmac.compare_digest()` 防止时序攻击
 - **认证警告** - 未配置 API Key 时启动警告
 - **密钥掩码** - API 响应中只返回 `key_masked`，不暴露完整密钥
+- **Webhook 安全** - Webhook 端点使用正确的 API 方法，防止运行时错误
 
 ### API 认证
 

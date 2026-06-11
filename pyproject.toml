@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "api-key-manager"
-version = "2.1.0"
+version = "2.1.1"
 description = "Batch manage API keys for 44+ AI providers with CLI and Web interfaces"
 readme = "README.md"
 license = {text = "MIT"}
@@ -12,7 +12,7 @@ requires-python = ">=3.10"
 authors = [
     {name = "Townrain"}
 ]
-keywords = ["api-key", "ai", "security", "cli", "web", "python", "encryption", "fastapi"]
+keywords = ["api-key", "ai", "openai", "anthropic", "google", "deepseek"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

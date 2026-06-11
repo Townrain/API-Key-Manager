@@ -42,6 +42,7 @@ __all__ = [
     "OperationEntry",
     "OperationsResponse",
     "ProgressResponse",
+    "ProxyResponse",
 ]
 
 
@@ -356,3 +357,11 @@ class ProgressResponse(BaseModel):
     total: int = Field(0, description="Total items to process")
     status: str = Field("", description="Task status: loading / done / error")
     results: dict[str, Any] | None = Field(None, description="Final results when complete")
+
+
+# ── Proxy ─────────────────────────────────────────────────────────────────────
+
+
+class ProxyResponse(BaseModel):
+    proxy: str | None = Field(None, description="Detected proxy URL")
+    source: str = Field("", description="Proxy source: config / env / auto / none")

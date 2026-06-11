@@ -60,7 +60,7 @@ async def validate_keys(keys_file: str = "./data/keys.json",
             provider_name = info["provider"].lower()
             provider = PROVIDERS.get(provider_name)
             if not provider:
-                from src.providers.base import CheckResult
+                from key_manager.providers.base import CheckResult
                 result = CheckResult(valid=False, status_code=None, latency_ms=0, error=f"unknown provider: {provider_name}")
             else:
                 result = await provider.check(client, key)

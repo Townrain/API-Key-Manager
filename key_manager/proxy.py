@@ -55,16 +55,3 @@ def get_proxy(config_proxy: str = None) -> str:
         return ""
     # Otherwise use the configured proxy
     return config_proxy
-    """Get proxy from config or auto-detect."""
-    # 空字符串表示禁用代理
-    if config_proxy == "":
-        return ""
-    # 有配置则使用配置
-    if config_proxy:
-        return config_proxy
-    # 没有配置则自动检测
-    return detect_system_proxy()
-    """Get proxy from config or auto-detect."""
-    if config_proxy:
-        return config_proxy
-    return detect_system_proxy()

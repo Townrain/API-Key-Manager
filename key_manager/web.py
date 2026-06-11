@@ -1,4 +1,4 @@
-"""FastAPI application for API Key Manager.
+﻿"""FastAPI application for API Key Manager.
 
 Serves the web UI and REST API for managing API keys across 37+ providers.
 """
@@ -7,6 +7,7 @@ import time
 import asyncio
 import os
 import json
+import hmac
 import threading
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -38,6 +39,8 @@ from key_manager.detector import detect_by_prefix, detect_provider
 from key_manager.logger import project_logger
 from key_manager.i18n import get_lang_from_header, set_lang, t
 from key_manager.webhook import webhook_manager, WebhookEvent
+from key_manager.ssrf import validate_custom_base_url, get_allowed_domains
+from key_manager.url_override import custom_base_url
 from key_manager.errors import (
     ErrorCode,
     ErrorResponse,
@@ -82,13 +85,14 @@ from key_manager.api_models import (
     OperationEntry,
     OperationsResponse,
     ProgressResponse,
+    ProxyResponse,
 )
 
-# ââ Module-level config ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Module-level config
 
 config = load_config()
 
-# ââ Debug system ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Debug system
 try:
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -98,14 +102,14 @@ except ImportError:
     DEBUG_ENABLED = False
     debug_logger = None
     FunctionTracer = None
-# ââ FastAPI application ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# FastAPI application
 
 app = FastAPI(
     title="API Key Manager",
     description="Manage and validate API keys for 37+ AI providers. "
     "Import, check validity, test token limits and concurrency, "
     "query balances, and export working keys.",
-    version="2.1.0",
+    version="2.1.1",
     openapi_tags=[
         {"name": "Keys", "description": "Key management operations"},
         {"name": "Check", "description": "Key validity checking"},
@@ -119,7 +123,7 @@ app = FastAPI(
     ],
 )
 
-# ââ Initialize debug system ââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Initialize debug system
 
 if DEBUG_ENABLED:
     debug_tracer = init_debug(app)
@@ -128,7 +132,7 @@ else:
     debug_tracer = None
     tracer = None
 
-# ââ Global progress tracker (shared-memory, thread-safe) ââââââââââââââââââââââ
+# Global progress tracker (shared-memory, thread-safe)
 
 class ProgressTracker:
     """Thread-safe progress tracker for long-running operations."""
@@ -182,7 +186,7 @@ def _make_progress_callback():
     return cb
 
 
-# ââ SSE helpers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# SSE helpers
 
 async def _sse_progress_event_generator(poll_interval: float = 0.5):
     """SSE generator that polls the progress tracker until the task completes."""
@@ -196,7 +200,7 @@ async def _sse_progress_event_generator(poll_interval: float = 0.5):
         await asyncio.sleep(poll_interval)
 
 
-# ââ Helper: load keys store ââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Helper: load keys store
 
 def _load_keys_store(config_override: dict | None = None) -> KeyStore:
     cfg = config_override or config
@@ -220,7 +224,7 @@ def _save_keys_data(data: dict, config_override: dict | None = None):
     _load_keys_store(cfg).save(data)
 
 
-# ââ Middleware: rate limit by IP âââââââââââââââââââââââââââââââââââââââââââââ
+# Middleware: rate limit by IP
 
 _RATE_LIMIT_STORE: dict[str, list[float]] = {}
 
@@ -254,7 +258,7 @@ async def rate_limit_middleware(request: Request, call_next):
     _RATE_LIMIT_STORE[client_ip].append(now)
     return await call_next(request)
 
-# ââ Middleware: authenticate requests via Bearer token âââââââââââââââââââââââ
+# Middleware: authenticate requests via Bearer token
 
 _AUTH_WHITELIST = {"/", "/docs", "/redoc", "/openapi.json"}
 
@@ -275,7 +279,7 @@ async def auth_middleware(request: Request, call_next):
     if request.url.path in _AUTH_WHITELIST:
         return await call_next(request)
     auth_header = request.headers.get("authorization", "")
-    if auth_header == f"Bearer {api_key}":
+    if hmac.compare_digest(auth_header, f"Bearer {api_key}"):
         return await call_next(request)
     response = ErrorResponse.error_factory(
         code=ErrorCode.AUTH_REQUIRED,
@@ -283,7 +287,7 @@ async def auth_middleware(request: Request, call_next):
     )
     return JSONResponse(status_code=401, content=response.model_dump())
 
-# ââ Middleware: set language from Accept-Language header ââââââââââââââââââââââ
+# Middleware: set language from Accept-Language header
 
 @app.middleware("http")
 async def i18n_middleware(request: Request, call_next):
@@ -293,7 +297,7 @@ async def i18n_middleware(request: Request, call_next):
     return response
 
 
-# ââ Error handlers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Error handlers
 
 
 @app.exception_handler(RequestValidationError)
@@ -333,9 +337,9 @@ async def validation_error_handler(request: Request, exc: ValidationError):
     return JSONResponse(status_code=status_code, content=body.model_dump())
 
 
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 # WEB UI
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 
 _TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"
 _TEMPLATES_DIR_ALT = Path(__file__).resolve().parent / "templates"
@@ -358,9 +362,9 @@ async def web_ui(request: Request):
     return HTMLResponse("<html><body><h1>API Key Manager</h1><p>Web UI not found.</p></body></html>")
 
 
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 # KEYS
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 
 @app.post("/api/import", tags=["Keys"], response_model=ImportResponse)
 async def api_import(body: ImportRequest):
@@ -580,9 +584,9 @@ async def api_clear_keys():
     return {"cleared": cleared}
 
 
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 # CHECK
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 
 @app.post("/api/check", tags=["Check"])
 async def api_check(
@@ -626,13 +630,18 @@ async def api_check_single(body: CheckSingleRequest):
     key = (body.key or "").strip()
     provider_name = (body.provider or "").strip()
 
+    custom_url = body.custom_base_url
+    if custom_url:
+        allowed_domains = get_allowed_domains(PROVIDERS)
+        validate_custom_base_url(custom_url, allowed_domains)
+        custom_base_url.set(custom_url)
     if not key:
         raise ValidationError(
             code=ErrorCode.VALIDATION_MISSING_KEY,
             message=t("VALIDATION_MISSING_KEY"),
         )
 
-    # Detect provider if not given â?use smart detection with probe+check verification
+    # Detect provider if not given - use smart detection with probe+check verification
     proxy = get_proxy(config.get("proxy")) or None
     
     # Debug logging for proxy config
@@ -646,76 +655,79 @@ async def api_check_single(body: CheckSingleRequest):
             level="INFO"
         ))
     
-    async with httpx.AsyncClient(
-        timeout=config["check"]["timeout_seconds"],
-        proxy=proxy,
-        follow_redirects=False,
-    ) as client:
-        if not provider_name:
-            provider_name = await detect_provider(client, key)
-            if not provider_name or provider_name == 'unknown':
+    try:
+        async with httpx.AsyncClient(
+            timeout=config["check"]["timeout_seconds"],
+            proxy=proxy,
+            follow_redirects=False,
+        ) as client:
+            if not provider_name:
+                provider_name = await detect_provider(client, key)
+                if not provider_name or provider_name == 'unknown':
+                    raise ValidationError(
+                        code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
+                        message=t("VALIDATION_PROVIDER_UNKNOWN"),
+                    )
+
+            provider_name_lower = provider_name.lower()
+            provider_obj = PROVIDERS.get(provider_name_lower)
+            if not provider_obj:
                 raise ValidationError(
                     code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
                     message=t("VALIDATION_PROVIDER_UNKNOWN"),
                 )
 
-        provider_name_lower = provider_name.lower()
-        provider_obj = PROVIDERS.get(provider_name_lower)
-        if not provider_obj:
-            raise ValidationError(
-                code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
-                message=t("VALIDATION_PROVIDER_UNKNOWN"),
+            result = await provider_obj.check(client, key)
+
+            # Attempt balance query
+            balance = None
+            if result.valid and hasattr(provider_obj, "get_balance"):
+                try:
+                    bal = await provider_obj.get_balance(client, key)
+                    if bal.supported and bal.balance is not None:
+                        balance = {"balance": bal.balance, "currency": bal.currency}
+                except Exception:
+                    pass
+
+            # Attempt models query
+            models: list[str] = []
+            if result.valid and hasattr(provider_obj, "get_models"):
+                try:
+                    models = await provider_obj.get_models(client, key) or []
+                except Exception:
+                    pass
+
+            error_type = None
+            if not result.valid:
+                if result.status_code in (401, 403):
+                    error_type = "invalid_key"
+                elif result.status_code == 429:
+                    error_type = "rate_limited"
+                elif result.status_code == 402:
+                    error_type = "insufficient_balance"
+
+            status_str = "valid" if result.valid else ("invalid" if result.status_code in (401, 403) else "error")
+
+            project_logger.log_web_action("check_single", f"{mask_key(key)} {provider_name}: {status_str}")
+
+            # Simplify error message for readability
+            simplified_error = simplify_error(result.error, result.status_code) if result.error else None
+
+            return CheckSingleResponse(
+                key=key,
+                key_masked=mask_key(key),
+                provider=provider_name,
+                display_name=get_display_name(provider_name),
+                status=status_str,
+                status_code=result.status_code,
+                latency_ms=result.latency_ms,
+                error=simplified_error,
+                error_type=error_type,
+                balance=balance,
+                models=models,
             )
-
-        result = await provider_obj.check(client, key)
-
-        # Attempt balance query
-        balance = None
-        if result.valid and hasattr(provider_obj, "get_balance"):
-            try:
-                bal = await provider_obj.get_balance(client, key)
-                if bal.supported and bal.balance is not None:
-                    balance = {"balance": bal.balance, "currency": bal.currency}
-            except Exception:
-                pass
-
-        # Attempt models query
-        models: list[str] = []
-        if result.valid and hasattr(provider_obj, "get_models"):
-            try:
-                models = await provider_obj.get_models(client, key) or []
-            except Exception:
-                pass
-
-        error_type = None
-        if not result.valid:
-            if result.status_code in (401, 403):
-                error_type = "invalid_key"
-            elif result.status_code == 429:
-                error_type = "rate_limited"
-            elif result.status_code == 402:
-                error_type = "insufficient_balance"
-
-        status_str = "valid" if result.valid else ("invalid" if result.status_code in (401, 403) else "error")
-
-        project_logger.log_web_action("check_single", f"{mask_key(key)} {provider_name}: {status_str}")
-
-        # Simplify error message for readability
-        simplified_error = simplify_error(result.error, result.status_code) if result.error else None
-
-        return CheckSingleResponse(
-            key=key,
-            key_masked=mask_key(key),
-            provider=provider_name,
-            display_name=get_display_name(provider_name),
-            status=status_str,
-            status_code=result.status_code,
-            latency_ms=result.latency_ms,
-            error=simplified_error,
-            error_type=error_type,
-            balance=balance,
-            models=models,
-        )
+    finally:
+        custom_base_url.set(None)
 
 
 @app.post("/api/check/batch", tags=["Check"], response_model=CheckBatchResponse)
@@ -804,9 +816,9 @@ async def api_check_batch(body: CheckBatchRequest):
     return CheckBatchResponse(results=results, summary=summary)
 
 
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 # TEST
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 
 @app.post("/api/test", tags=["Test"])
 async def api_test():
@@ -995,9 +1007,9 @@ async def api_test_concurrency_batch():
     """Run concurrency tests on specific keys (batch alias)."""
     return await api_test_concurrency()
 
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 # BALANCE
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 
 @app.post("/api/balance", tags=["Balance"], response_model=BalanceResponse)
 async def api_balance(body: BalanceRequest):
@@ -1005,71 +1017,79 @@ async def api_balance(body: BalanceRequest):
     key = (body.key or "").strip()
     provider_name = (body.provider or "").strip()
 
+    custom_url = body.custom_base_url
+    if custom_url:
+        allowed_domains = get_allowed_domains(PROVIDERS)
+        validate_custom_base_url(custom_url, allowed_domains)
+        custom_base_url.set(custom_url)
     if not key:
         raise ValidationError(
             code=ErrorCode.VALIDATION_MISSING_KEY,
             message=t("VALIDATION_MISSING_KEY"),
         )
 
-    if not provider_name:
-        proxy = get_proxy(config.get("proxy")) or None
-        async with httpx.AsyncClient(timeout=config["check"]["timeout_seconds"], proxy=proxy) as client:
-            provider_name = await detect_provider(client, key)
-        if not provider_name or provider_name == 'unknown':
+    try:
+        if not provider_name:
+            proxy = get_proxy(config.get("proxy")) or None
+            async with httpx.AsyncClient(timeout=config["check"]["timeout_seconds"], proxy=proxy) as client:
+                provider_name = await detect_provider(client, key)
+            if not provider_name or provider_name == 'unknown':
+                raise ValidationError(
+                    code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
+                    message=t("VALIDATION_PROVIDER_UNKNOWN"),
+                )
+
+        provider_name_lower = provider_name.lower()
+        provider_obj = PROVIDERS.get(provider_name_lower)
+        if not provider_obj:
             raise ValidationError(
                 code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
                 message=t("VALIDATION_PROVIDER_UNKNOWN"),
             )
 
-    provider_name_lower = provider_name.lower()
-    provider_obj = PROVIDERS.get(provider_name_lower)
-    if not provider_obj:
-        raise ValidationError(
-            code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
-            message=t("VALIDATION_PROVIDER_UNKNOWN"),
+        proxy = get_proxy(config.get("proxy")) or None
+        error = None
+        balance_value = None
+        currency = None
+        supported = False
+
+        if hasattr(provider_obj, "get_balance"):
+            supported = True
+            async with httpx.AsyncClient(
+                timeout=config["check"]["timeout_seconds"],
+                proxy=proxy,
+            ) as client:
+                try:
+                    bal = await provider_obj.get_balance(client, key)
+                    if bal.supported:
+                        balance_value = bal.balance
+                        currency = bal.currency
+                    else:
+                        supported = False
+                    if bal.error:
+                        error = bal.error
+                except Exception as e:
+                    error = str(e)
+        else:
+            error = "Provider does not support balance queries"
+
+        project_logger.log_web_action("balance", f"{mask_key(key)} {provider_name}: {balance_value}")
+
+        return BalanceResponse(
+            provider=provider_name,
+            supported=supported,
+            balance=balance_value,
+            currency=currency,
+            key_masked=mask_key(key),
+            error=error,
         )
-
-    proxy = get_proxy(config.get("proxy")) or None
-    error = None
-    balance_value = None
-    currency = None
-    supported = False
-
-    if hasattr(provider_obj, "get_balance"):
-        supported = True
-        async with httpx.AsyncClient(
-            timeout=config["check"]["timeout_seconds"],
-            proxy=proxy,
-        ) as client:
-            try:
-                bal = await provider_obj.get_balance(client, key)
-                if bal.supported:
-                    balance_value = bal.balance
-                    currency = bal.currency
-                else:
-                    supported = False
-                if bal.error:
-                    error = bal.error
-            except Exception as e:
-                error = str(e)
-    else:
-        error = "Provider does not support balance queries"
-
-    project_logger.log_web_action("balance", f"{mask_key(key)} {provider_name}: {balance_value}")
-
-    return BalanceResponse(
-        provider=provider_name,
-        supported=supported,
-        balance=balance_value,
-        currency=currency,
-        key_masked=mask_key(key),
-        error=error,
-    )
+    finally:
+        custom_base_url.set(None)
 
 
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 # MODELS
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 
 @app.get("/api/models", tags=["Models"], response_model=ModelsResponse)
 async def api_models(
@@ -1100,7 +1120,7 @@ async def api_models(
                     total=0,
                     type_filter=type_filter,
                     source=None,
-                    hint="æ æ³ä»?Key èªå¨æ£æµ?Providerï¼è¯·æå¨éæ©",
+                    hint="未找到有效的 Key，请检查 Key 是否正确或 Provider 是否支持",
                 )
         else:
             # No key provided, return all static models
@@ -1299,9 +1319,9 @@ async def api_models_check(request: Request):
     return StreamingResponse(stream(), media_type="text/event-stream", headers={"Cache-Control":"no-cache","Connection":"keep-alive","X-Accel-Buffering":"no"})
 
 
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 # PROVIDERS
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 
 @app.get("/api/providers", tags=["Providers"], response_model=ProvidersResponse)
 async def api_providers():
@@ -1346,9 +1366,9 @@ async def api_providers_detail():
     return ProviderDetailResponse(providers=detail_list, total=len(detail_list))
 
 
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 # STATS
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 
 @app.get("/api/stats", tags=["Stats"], response_model=StatsResponse)
 async def api_stats():
@@ -1415,9 +1435,27 @@ async def api_stats_chart():
     )
 
 
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
+
+@app.get("/api/proxy", tags=["Proxy"], response_model=ProxyResponse)
+async def api_proxy():
+    """Get proxy configuration status."""
+    config_proxy = config.get("proxy")
+    proxy = get_proxy(config_proxy)
+    
+    if proxy:
+        # Check if it's from config or auto-detected
+        if config_proxy is not None and config_proxy != "":
+            source = "config"
+        else:
+            source = "auto"
+    else:
+        proxy = None
+        source = "none"
+    
+    return ProxyResponse(proxy=proxy, source=source)
 # LOGS
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 
 @app.get("/api/logs", tags=["Logs"], response_model=LogsResponse)
 async def api_logs():
@@ -1433,9 +1471,9 @@ async def api_logs_operations():
     return OperationsResponse(operations=[OperationEntry(**entry) for entry in operations])
 
 
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 # PROGRESS
-# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# ---
 
 @app.get("/api/progress", tags=["Progress"], response_model=ProgressResponse)
 async def api_progress():
@@ -1453,12 +1491,12 @@ async def api_progress_stream():
     )
 
 
-# ââ Webhook routes âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Webhook routes
 
 @app.get("/api/webhooks", tags=["Webhooks"])
 async def api_webhooks_list():
     """List all configured webhooks."""
-    return webhook_manager.list_webhooks()
+    return webhook_manager.list_all()
 
 
 @app.post("/api/webhooks", tags=["Webhooks"])
@@ -1468,14 +1506,20 @@ async def api_webhooks_create(request: Request):
         body = await request.json()
     except Exception:
         raise ValidationError(code=ErrorCode.VALIDATION_INVALID_FORMAT, message="Invalid JSON body")
-    webhook_manager.add_webhook(body)
-    return {"success": True}
+    webhook_id = webhook_manager.register(
+        url=body.get('url', ''),
+        events=body.get('events'),
+        secret=body.get('secret'),
+        active=body.get('active', True),
+        max_retries=body.get('max_retries', 3),
+    )
+    return {"success": True, "webhook_id": webhook_id}
 
 
 @app.get("/api/webhooks/{webhook_id}", tags=["Webhooks"])
 async def api_webhooks_get(webhook_id: str):
     """Get a specific webhook."""
-    webhook = webhook_manager.get_webhook(webhook_id)
+    webhook = webhook_manager.get(webhook_id)
     if not webhook:
         raise ValidationError(code=ErrorCode.VALIDATION_FILE_NOT_FOUND, message="Webhook not found")
     return webhook
@@ -1488,25 +1532,26 @@ async def api_webhooks_update(webhook_id: str, request: Request):
         body = await request.json()
     except Exception:
         raise ValidationError(code=ErrorCode.VALIDATION_INVALID_FORMAT, message="Invalid JSON body")
-    webhook_manager.update_webhook(webhook_id, body)
+    webhook_manager.update(webhook_id, **body)
     return {"success": True}
 
 
 @app.delete("/api/webhooks/{webhook_id}", tags=["Webhooks"])
 async def api_webhooks_delete(webhook_id: str):
     """Delete a webhook."""
-    webhook_manager.delete_webhook(webhook_id)
+    webhook_manager.unregister(webhook_id)
     return {"success": True}
 
 
 @app.get("/api/webhooks/log/deliveries", tags=["Webhooks"])
 async def api_webhooks_log_deliveries():
     """Get webhook delivery logs."""
-    return webhook_manager.get_delivery_logs()
+    return webhook_manager.get_delivery_log()
 
 
 @app.delete("/api/webhooks/log/deliveries", tags=["Webhooks"])
 async def api_webhooks_log_deliveries_clear():
     """Clear webhook delivery logs."""
-    webhook_manager.clear_delivery_logs()
+    webhook_manager.clear_delivery_log()
     return {"success": True}
+

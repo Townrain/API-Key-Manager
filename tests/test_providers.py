@@ -4,7 +4,7 @@ import pytest
 from key_manager.providers import PROVIDERS
 
 
-REPRESENTATIVE = ["openai", "anthropic", "google", "deepseek", "groq", "dashscope"]
+REPRESENTATIVE = list(PROVIDERS.keys())
 
 
 @pytest.mark.parametrize("name", REPRESENTATIVE)

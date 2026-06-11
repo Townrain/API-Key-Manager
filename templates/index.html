@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS // API 密钥管理中心</title>
+    <title>KeyHub // API 密钥管理中心</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -2234,7 +2234,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 7a2 2 0 0 1 2 2m4 0a6 6 0 0 1-7.743 5.743L11 17H9v2H7v2H4a1 1 0 0 1-1-1v-2.586a1 1 0 0 1 .293-.707l5.964-5.964A6 6 0 1 1 21 9z"/></svg>
                 </div>
                 <div class="logo-text">
-                    <h1>NEXUS</h1>
+                    <h1>KeyHub</h1>
                     <div class="tagline">API 密钥管理中心</div>
                 </div>
             </div>
@@ -2647,7 +2647,7 @@
 
     <footer>
         <div class="container">
-            <p>NEXUS // API 密钥管理中心 &copy; 2026</p>
+            <p>KeyHub // API 密钥管理中心 &copy; 2026</p>
         </div>
     </footer>
 
@@ -2749,11 +2749,11 @@
 
         // Global error handler - prevents silent JS errors from breaking the UI
         window.addEventListener('error', function(e) {
-            console.error('[NEXUS] Uncaught error:', e.message, 'at', e.filename + ':' + e.lineno);
+            console.error('[KeyHub] Uncaught error:', e.message, 'at', e.filename + ':' + e.lineno);
             e.preventDefault();
         });
         window.addEventListener('unhandledrejection', function(e) {
-            console.error('[NEXUS] Unhandled promise rejection:', e.reason);
+            console.error('[KeyHub] Unhandled promise rejection:', e.reason);
             e.preventDefault();
         });
         // Event delegation fallback - ensures clicks work even if inline handlers are blocked
@@ -3697,12 +3697,17 @@ async function runConcurrencyTest() {
         }
 
         async function loadProxy() {
-            const data = await safeFetch('/api/proxy');
-            const el = document.getElementById('proxy-status');
-            if (data.proxy && data.proxy !== '未检测到代理') {
-                el.innerHTML = `<div class="status-dot"></div><span>${data.proxy}</span>`;
-            } else {
-                el.innerHTML = `<div class="status-dot offline"></div><span>无代理</span>`;
+            try {
+                const data = await safeFetch('/api/proxy');
+                const el = document.getElementById('proxy-status');
+                if (data.proxy) {
+                    el.innerHTML = `<div class="status-dot"></div><span>${data.proxy}</span>`;
+                } else {
+                    el.innerHTML = `<div class="status-dot offline"></div><span>无代理</span>`;
+                }
+            } catch (e) {
+                const el = document.getElementById('proxy-status');
+                el.innerHTML = `<div class="status-dot offline"></div><span>检测失败</span>`;
             }
         }
         async function loadProviders() {

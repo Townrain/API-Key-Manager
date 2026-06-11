@@ -6,6 +6,7 @@ from pathlib import Path
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
+from key_manager.errors import ErrorCode, StorageError
 
 
 _ITERATIONS = 100_000
@@ -33,7 +34,8 @@ def _get_passphrase(config: dict | None = None) -> str:
     if config and config.get("encryption", {}).get("passphrase"):
         return config["encryption"]["passphrase"]
     raise StorageError(
-        "No passphrase found. Set KEY_MANAGER_SECRET env var or "
+        code=ErrorCode.STORAGE_ENCRYPTION_ERROR,
+        message="No passphrase found. Set KEY_MANAGER_SECRET env var or "
         "configure encryption.passphrase in config.yaml"
     )
 
@@ -46,8 +48,6 @@ def _b64d(s: str) -> bytes:
     return base64.b64decode(s)
 
 
-class StorageError(Exception):
-    pass
 
 
 class KeyStore:
@@ -58,12 +58,12 @@ class KeyStore:
 
     def load(self) -> dict:
         if not self.path.exists():
-            raise StorageError(f"File not found: {self.path}")
+            raise StorageError(code=ErrorCode.STORAGE_READ_ERROR, message=f"File not found: {self.path}")
         raw = self.path.read_text(encoding="utf-8")
         try:
             data = json.loads(raw)
         except json.JSONDecodeError as e:
-            raise StorageError(f"Invalid JSON in {self.path}: {e}") from e
+            raise StorageError(code=ErrorCode.STORAGE_READ_ERROR, message=f"Invalid JSON in {self.path}: {e}") from e
         if isinstance(data, dict) and data.get("encrypted") is True:
             return self._decrypt(data)
         return data
@@ -83,12 +83,12 @@ class KeyStore:
 
     def rotate_key(self, new_passphrase: str) -> dict:
         if not self.path.exists():
-            raise StorageError(f"File not found: {self.path}")
+            raise StorageError(code=ErrorCode.STORAGE_READ_ERROR, message=f"File not found: {self.path}")
         raw = self.path.read_text(encoding="utf-8")
         try:
             envelope = json.loads(raw)
         except json.JSONDecodeError as e:
-            raise StorageError(f"Invalid JSON in {self.path}: {e}") from e
+            raise StorageError(code=ErrorCode.STORAGE_READ_ERROR, message=f"Invalid JSON in {self.path}: {e}") from e
         if isinstance(envelope, dict) and envelope.get("encrypted") is True:
             data = self._decrypt(envelope)
         else:
@@ -120,15 +120,15 @@ class KeyStore:
             nonce = _b64d(envelope["nonce"])
             ciphertext = _b64d(envelope["data"])
         except (KeyError, ValueError) as e:
-            raise StorageError(f"Malformed encrypted envelope: {e}") from e
+            raise StorageError(code=ErrorCode.STORAGE_ENCRYPTION_ERROR, message=f"Malformed encrypted envelope: {e}") from e
         passphrase = _get_passphrase(self.config)
         key = _derive_key(passphrase, salt)
         aes = AESGCM(key)
         try:
             plaintext = aes.decrypt(nonce, ciphertext, None)
         except Exception as e:
-            raise StorageError(f"Decryption failed (wrong key or tampered data): {e}") from e
+            raise StorageError(code=ErrorCode.STORAGE_ENCRYPTION_ERROR, message=f"Decryption failed (wrong key or tampered data): {e}") from e
         try:
             return json.loads(plaintext.decode("utf-8"))
         except json.JSONDecodeError as e:
-            raise StorageError(f"Decrypted data is not valid JSON: {e}") from e
+            raise StorageError(code=ErrorCode.STORAGE_ENCRYPTION_ERROR, message=f"Decrypted data is not valid JSON: {e}") from e
