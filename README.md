@@ -577,7 +577,7 @@ python -m pytest tests/ --cov=key_manager --cov-report=term-missing
 | 密钥解析 | `test_parser.py` | 12 |
 | 验证器 | `test_validator.py` | 5 |
 | 检查器 | `test_checker.py` | 4 |
-| 提供商合约 | `test_providers.py` | 30 |
+| 提供商合约 | `test_providers.py` | 220 |
 | 安全回归 | `test_security.py` | 12 |
 | 加密存储 | `test_storage.py` | 26 |
 | 错误系统 | `test_errors.py` | 28 |
@@ -585,7 +585,12 @@ python -m pytest tests/ --cov=key_manager --cov-report=term-missing
 | 端到端 | `test_e2e.py` | 17 |
 | Webhook | `test_webhook.py` | 35 |
 | OpenAPI | `test_openapi.py` | 26 |
+| 代理检测 | `test_proxy.py` | 19 |
+| 日志系统 | `test_logger.py` | 21 |
+| 能力测试 | `test_tester.py` | 11 |
+| 核心门面 | `test_core.py` | 22 |
 
+**总测试数**: 583+ | **覆盖率**: 88%
 ## SDK 使用
 
 ### Python SDK
@@ -671,6 +676,20 @@ const result = await client.checkSingleKey({ key: 'sk-xxx', provider: 'openai' }
 ### 5. 模型列表的时效性
 
 模型列表从 Cherry Studio 同步，每日更新一次。新发布的模型可能需要等待同步后才能被检测到。
+
+
+## 更新日志
+
+### v2.1.2 (2026-06-11)
+
+- **Bug 修复**: 修复 `KeyManager.detect_provider()` 调用异步函数未 await 的问题
+- **测试扩展**: 提供商合约测试扩展至全部 44 个服务商
+- **测试新增**: 新增 `test_proxy.py`、`test_logger.py`、`test_tester.py`、`test_core.py`
+- **覆盖率提升**: 测试覆盖率从 74% 提升至 88%
+
+### v2.1.1
+
+- 初始发布版本
 
 ## 许可证
 
