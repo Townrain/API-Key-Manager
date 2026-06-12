@@ -18,6 +18,11 @@
 - **SDK 支持** - Python 和 TypeScript 客户端库
 - **Webhook 通知** - 事件驱动的 Webhook 通知系统
 
+## 系统架构
+
+![系统架构流程图](docs/images/flowchart.png)
+
+
 ## 支持的 AI 服务商
 
 ### 国际

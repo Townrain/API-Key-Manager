@@ -3123,9 +3123,11 @@
 
         async function getModels() {
             const key = document.getElementById('manual-key').value.trim();
-            if (!key) { showToast('请先输入 Key', 'error'); return; }
-
             const provider = document.getElementById('manual-provider').value;
+            
+            // Allow fetching models without key if provider is selected
+            if (!key && !provider) { showToast('请输入 Key 或选择服务商', 'error'); return; }
+
             const typeFilter = document.getElementById('model-type-filter').value;
             const resultEl = document.getElementById('manual-result');
             resultEl.innerHTML = '<div class="result-card"><div style="color: var(--neon-cyan); display: flex; align-items: center; gap: 10px;"><div class="progress-spinner" style="width: 20px; height: 20px;"></div> 获取模型列表...</div></div>';
