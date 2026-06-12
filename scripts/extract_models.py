@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 # 新路径：JSON 数据文件
 CHERRY_DATA_DIR = Path(os.environ.get("CHERRY_DATA_DIR", "cherry-studio/packages/provider-registry/data"))
 MODELS_FILE = CHERRY_DATA_DIR / "models.json"
-OUTPUT_FILE = Path("src/providers/models_registry.py")
+OUTPUT_FILE = Path("key_manager/providers/models_registry.py")
 
 
 def extract_models_from_json(file_path: Path) -> dict[str, list[str]]:
@@ -29,6 +29,23 @@ def extract_models_from_json(file_path: Path) -> dict[str, list[str]]:
 
     models = data.get("models", [])
 
+    # Cherry Studio ownedBy -> 我们的 provider 名称映射
+    OWNER_MAPPING = {
+        # 阿里系
+        "alibaba": "dashscope",
+        "Tongyi-MAI": "dashscope",
+        "dashscope": "dashscope",
+        # 字节系
+        "bytedance": "doubao",
+        # 中转站/聚合平台
+        "302ai": "ai302",
+        # 其他
+        "xai": "grok",
+        "moonshot": "kimi",
+        "tencent": "tencent-hunyuan",
+        "01ai": "yi",
+    }
+
     # 按 ownedBy 分组
     provider_models = {}
     for model in models:
@@ -38,10 +55,13 @@ def extract_models_from_json(file_path: Path) -> dict[str, list[str]]:
         if not model_id:
             continue
 
-        if owned_by not in provider_models:
-            provider_models[owned_by] = []
+        # 应用映射
+        provider_name = OWNER_MAPPING.get(owned_by, owned_by)
 
-        provider_models[owned_by].append(model_id)
+        if provider_name not in provider_models:
+            provider_models[provider_name] = []
+
+        provider_models[provider_name].append(model_id)
 
     return provider_models
 

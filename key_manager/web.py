@@ -34,6 +34,7 @@ from key_manager.providers import (
     PROVIDER_WEBSITES,
     KEY_PREFIX_MAP,
 )
+from key_manager.providers.models_registry import PROVIDER_MODELS
 from key_manager.providers.base import simplify_error
 from key_manager.detector import detect_by_prefix, detect_provider
 from key_manager.logger import project_logger
@@ -1123,11 +1124,10 @@ async def api_models(
                     hint="未找到有效的 Key，请检查 Key 是否正确或 Provider 是否支持",
                 )
         else:
-            # No key provided, return all static models
+            # No key provided, return all static models from PROVIDER_MODELS
             all_models: list[str] = []
-            for p in PROVIDERS.values():
-                if hasattr(p, "models"):
-                    all_models.extend(getattr(p, "models", []))
+            for provider_models in PROVIDER_MODELS.values():
+                all_models.extend(provider_models)
             return ModelsResponse(
                 provider="all",
                 models=sorted(set(all_models)),
@@ -1164,7 +1164,10 @@ async def api_models(
 
     if not models and hasattr(provider_obj, "models"):
         models = getattr(provider_obj, "models", [])
-
+    
+    # Fallback to static models from PROVIDER_MODELS (Cherry Studio sync)
+    if not models:
+        models = PROVIDER_MODELS.get(provider_name, [])
     # Apply type filter (if model_capabilities module is available)
     filtered = models
     try:
@@ -1226,11 +1229,10 @@ async def api_models_check(request: Request):
                     except Exception:
                         pass
 
-    # Step 2: Fallback to static models
+    # Step 2: Fallback to static models from PROVIDER_MODELS
     if not models and provider_obj:
         source = "static"
-        if hasattr(provider_obj, "models"):
-            models = getattr(provider_obj, "models", [])
+        models = PROVIDER_MODELS.get(provider_name, [])
     if not provider_name:
         candidates = detect_by_prefix(key)
         provider_name = candidates[0] if candidates else "unknown"
