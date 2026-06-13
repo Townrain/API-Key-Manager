@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "api-key-manager"
-version = "2.1.2"
+version = "2.2.0"
 description = "Batch manage API keys for 44+ AI providers with CLI and Web interfaces"
 readme = "README.md"
 license = {text = "MIT"}

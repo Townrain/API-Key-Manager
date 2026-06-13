@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-06-14
+
+### Added
+
+- **OpenCode Providers** — Added OpenCode Go and OpenCode Zen providers with 13 and 48 models respectively.
+- **Three-Step Detection** — New detection logic: GET /v1/models to get model list, then concurrent chat/completions testing.
+- **Version Path Extraction** — Extract version prefix from check_endpoint to construct correct chat URL (fixes OpenCode 404).
+- **Concurrent Model Fetching** — /v1/models calls are now concurrent across all providers with 5s timeout.
+- **Cherry Studio Sync** — Added ownedBy mapping for alibaba→dashscope, bytedance→doubao, xai→grok, etc.
+
+### Changed
+
+- **Provider Contract Tests** — Expanded from 6 to 44 providers.
+- **Test Coverage** — Increased from 74% to 88% with new test files (test_proxy, test_logger, test_tester, test_core, test_api_endpoints, test_base_check).
+- **Model Detection** — Removed check_model fallback for providers with /v1/models endpoint.
+
+### Fixed
+
+- **detect_provider Async Bug** — Fixed KeyManager.detect_provider() calling async function without await.
+- **URL Construction** — Fixed chat/completions URL missing version prefix for providers like OpenCode.
+
+## [2.1.2] - 2026-06-11
+
+### Fixed
+
+- **detect_provider Async** — Fixed calling async detect_provider without await and missing client parameter.
+
 ## [2.1.1] - 2026-06-11
 
 ### Fixed

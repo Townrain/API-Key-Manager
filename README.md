@@ -685,6 +685,16 @@ const result = await client.checkSingleKey({ key: 'sk-xxx', provider: 'openai' }
 
 ## 更新日志
 
+### v2.2.0 (2026-06-14)
+
+- **检测逻辑重构**: 添加三步检测逻辑（/v1/models → 并发测试）
+- **URL 修复**: 从 check_endpoint 提取版本路径，修复 OpenCode 等服务商 404 问题
+- **并发优化**: /v1/models 和 chat/completions 都并发调用
+- **超时控制**: 所有网络请求 5 秒超时
+- **模型同步**: 从 Cherry Studio 同步模型数据，支持 ownedBy 映射
+- **新增服务商**: OpenCode Go、OpenCode Zen
+- **新增服务商**: OpenCode Go、OpenCode Zen
+
 ### v2.1.2 (2026-06-11)
 
 - **Bug 修复**: 修复 `KeyManager.detect_provider()` 调用异步函数未 await 的问题

@@ -106,6 +106,14 @@ class TestDetectProvider:
         mock_openai = _mock_provider("openai", check_valid=False)
         mock_deepseek = _mock_provider("deepseek", check_valid=True, models=["deepseek-chat"])
 
+        # Mock the client.get to return models for both providers
+        async def mock_get(url, headers=None):
+            provider = "deepseek" if "deepseek" in url else "openai"
+            return MagicMock(
+                status_code=200,
+                json=lambda: {"data": [{"id": f"{provider}-chat"}]}
+            )
+
         # Mock the client.post to return 200 for deepseek, 401 for openai
         async def mock_post(url, headers=None, json=None):
             if "deepseek" in url:
@@ -113,11 +121,11 @@ class TestDetectProvider:
             return MagicMock(status_code=401, text='{"error": "invalid"}')
 
         mock_client = MagicMock()
+        mock_client.get = AsyncMock(side_effect=mock_get)
         mock_client.post = AsyncMock(side_effect=mock_post)
 
         with patch("key_manager.detector.PROVIDERS", {"openai": mock_openai, "deepseek": mock_deepseek}):
-            with patch("key_manager.detector.PROVIDER_MODELS", {"openai": ["gpt-3.5-turbo"], "deepseek": ["deepseek-chat"]}):
-                result = await detect_provider(mock_client, "sk-test123")
+            result = await detect_provider(mock_client, "sk-test123")
 
         # Should detect deepseek because its request returns 200
         assert result == "deepseek"
