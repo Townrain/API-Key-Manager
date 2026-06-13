@@ -26,39 +26,6 @@ class CerebrasProvider(ProviderBase):
         except Exception:
             return []
 
-    async def check(self, client, key: str) -> CheckResult:
-        """Real usage test - try to make a minimal chat completion request."""
-        headers = self.build_headers(key)
-        headers["Content-Type"] = "application/json"
-        start = time.monotonic()
-        try:
-            resp = await client.post(
-                f"{self.get_base_url()}/chat/completions",
-                headers=headers,
-                json={
-                    "model": "llama3.1-8b",
-                    "messages": [{"role": "user", "content": "hi"}],
-                    "max_tokens": 5
-                }
-            )
-            latency = (time.monotonic() - start) * 1000
-
-            if resp.status_code == 200:
-                return CheckResult(True, 200, latency, None)
-            elif resp.status_code in (401, 403):
-                return CheckResult(False, resp.status_code, latency, "invalid key or forbidden")
-            elif resp.status_code == 429:
-                return CheckResult(False, 429, latency, "rate limited")
-            else:
-                try:
-                    data = resp.json()
-                    error_msg = data.get("error", {}).get("message", f"status {resp.status_code}")
-                except:
-                    error_msg = f"status {resp.status_code}"
-                return CheckResult(False, resp.status_code, latency, error_msg)
-        except Exception as e:
-            return CheckResult(False, None, (time.monotonic() - start) * 1000, str(e))
-
     async def test_token_limit(self, client, key: str, token_steps: list[int]) -> TestResult:
         headers = self.build_headers(key)
         last_success = None

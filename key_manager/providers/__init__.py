@@ -43,6 +43,8 @@ from .cstcloud import CSTCloudProvider
 from .zhipu_coding import ZhipuCodingProvider
 from .kimi_coding import KimiCodingProvider
 from .infini_coding import InfiniCodingProvider
+from .opencode import OpenCodeGoProvider
+from .opencode_zen import OpenCodeZenProvider
 
 # Provider registry
 PROVIDERS: dict[str, ProviderBase] = {
@@ -90,6 +92,8 @@ PROVIDERS: dict[str, ProviderBase] = {
     "zhipu-coding": ZhipuCodingProvider(),
     "kimi-coding": KimiCodingProvider(),
     "infini-coding": InfiniCodingProvider(),
+    "opencode-go": OpenCodeGoProvider(),
+    "opencode-zen": OpenCodeZenProvider(),
 }
 
 # Key prefix to provider mapping (for auto-detection)
@@ -113,7 +117,7 @@ KEY_PREFIX_MAP: dict[str, list[str]] = {
     "AKID": ["cstcloud"],
     # Generic sk- prefix (must be last - shared by multiple providers)
     # Excluded: ppio, nvidia, modelscope, ai21 - their /models endpoints don't validate keys
-    "sk-": ["openai", "deepseek", "together", "fireworks", "perplexity", "dashscope", "kimi", "siliconflow", "cerebras", "hyperbolic", "mimo", "stepfun", "infini", "zai", "ai302", "dmxapi", "ocoolai", "dashscope-coding", "tencent-hunyuan"],
+    "sk-": ["openai", "deepseek", "together", "fireworks", "perplexity", "dashscope", "kimi", "siliconflow", "cerebras", "hyperbolic", "mimo", "stepfun", "infini", "zai", "ai302", "dmxapi", "ocoolai", "dashscope-coding", "tencent-hunyuan", "opencode-go", "opencode-zen"],
     # MiniMax Token Plan keys
     "sk-cp-": ["minimax-plan", "infini-coding"],
     # Kimi Coding Plan keys
@@ -228,6 +232,8 @@ PROVIDER_ERROR_SIGNATURES: dict[str, list[str]] = {
     "google": ["generativelanguage"],
     # grok: 实际返回 "Incorrect API key provided: sk***45...console.x.ai."
     "groq": ["groq"],
+    "opencode-go": ["opencode.ai", "zen/go", "creditserror", "no payment method"],
+    "opencode-zen": ["opencode.ai", "zen/v1", "creditserror", "no payment method"],
 }
 
 
@@ -273,6 +279,8 @@ PROVIDER_WEBSITES: dict[str, dict[str, str]] = {
     "longcat": {"name": "LongCat", "url": "https://longcat.com", "docs": "https://longcat.com/docs"},
     "tencent-hunyuan": {"name": "腾讯混元", "url": "https://cloud.tencent.com/product/hunyuan", "docs": "https://cloud.tencent.com/document/product/1729"},
     "cstcloud": {"name": "中算云", "url": "https://www.cstcloud.com", "docs": "https://www.cstcloud.com/docs"},
+    "opencode-go": {"name": "OpenCode Go", "url": "https://opencode.ai", "docs": "https://opencode.ai/docs/zh-cn/go/"},
+    "opencode-zen": {"name": "OpenCode Zen", "url": "https://opencode.ai", "docs": "https://opencode.ai/docs/"},
     "dashscope-coding": {"name": "阿里百炼编程", "url": "https://dashscope.aliyun.com", "docs": "https://help.aliyun.com/zh/dashscope/"},
     "mimo-plan": {"name": "MiMo 计划版", "url": "https://mimo.xiaomi.com", "docs": "https://mimo.xiaomi.com/docs"},
     "minimax-plan": {"name": "MiniMax 计划版", "url": "https://platform.minimaxi.com", "docs": "https://platform.minimaxi.com/document"},

@@ -50,20 +50,6 @@ class ModelScopeProvider(ProviderBase):
         
         return None, 0
 
-    async def check(self, client, key: str) -> CheckResult:
-        headers = self.build_headers(key)
-        headers["Content-Type"] = "application/json"
-        start = time.monotonic()
-        try:
-            # 遍历找到可用模型
-            model_id, latency = await self._find_working_model(client, key)
-            if not model_id:
-                return CheckResult(False, None, (time.monotonic() - start) * 1000, "all models failed")
-            
-            return CheckResult(True, 200, latency, None)
-        except Exception as e:
-            return CheckResult(False, None, (time.monotonic() - start) * 1000, str(e))
-
     async def test_token_limit(self, client, key: str, token_steps: list[int]) -> TestResult:
         headers = self.build_headers(key)
         models = await self.get_models(client, key)

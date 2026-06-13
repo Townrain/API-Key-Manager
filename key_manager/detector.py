@@ -223,31 +223,59 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
         for name, valid in format_results:
             if valid:
                 return name
-    # Step 4: Concurrently probe ALL providers with their top 5 models
+    # Step 4: Concurrently probe ALL providers
+    # First, get models from all providers concurrently
+    async def get_provider_models(name, provider):
+        """Get models from /v1/models endpoint."""
+        try:
+            resp = await asyncio.wait_for(
+                client.get(
+                    f"{provider.get_base_url()}{provider.check_endpoint}",
+                    headers=provider.build_headers(key),
+                ),
+                timeout=5.0
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                if isinstance(data, dict) and "data" in data:
+                    models = [m.get("id", "") for m in data["data"] if m.get("id")]
+                    if models:
+                        return name, models
+        except:
+            pass
+        return name, []
+    
+    # Get models from all providers concurrently
+    model_tasks = [get_provider_models(name, provider) for name, provider in PROVIDERS.items()]
+    model_results = await asyncio.gather(*model_tasks)
+    
     # Build tasks: (provider_name, model) pairs
     tasks = []
-    for name, provider in PROVIDERS.items():
-        models = PROVIDER_MODELS.get(name, [])
+    for name, models in model_results:
         if not models:
-            models = [getattr(provider, 'check_model', 'gpt-3.5-turbo')]
-        
-        # Use first 5 models
-        for model in models[:5]:
+            continue
+        for model in models:
             tasks.append((name, model))
     
     # Concurrently check all (provider, model) pairs
+    import re
+    
     async def try_model(name, model):
         provider = PROVIDERS[name]
         headers = provider.build_headers(key)
         headers["Content-Type"] = "application/json"
+        # Extract version path from check_endpoint
+        version_match = re.match(r'(/v\d+)', provider.check_endpoint or '')
+        version_prefix = version_match.group(1) if version_match else ''
+        chat_url = f"{provider.get_base_url()}{version_prefix}/chat/completions"
         try:
             resp = await asyncio.wait_for(
                 client.post(
-                    f"{provider.get_base_url()}/chat/completions",
+                    chat_url,
                     headers=headers,
                     json={"model": model, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
                 ),
-                timeout=10.0
+                timeout=5.0
             )
             body = resp.text[:500] if resp.text else ""
             if resp.status_code == 200:

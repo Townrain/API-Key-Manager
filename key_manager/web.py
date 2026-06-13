@@ -110,7 +110,7 @@ app = FastAPI(
     description="Manage and validate API keys for 37+ AI providers. "
     "Import, check validity, test token limits and concurrency, "
     "query balances, and export working keys.",
-    version="2.1.1",
+    version="2.2.0",
     openapi_tags=[
         {"name": "Keys", "description": "Key management operations"},
         {"name": "Check", "description": "Key validity checking"},

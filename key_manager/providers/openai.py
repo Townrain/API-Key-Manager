@@ -26,45 +26,6 @@ class OpenAIProvider(ProviderBase):
         except Exception:
             return []
 
-    async def check(self, client, key: str) -> CheckResult:
-        """Real usage test - try to make a minimal chat completion request."""
-        headers = self.build_headers(key)
-        headers["Content-Type"] = "application/json"
-        start = time.monotonic()
-        try:
-            resp = await client.post(
-                f"{self.get_base_url()}/v1/chat/completions",
-                headers=headers,
-                json={
-                    "model": "gpt-3.5-turbo",
-                    "messages": [{"role": "user", "content": "hi"}],
-                    "max_tokens": 5
-                }
-            )
-            latency = (time.monotonic() - start) * 1000
-
-            if resp.status_code == 200:
-                return CheckResult(True, 200, latency, None)
-            elif resp.status_code == 401:
-                return CheckResult(False, 401, latency, "invalid key")
-            elif resp.status_code == 403:
-                return CheckResult(False, 403, latency, "forbidden - check key permissions")
-            elif resp.status_code == 429:
-                data = resp.json()
-                error_msg = data.get("error", {}).get("message", "rate limited")
-                return CheckResult(False, 429, latency, f"rate limited: {error_msg}")
-            elif resp.status_code == 400:
-                data = resp.json()
-                error_msg = data.get("error", {}).get("message", "bad request")
-                return CheckResult(False, 400, latency, f"error: {error_msg}")
-            else:
-                data = resp.json()
-                error_msg = data.get("error", {}).get("message", f"status {resp.status_code}")
-                return CheckResult(False, resp.status_code, latency, error_msg)
-        except Exception as e:
-            latency = (time.monotonic() - start) * 1000
-            return CheckResult(False, None, latency, str(e))
-
     async def test_token_limit(self, client, key: str,
                                 token_steps: list[int]) -> TestResult:
         headers = self.build_headers(key)

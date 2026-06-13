@@ -131,38 +131,63 @@ class ProviderBase(ABC):
         ...
 
     async def check(self, client, key: str) -> CheckResult:
-        """Check key validity using multiple models from PROVIDER_MODELS.
-        
-        Strategy:
-        1. Get models from PROVIDER_MODELS (Cherry Studio sync)
-        2. Try first 5 models with /chat/completions
-        3. If any succeeds, return valid
-        4. If all fail, return last error
-        
-        Providers with non-standard APIs (Anthropic, Google, etc.) should override this.
+        """Three-step check logic:
+        1. GET /v1/models → get model list (not for validation)
+        2. < 10 models → serial test with /v1/chat/completions
+        3. >= 10 models → parallel test with batch_size=10
         """
+        import asyncio
         import time
-        from .models_registry import PROVIDER_MODELS
         
         headers = self.build_headers(key)
         headers["Content-Type"] = "application/json"
         
-        # Get models for this provider from Cherry Studio sync
-        models = PROVIDER_MODELS.get(self.name, [])
+        # Providers that don't support /v1/models or it doesn't validate key
+        SKIP_MODELS_ENDPOINT = {"replicate", "huggingface", "ppio", "nvidia", "modelscope"}
+        
+        # Endpoints that are NOT models endpoints
+        NON_MODELS_ENDPOINTS = {"/v1/account", "/api/whoami-v2", "/auth/key", "/v1/check-api-key"}
+        
+        models = []
+        
+        # Step 1: GET /v1/models to get model list (not for validation)
+        # Skip if provider is in skip list OR endpoint is not a models endpoint
+        skip_models = (
+            self.name in SKIP_MODELS_ENDPOINT
+            or self.check_endpoint in NON_MODELS_ENDPOINTS
+            or not self.check_endpoint
+        )
+        
+        if not skip_models:
+            try:
+                resp = await client.get(
+                    f"{self.get_base_url()}{self.check_endpoint}",
+                    headers=self.build_headers(key)
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if isinstance(data, dict) and "data" in data:
+                        models = [m.get("id", "") for m in data["data"] if m.get("id")]
+            except Exception:
+                pass  # Ignore errors, fall back to static list
+        
+        # Fallback to check_model if API returned empty
         if not models:
-            # Fallback to check_model if no models in registry
             models = [self.check_model]
         
-        # Try first 5 models
-        test_models = models[:5]
-        last_error = ""
-        last_status = None
+        # Helper: get chat completions URL
+        # Extract version path from check_endpoint (e.g., /v1 from /v1/models)
+        import re
+        version_match = re.match(r'(/v\d+)', self.check_endpoint or '')
+        version_prefix = version_match.group(1) if version_match else ''
+        chat_url = f"{self.get_base_url()}{version_prefix}/chat/completions"
         
-        for model in test_models:
+        # Helper: test single model
+        async def test_model(model: str) -> CheckResult:
             start = time.monotonic()
             try:
                 resp = await client.post(
-                    f"{self.get_base_url()}/chat/completions",
+                    chat_url,
                     headers=headers,
                     json={"model": model, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
                 )
@@ -176,21 +201,34 @@ class ProviderBase(ABC):
                     return CheckResult(False, 429, latency, "rate limited")
                 else:
                     try:
-                        data = resp.json()
-                        last_error = data.get("error", {}).get("message", f"status {resp.status_code}")
+                        error_msg = resp.json().get("error", {}).get("message", f"status {resp.status_code}")
                     except:
-                        last_error = f"status {resp.status_code}"
-                    last_status = resp.status_code
-                
-                # Simplify error for readability
-                last_error = simplify_error(last_error, resp.status_code)
+                        error_msg = f"status {resp.status_code}"
+                    return CheckResult(False, resp.status_code, latency, simplify_error(error_msg, resp.status_code))
             except Exception as e:
-                last_error = str(e)
-                last_status = None
+                return CheckResult(False, None, (time.monotonic() - start) * 1000, str(e))
         
-        # All models failed
-        # All models failed
-        return CheckResult(False, last_status, 0, last_error or "all models failed")
+        # Step 2 & 3: Test models with /v1/chat/completions
+        if len(models) < 10:
+            # Serial test
+            for model in models:
+                result = await test_model(model)
+                if result.valid:
+                    return result
+            # All failed
+            return result if models else CheckResult(False, None, 0, "no models available")
+        else:
+            # Test all models concurrently (no batching)
+            tasks = [test_model(m) for m in models]
+            results = await asyncio.gather(*tasks)
+            
+            # Return first success or first error
+            for result in results:
+                if result.valid:
+                    return result
+            
+            # All failed, return first error
+            return results[0] if results else CheckResult(False, None, 0, "no models available")
     @abstractmethod
     async def test_token_limit(self, client, key: str,
                                 token_steps: list[int]) -> TestResult:

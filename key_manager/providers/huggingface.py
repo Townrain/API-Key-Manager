@@ -14,23 +14,6 @@ class HuggingFaceProvider(ProviderBase):
     async def get_models(self, client, key: str) -> list[str]:
         return []
 
-    async def check(self, client, key: str) -> CheckResult:
-        headers = self.build_headers(key)
-        start = time.monotonic()
-        try:
-            resp = await client.get(f"{self.get_base_url()}{self.check_endpoint}", headers=headers)
-            latency = (time.monotonic() - start) * 1000
-            if resp.status_code == 200:
-                return CheckResult(True, 200, latency, None)
-            elif resp.status_code in (401, 403):
-                return CheckResult(False, resp.status_code, latency, "invalid key")
-            elif resp.status_code == 429:
-                return CheckResult(True, 429, latency, "rate limited")
-            else:
-                return CheckResult(False, resp.status_code, latency, f"status {resp.status_code}")
-        except Exception as e:
-            return CheckResult(False, None, (time.monotonic() - start) * 1000, str(e))
-
     async def test_token_limit(self, client, key: str, token_steps: list[int]) -> TestResult:
         return TestResult(max_tokens=None)
 
