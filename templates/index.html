@@ -1,0 +1,4129 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyHub // API 密钥管理中心</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --void: #0b0d1a;
+            --surface-0: #111328;
+            --surface-1: #171a35;
+            --surface-2: #1e2242;
+            --surface-3: #262b50;
+            --neon-cyan: #00e8ff;
+            --neon-magenta: #ff44bb;
+            --neon-green: #00ff88;
+            --neon-amber: #ffbb33;
+            --neon-red: #ff4477;
+            --text-primary: #eceef8;
+            --text-dim: #a0a4c0;
+            --text-ghost: #6a6e8e;
+            --glow-cyan: rgba(0, 232, 255, 0.18);
+            --glow-magenta: rgba(255, 68, 187, 0.18);
+            --glow-green: rgba(0, 255, 136, 0.18);
+            --glow-red: rgba(255, 68, 119, 0.18);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(0, 232, 255, 0.3);
+            --glass: rgba(17, 19, 40, 0.88);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 15px; }
+
+        body {
+            font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--void);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Background Effects */
+        .bg-matrix {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 232, 255, 0.12), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255, 68, 187, 0.1), transparent),
+                radial-gradient(ellipse 40% 30% at 20% 60%, rgba(0, 255, 136, 0.05), transparent);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 232, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 232, 255, 0.05) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 232, 255, 0.012) 2px,
+                rgba(0, 232, 255, 0.012) 4px
+            );
+            pointer-events: none;
+            z-index: 2;
+            animation: scanline-move 8s linear infinite;
+        }
+
+        @keyframes scanline-move {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--surface-0); }
+        ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-ghost); }
+
+        /* Layout */
+        .container {
+            max-width: 1520px;
+            margin: 0 auto;
+            padding: 24px 32px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header */
+        header {
+            padding: 16px 0 32px;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 32px;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-mark {
+            width: 48px;
+            height: 48px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-mark::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 2px solid var(--neon-cyan);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            animation: logo-rotate 12s linear infinite;
+        }
+
+        @keyframes logo-rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .logo-mark svg {
+            width: 24px;
+            height: 24px;
+            color: var(--neon-cyan);
+            filter: drop-shadow(0 0 8px var(--neon-cyan));
+        }
+
+        .logo-text h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 8px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px rgba(0, 232, 255, 0.4), 0 0 40px rgba(0, 232, 255, 0.15), 0 0 80px rgba(0, 232, 255, 0.05);
+        }
+
+        .logo-text .tagline {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--text-dim);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--surface-1), var(--surface-2));
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--neon-green);
+            box-shadow: 0 0 8px var(--neon-green), 0 0 16px rgba(0, 255, 136, 0.3);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .status-dot.offline {
+            background: var(--text-ghost);
+            box-shadow: none;
+            animation: none;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--surface-1), var(--surface-2));
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-cyan), transparent);
+            opacity: 0.8;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, var(--glow-cyan), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-glow);
+            box-shadow: 0 12px 40px rgba(0, 232, 255, 0.15);
+        }
+
+        .stat-card:hover::after { opacity: 1; }
+
+        .stat-card:nth-child(2)::before { background: var(--neon-green); }
+        .stat-card:nth-child(2)::after { background: linear-gradient(180deg, var(--glow-green), transparent); }
+        .stat-card:nth-child(2):hover { border-color: rgba(0, 255, 136, 0.3); box-shadow: 0 8px 32px rgba(0, 255, 136, 0.1); }
+
+        .stat-card:nth-child(3)::before { background: var(--neon-red); }
+        .stat-card:nth-child(3)::after { background: linear-gradient(180deg, var(--glow-red), transparent); }
+        .stat-card:nth-child(3):hover { border-color: rgba(255, 68, 119, 0.3); box-shadow: 0 8px 32px rgba(255, 68, 119, 0.1); }
+
+        .stat-card:nth-child(4)::before { background: var(--neon-magenta); }
+        .stat-card:nth-child(4)::after { background: linear-gradient(180deg, var(--glow-magenta), transparent); }
+        .stat-card:nth-child(4):hover { border-color: rgba(255, 68, 187, 0.3); box-shadow: 0 8px 32px rgba(255, 68, 187, 0.1); }
+
+        .stat-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 40px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-value.cyan { color: var(--neon-cyan); text-shadow: 0 0 20px rgba(0, 232, 255, 0.4), 0 0 40px rgba(0, 232, 255, 0.1); }
+        .stat-value.green { color: var(--neon-green); text-shadow: 0 0 20px rgba(0, 255, 136, 0.4), 0 0 40px rgba(0, 255, 136, 0.1); }
+        .stat-value.red { color: var(--neon-red); text-shadow: 0 0 20px rgba(255, 68, 119, 0.4), 0 0 40px rgba(255, 68, 119, 0.1); }
+        .stat-value.magenta { color: var(--neon-magenta); text-shadow: 0 0 20px rgba(255, 68, 187, 0.4), 0 0 40px rgba(255, 68, 187, 0.1); }
+
+        /* Navigation Tabs */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 2px;
+            background: linear-gradient(135deg, var(--surface-1), var(--surface-2));
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dim);
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+            background: var(--surface-2);
+        }
+
+        .nav-tab.active {
+            background: var(--neon-cyan);
+            color: var(--void);
+            font-weight: 600;
+            box-shadow: 0 0 20px rgba(0, 232, 255, 0.3);
+        }
+
+        .nav-tab .cnt {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-tab.active .cnt {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Card */
+        .card {
+            background: linear-gradient(180deg, var(--surface-1), var(--surface-0));
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title .indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon-cyan);
+            animation: pulse-glow 2s infinite;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            padding: 16px 24px;
+            background: var(--surface-0);
+            border-bottom: 1px solid var(--border-subtle);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--surface-2), var(--surface-3));
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 10px 14px;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus-within {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 0 3px var(--glow-cyan);
+        }
+
+        .search-input svg { color: var(--text-ghost); flex-shrink: 0; }
+
+        .search-input input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            width: 100%;
+            outline: none;
+        }
+
+        .search-input input::placeholder { color: var(--text-ghost); }
+
+        /* Buttons */
+        button {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            font-size: 13px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--surface-2), var(--surface-3));
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, var(--surface-3), var(--surface-2));
+            border-color: var(--border-glow);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            padding: 10px 18px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--neon-cyan), #00c8d4);
+            color: var(--void);
+            font-weight: 600;
+            border: none;
+            box-shadow: 0 4px 16px rgba(0, 232, 255, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #33f3ff, #00e5f0);
+            box-shadow: 0 6px 24px rgba(0, 232, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--neon-green), #00cc6a);
+            color: var(--void);
+            font-weight: 600;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #33ff99, #00e57a);
+            box-shadow: 0 6px 24px rgba(0, 255, 136, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            padding: 10px 18px;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-ghost:hover {
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+            background: var(--glow-cyan);
+        }
+
+        /* Select */
+        select {
+            background: linear-gradient(135deg, var(--surface-2), var(--surface-3));
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            padding: 10px 32px 10px 14px;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            appearance: none;
+            color-scheme: dark;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236a6a8a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        select option {
+            background: #1a1d3a;
+            color: #eceef8;
+            padding: 8px;
+        }
+
+        select:hover { border-color: var(--neon-cyan); }
+        select:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 0 3px var(--glow-cyan); }
+
+        /* Toggle */
+        .toggle-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .toggle-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .toggle {
+            width: 44px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--surface-3), var(--surface-2));
+            border-radius: 16px;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.3s;
+        }
+
+        .toggle.active {
+            background: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .toggle.active::after {
+            transform: translateX(20px);
+            background: var(--void);
+        }
+
+        /* Table */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+
+        th {
+            background: linear-gradient(180deg, var(--surface-0), var(--surface-1));
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-ghost);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 14px 20px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 14px 20px;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        tr { transition: all 0.2s ease; }
+        tr:hover { background: linear-gradient(90deg, var(--surface-2), transparent); }
+
+        .key-cell {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--surface-0), var(--surface-1));
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all 0.2s;
+            word-break: break-all;
+            line-height: 1.6;
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .key-cell:hover {
+            border-color: var(--neon-cyan);
+            background: var(--glow-cyan);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .badge-valid {
+            background: var(--glow-green);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .badge-invalid {
+            background: var(--glow-red);
+            color: var(--neon-red);
+            border: 1px solid rgba(255, 68, 119, 0.2);
+        }
+
+        .badge-error {
+            background: rgba(255, 187, 51, 0.1);
+            color: var(--neon-amber);
+            border: 1px solid rgba(255, 187, 51, 0.2);
+        }
+
+        .badge-unknown {
+            background: var(--glow-cyan);
+            color: var(--neon-cyan);
+            border: 1px solid rgba(0, 232, 255, 0.2);
+        }
+
+        .provider-chip {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--text-dim);
+            background: linear-gradient(135deg, var(--surface-2), var(--surface-3));
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+        }
+
+        /* Models Display */
+        .models-wrap { min-width: 160px; }
+
+        .models-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .model-chip {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--neon-cyan);
+            background: var(--glow-cyan);
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 232, 255, 0.15);
+            transition: all 0.2s;
+        }
+
+        .model-chip:hover {
+            background: rgba(0, 232, 255, 0.25);
+            border-color: var(--neon-cyan);
+        }
+
+        .model-chip.more {
+            color: var(--neon-magenta);
+            background: var(--glow-magenta);
+            border-color: rgba(255, 68, 187, 0.15);
+            cursor: pointer;
+        }
+
+        .model-more-btn {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-dim);
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .model-more-btn:hover {
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+
+        /* Error Display */
+        .error-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .error-hint {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--neon-red);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            max-width: 200px;
+            cursor: help;
+        }
+
+        .error-hint svg { flex-shrink: 0; }
+
+        .error-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .error-hint:hover .error-text {
+            white-space: normal;
+            overflow: visible;
+        }
+
+        /* Progress Overlay */
+        .progress-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(11, 13, 26, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-overlay.active { display: flex; }
+
+        .progress-card {
+            background: linear-gradient(135deg, var(--surface-1), var(--surface-2));
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 48px;
+            text-align: center;
+            min-width: 420px;
+            box-shadow: 0 0 60px rgba(0, 232, 255, 0.2), 0 20px 60px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 60px rgba(0, 232, 255, 0.15);
+        }
+
+        .progress-spinner {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .progress-spinner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 3px solid var(--surface-3);
+            border-top-color: var(--neon-cyan);
+            border-right-color: var(--neon-magenta);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .progress-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            margin-bottom: 8px;
+        }
+
+        .progress-sub {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+
+        .progress-bar-wrap {
+            background: var(--surface-2);
+            border-radius: 8px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+            border-radius: 8px;
+            transition: width 0.3s;
+            width: 0%;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .progress-stats .num { color: var(--neon-cyan); }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, var(--surface-1), var(--surface-2));
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            overflow: visible;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        /* Manual check card needs higher z-index for dropdowns */
+        .action-card-dropdown {
+            z-index: 100;
+        }
+
+        .action-card-dropdown:hover {
+            z-index: 101;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border-color: var(--border-glow);
+        }
+
+        .action-card:hover { border-color: var(--border-glow); }
+
+        .action-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-icon.import { background: var(--glow-cyan); color: var(--neon-cyan); }
+        .action-icon.check { background: var(--glow-green); color: var(--neon-green); }
+
+        .action-header h3 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .action-body { padding: 20px; }
+
+        .upload-zone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: 8px;
+            padding: 28px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--neon-cyan);
+            background: var(--glow-cyan);
+        }
+
+        .upload-zone svg { color: var(--text-ghost); margin-bottom: 8px; }
+        .upload-zone p { font-size: 13px; margin-bottom: 4px; }
+        .upload-zone span { font-size: 13px; color: var(--text-dim); }
+
+        .upload-status { margin-top: 12px; font-size: 12px; }
+        .upload-status.success { color: var(--neon-green); }
+        .upload-status.error { color: var(--neon-red); }
+        .upload-status.loading { color: var(--neon-cyan); }
+
+        .manual-input-group { display: flex; gap: 8px; }
+
+        .manual-input {
+            flex: 1;
+            background: var(--surface-2);
+            border: 1px solid var(--border-subtle);
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .manual-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 0 3px var(--glow-cyan);
+        }
+
+        .manual-input::placeholder { color: var(--text-ghost); }
+
+        .manual-select,
+        .model-type-select,
+        .concurrency-input {
+            padding: 10px 18px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--surface-2), var(--surface-3));
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            font-size: 12px;
+            font-family: 'Fira Code', monospace;
+            color-scheme: dark;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .manual-select,
+        .model-type-select {
+            min-width: 120px;
+            padding-right: 36px;
+            position: relative;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        /* Custom arrow using ::after pseudo-element */
+        .select-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .select-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid var(--text-ghost);
+            pointer-events: none;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .select-wrapper:hover::after {
+            border-top-color: var(--neon-cyan);
+            animation: arrow-bounce 0.6s ease infinite;
+        }
+
+        @keyframes arrow-bounce {
+            0%, 100% { transform: translateY(-50%); }
+            50% { transform: translateY(calc(-50% - 4px)); }
+        }
+
+        .concurrency-input {
+            width: 100px;
+            text-align: center;
+            padding: 10px 12px;
+        }
+
+        .concurrency-input::placeholder {
+            color: var(--text-ghost);
+            font-size: 11px;
+        }
+
+        /* Hide number input spinners */
+        .concurrency-input::-webkit-inner-spin-button,
+        .concurrency-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .concurrency-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .manual-select:hover,
+        .model-type-select:hover,
+        .concurrency-input:hover {
+            background: linear-gradient(135deg, var(--surface-3), var(--surface-2));
+            border-color: var(--border-glow);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .manual-select:active,
+        .model-type-select:active,
+        .concurrency-input:active {
+            transform: translateY(0);
+        }
+
+        .manual-select:focus,
+        .model-type-select:focus,
+        .concurrency-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.25);
+        }
+
+        /* Custom dropdown panel styling */
+        .custom-select {
+            position: relative;
+            display: inline-block;
+        }
+
+        .custom-select-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 36px 10px 18px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--surface-2), var(--surface-3));
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            font-size: 12px;
+            font-family: 'Fira Code', monospace;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 120px;
+            position: relative;
+        }
+
+        .custom-select-trigger::after {
+            content: '';
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid var(--text-ghost);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .custom-select.open .custom-select-trigger::after {
+            transform: translateY(-50%) rotate(180deg);
+            border-top-color: var(--neon-cyan);
+        }
+
+        .custom-select-trigger:hover {
+            background: linear-gradient(135deg, var(--surface-3), var(--surface-2));
+            border-color: var(--border-glow);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .custom-select-trigger:hover::after {
+            border-top-color: var(--neon-cyan);
+            animation: arrow-bounce 0.6s ease infinite;
+        }
+
+        .custom-select.open .custom-select-trigger {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.25);
+        }
+
+        .custom-select-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--surface-1);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            z-index: 99999;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: none;
+            animation: dropdown-in 0.15s ease;
+        }
+
+        /* Custom scrollbar for dropdown */
+        .custom-select-dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-select-dropdown::-webkit-scrollbar-track {
+            background: var(--surface-1);
+            border-radius: 3px;
+        }
+
+        .custom-select-dropdown::-webkit-scrollbar-thumb {
+            background: var(--surface-3);
+            border-radius: 3px;
+        }
+
+        .custom-select-dropdown::-webkit-scrollbar-thumb:hover {
+            background: var(--text-ghost);
+        }
+
+        .custom-select.open .custom-select-dropdown {
+            display: block;
+        }
+
+        @keyframes dropdown-in {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .custom-select-option {
+            padding: 10px 16px;
+            font-size: 12px;
+            font-family: 'Fira Code', monospace;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border-left: 2px solid transparent;
+        }
+
+        .custom-select-option:hover {
+            background: var(--surface-2);
+            border-left-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .custom-select-option.selected {
+            background: linear-gradient(135deg, var(--neon-cyan-dim), var(--surface-2));
+            color: var(--neon-cyan);
+            border-left-color: var(--neon-cyan);
+        }
+
+        .check-hint {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-ghost);
+            margin-top: 8px;
+        }
+
+        /* Batch Check */
+        .batch-textarea {
+            width: 100%;
+            height: 120px;
+            background: var(--surface-2);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-primary);
+            resize: vertical;
+            line-height: 1.6;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .batch-textarea:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 0 3px var(--glow-cyan);
+        }
+
+        .batch-textarea::placeholder { color: var(--text-ghost); }
+
+        .batch-results {
+            max-height: 240px;
+            overflow-y: auto;
+            margin-top: 12px;
+        }
+
+        .batch-result-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 12px;
+            animation: fadeInRow 0.3s ease both;
+        }
+
+        .batch-result-item:last-child { border-bottom: none; }
+        .batch-result-item:hover { background: var(--surface-2); }
+
+        .batch-result-key {
+            font-family: 'Fira Code', monospace;
+            color: var(--text-primary);
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .batch-result-error {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .batch-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .batch-hint {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-ghost);
+            margin-top: 4px;
+        }
+
+        .batch-summary {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .batch-summary .valid { color: var(--neon-green); }
+        .batch-summary .invalid { color: var(--neon-red); }
+        .batch-summary .error { color: var(--neon-amber); }
+
+        .manual-result { margin-top: 16px; }
+
+        .result-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .result-key { font-family: 'Fira Code', monospace; font-size: 12px; }
+
+        .result-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding: 10px 0;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .result-item label {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: var(--text-ghost);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-item value { font-size: 13px; font-weight: 600; }
+
+        .result-error {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--glow-red);
+            border: 1px solid rgba(255, 68, 119, 0.2);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--neon-red);
+        }
+
+        .result-error .label { font-weight: 600; margin-bottom: 4px; }
+
+        .result-error .msg {
+            opacity: 0.8;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+        }
+
+        /* Providers Grid */
+        .providers-grid {
+            padding: 20px 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            background: var(--surface-0);
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .providers-grid.collapsed { display: none; }
+
+        .provider-cat {
+            padding: 16px;
+            border-radius: 10px;
+            background: var(--surface-2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .provider-cat-title {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 0 10px rgba(0, 232, 255, 0.3);
+        }
+
+        .provider-cat-title svg { color: var(--neon-cyan); }
+
+        .provider-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+        .provider-chip-item {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+        }
+
+        .provider-chip-item:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); }
+
+        .provider-chip-item.ai { background: rgba(0, 232, 255, 0.2); color: #7df7ff; border-color: rgba(0, 232, 255, 0.35); text-shadow: 0 0 8px rgba(0, 232, 255, 0.4); }
+        .provider-chip-item.cloud { background: rgba(255, 187, 51, 0.2); color: #ffe08a; border-color: rgba(255, 187, 51, 0.35); text-shadow: 0 0 8px rgba(255, 187, 51, 0.4); }
+        .provider-chip-item.payment { background: rgba(0, 255, 136, 0.2); color: #7dffc0; border-color: rgba(0, 255, 136, 0.35); text-shadow: 0 0 8px rgba(0, 255, 136, 0.4); }
+        .provider-chip-item.dev { background: rgba(255, 68, 187, 0.2); color: #ff9ed8; border-color: rgba(255, 68, 187, 0.35); text-shadow: 0 0 8px rgba(255, 68, 187, 0.4); }
+        .provider-chip-item.comm { background: rgba(255, 187, 51, 0.2); color: #ffe08a; border-color: rgba(255, 187, 51, 0.35); text-shadow: 0 0 8px rgba(255, 187, 51, 0.4); }
+        .provider-chip-item.db { background: rgba(255, 68, 119, 0.2); color: #ff9aaf; border-color: rgba(255, 68, 119, 0.35); text-shadow: 0 0 8px rgba(255, 68, 119, 0.4); }
+
+        /* Logs */
+        .logs-container { max-height: 400px; overflow-y: auto; }
+        .logs-container.collapsed { max-height: 0; overflow: hidden; }
+        .logs-content { padding: 12px 16px; }
+
+        .log-entry {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--text-dim);
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .log-entry:hover { background: var(--surface-2); }
+        .log-ts { color: var(--text-ghost); }
+        .log-act { font-weight: 600; padding: 2px 6px; border-radius: 3px; font-size: 12px; }
+        .log-act.import { background: var(--glow-cyan); color: var(--neon-cyan); }
+        .log-act.check { background: var(--glow-green); color: var(--neon-green); }
+        .log-act.test { background: var(--glow-magenta); color: var(--neon-magenta); }
+        .log-act.manual { background: rgba(255, 187, 51, 0.1); color: var(--neon-amber); }
+        .log-prov { color: var(--neon-cyan); }
+        .log-key { color: var(--text-primary); font-weight: 500; }
+        .log-st { font-weight: 600; }
+        .log-st.valid { color: var(--neon-green); }
+        .log-st.invalid { color: var(--neon-red); }
+        .log-st.error { color: var(--neon-amber); }
+
+        /* Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-pulse 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes skeleton-pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        .skel-row td { padding: 14px 20px; }
+        .skel-bar { height: 14px; }
+        .skel-chip { height: 24px; width: 60px; border-radius: 6px; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--surface-1);
+            border: 1px solid var(--border-subtle);
+            padding: 14px 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 3000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            font-size: 13px;
+            overflow: hidden;
+            min-width: 280px;
+        }
+
+        .toast.show {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: toast-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast.success { border-left: 3px solid var(--neon-green); }
+        .toast.error { border-left: 3px solid var(--neon-red); }
+        .toast.info { border-left: 3px solid var(--neon-cyan); }
+
+        .toast::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: currentColor;
+            animation: toast-progress 4s linear forwards;
+        }
+
+        .toast.success::after { color: var(--neon-green); }
+        .toast.error::after { color: var(--neon-red); }
+        .toast.info::after { color: var(--neon-cyan); }
+
+        @keyframes toast-in { from { opacity: 0; transform: translateX(40px) scale(0.95); } to { opacity: 1; transform: translateX(0) scale(1); } }
+        @keyframes toast-progress { from { width: 100%; } to { width: 0%; } }
+
+        /* Page Load Animation */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInRow { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes flash { 0%, 100% { background: var(--surface-1); } 50% { background: var(--glow-cyan); } }
+
+        .stats-grid { animation: fadeInUp 0.6s ease both; }
+        .quick-actions { animation: fadeInUp 0.6s ease 0.1s both; }
+        .nav-bar { animation: fadeInUp 0.6s ease 0.15s both; }
+        .card { animation: fadeInUp 0.6s ease 0.2s both; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(11, 13, 26, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1500;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show { display: flex; }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--surface-1), var(--surface-2));
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            box-shadow: 0 0 60px rgba(0, 232, 255, 0.15), 0 20px 60px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--neon-cyan);
+        }
+
+        .modal-close {
+            background: var(--surface-2);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-dim);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--glow-red);
+            color: var(--neon-red);
+            border-color: var(--neon-red);
+        }
+
+        .confirm-icon-wrap {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: confirm-pulse 2s ease-in-out infinite;
+        }
+
+        .confirm-icon-wrap.danger {
+            background: var(--glow-red);
+            border: 2px solid rgba(255, 68, 119, 0.3);
+            box-shadow: 0 0 30px rgba(255, 68, 119, 0.15);
+        }
+
+        .confirm-icon-wrap.danger svg {
+            color: var(--neon-red);
+            filter: drop-shadow(0 0 8px var(--neon-red));
+        }
+
+        .confirm-icon-wrap.warning {
+            background: rgba(255, 187, 51, 0.1);
+            border: 2px solid rgba(255, 187, 51, 0.3);
+            box-shadow: 0 0 30px rgba(255, 187, 51, 0.15);
+        }
+
+        .confirm-icon-wrap.warning svg {
+            color: var(--neon-amber);
+            filter: drop-shadow(0 0 8px var(--neon-amber));
+        }
+
+        .confirm-icon-wrap.success {
+            background: var(--glow-green);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+        }
+
+        .confirm-icon-wrap.success svg {
+            color: var(--neon-green);
+            filter: drop-shadow(0 0 8px var(--neon-green));
+        }
+
+        @keyframes confirm-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .modal-body {
+            padding: 28px;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+
+        .export-textarea {
+            width: 100%;
+            height: 300px;
+            background: var(--surface-0);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-primary);
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .export-textarea:focus { outline: none; border-color: var(--neon-cyan); }
+
+        .export-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        /* Shortcuts */
+        .shortcuts {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            background: var(--surface-1);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--text-ghost);
+            display: flex;
+            gap: 14px;
+            z-index: 100;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .shortcuts:hover { opacity: 1; }
+
+        .sc { display: flex; align-items: center; gap: 5px; }
+
+        .sc kbd {
+            background: var(--surface-3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state svg {
+            width: 72px;
+            height: 64px;
+            color: var(--text-ghost);
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p { font-size: 13px; color: var(--text-dim); }
+
+        /* Table Row Hover Enhancement */
+        tr { transition: all 0.2s ease; }
+        tr:hover { background: var(--surface-2); }
+        tr:active { background: var(--surface-3); }
+
+        /* Button Active State */
+        button:active { transform: scale(0.97); }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-success:active { transform: scale(0.97); }
+
+        /* Stat Card Icon */
+        .stat-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.6;
+        }
+
+        .stat-icon.cyan { background: var(--glow-cyan); color: var(--neon-cyan); }
+        .stat-icon.green { background: var(--glow-green); color: var(--neon-green); }
+        .stat-icon.red { background: var(--glow-red); color: var(--neon-red); }
+        .stat-icon.magenta { background: var(--glow-magenta); color: var(--neon-magenta); }
+
+        /* Keyboard Shortcuts Modal */
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .shortcut-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--surface-2);
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .shortcut-item kbd {
+            background: linear-gradient(135deg, var(--surface-3), var(--surface-2));
+            border: 1px solid var(--border-subtle);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--neon-cyan);
+            box-shadow: 0 2px 0 var(--surface-0);
+        }
+
+        .shortcut-item span {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        /* SVG Icon Fix */
+        svg {
+            flex-shrink: 0;
+            vertical-align: middle;
+        }
+
+        /* Animations */
+        .spin { animation: spin 1s linear infinite; }
+
+        /* Smooth transitions for all interactive elements */
+        button, select, input, .toggle, .nav-tab, .stat-card, .action-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Ensure all interactive elements are always clickable */
+        .stat-card, .provider-chip, .provider-chip-item, .nav-tab, .key-cell, .upload-zone, .shortcuts,
+        .btn, .btn-primary, .btn-success, .btn-ghost, .modal-close, .provider-detail-link {
+            pointer-events: auto;
+        }
+
+        /* Gradient border effect for cards on hover */
+        .card {
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 17px;
+            padding: 1px;
+            background: linear-gradient(135deg, transparent, var(--neon-cyan), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .card:hover::before {
+            opacity: 0.5;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 48px;
+            padding: 24px 0;
+            border-top: 1px solid var(--border-subtle);
+            text-align: center;
+        }
+
+        footer p {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--text-ghost);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 232, 255, 0.1);
+        }
+
+        footer a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .quick-actions { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toggle-wrap { margin-left: 0; justify-content: space-between; }
+            .header-status { display: none; }
+            .nav-tabs { overflow-x: auto; }
+            .shortcuts { display: none; }
+        }
+
+        .pagination{display:flex;justify-content:center;align-items:center;gap:8px;padding:16px 24px;background:var(--surface-0);border-top:1px solid var(--border-subtle)}
+        .pagination button{padding:8px 16px;border-radius:8px;background:linear-gradient(135deg,var(--surface-2),var(--surface-3));color:var(--text-primary);border:1px solid var(--border-subtle);font-family:'Fira Code',monospace;font-size:12px;cursor:pointer;transition:all .2s}
+        .pagination button:hover:not(:disabled){border-color:var(--neon-cyan);background:var(--glow-cyan)}
+        .pagination button:disabled{opacity:.3;cursor:not-allowed}
+        .pagination .page-info{font-family:'Fira Code',monospace;font-size:13px;color:var(--text-dim);padding:0 16px}
+
+        /* Provider Detail Modal */
+        .provider-detail-body { padding: 0; }
+        .provider-detail-hero {
+            padding: 32px 28px 24px;
+            background: linear-gradient(135deg, rgba(0, 232, 255, 0.08), rgba(255, 68, 187, 0.05));
+            border-bottom: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+        }
+        .provider-detail-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 232, 255, 0.12), transparent 70%);
+            pointer-events: none;
+        }
+        .provider-detail-hero .prov-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px rgba(0, 232, 255, 0.3);
+            margin-bottom: 4px;
+        }
+        .provider-detail-hero .prov-internal {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-ghost);
+            letter-spacing: 1px;
+        }
+        .provider-detail-links {
+            padding: 24px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .provider-detail-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            background: var(--surface-2);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .provider-detail-link:hover {
+            border-color: var(--neon-cyan);
+            background: var(--glow-cyan);
+            transform: translateX(4px);
+        }
+        .provider-detail-link .link-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .provider-detail-link .link-icon.website {
+            background: var(--glow-cyan);
+            color: var(--neon-cyan);
+        }
+        .provider-detail-link .link-icon.docs {
+            background: var(--glow-green);
+            color: var(--neon-green);
+        }
+        .provider-detail-link .link-text {
+            flex: 1;
+        }
+        .provider-detail-link .link-text .link-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        .provider-detail-link .link-text .link-url {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: var(--text-ghost);
+            word-break: break-all;
+        }
+        .provider-detail-link .link-arrow {
+            color: var(--text-ghost);
+            transition: all 0.2s;
+        }
+        .provider-detail-link:hover .link-arrow {
+            color: var(--neon-cyan);
+            transform: translateX(4px);
+        }
+        .provider-detail-info {
+            padding: 20px 28px 24px;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .provider-detail-info .info-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+        .provider-detail-info .info-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-ghost);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 100px;
+        }
+        .provider-detail-info .info-value {
+            color: var(--text-primary);
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Signature Report Styles */
+        .sig-report-container { padding: 20px 24px; }
+        .sig-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .sig-summary-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .sig-summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+        }
+        .sig-summary-card.cyan::before { background: var(--neon-cyan); }
+        .sig-summary-card.green::before { background: var(--neon-green); }
+        .sig-summary-card.blue::before { background: #5b8def; }
+        .sig-summary-card.amber::before { background: var(--neon-amber); }
+        .sig-summary-card.red::before { background: var(--neon-red); }
+        .sig-summary-card.magenta::before { background: var(--neon-magenta); }
+        .sig-summary-card.purple::before { background: #a78bfa; }
+        .sig-summary-card .sig-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .sig-summary-card.cyan .sig-val { color: var(--neon-cyan); }
+        .sig-summary-card.green .sig-val { color: var(--neon-green); }
+        .sig-summary-card.blue .sig-val { color: #5b8def; }
+        .sig-summary-card.amber .sig-val { color: var(--neon-amber); }
+        .sig-summary-card.red .sig-val { color: var(--neon-red); }
+        .sig-summary-card.magenta .sig-val { color: var(--neon-magenta); }
+        .sig-summary-card.purple .sig-val { color: #a78bfa; }
+        .sig-summary-card .sig-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: var(--text-ghost);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .sig-section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--neon-cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sig-section-title .count-badge {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: var(--glow-cyan);
+            color: var(--neon-cyan);
+        }
+        .sig-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+        .sig-table th {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-ghost);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            text-align: left;
+            background: var(--surface-0);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .sig-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 12px;
+            vertical-align: middle;
+        }
+        .sig-table tr:hover { background: var(--surface-2); }
+        .sig-match-rate {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sig-match-bar {
+            width: 60px;
+            height: 4px;
+            background: var(--surface-3);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .sig-match-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        .sig-match-bar-fill.high { background: var(--neon-green); }
+        .sig-match-bar-fill.mid { background: var(--neon-amber); }
+        .sig-match-bar-fill.low { background: var(--neon-red); }
+        .sig-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            margin: 2px;
+            border: 1px solid;
+        }
+        .sig-tag.matched {
+            background: var(--glow-green);
+            color: var(--neon-green);
+            border-color: rgba(0, 255, 136, 0.2);
+        }
+        .sig-tag.missing {
+            background: var(--glow-red);
+            color: var(--neon-red);
+            border-color: rgba(255, 68, 119, 0.2);
+        }
+        .sig-tag.new-sig {
+            background: var(--glow-cyan);
+            color: var(--neon-cyan);
+            border-color: rgba(0, 232, 255, 0.2);
+        }
+        .sig-tag.conflict {
+            background: rgba(255, 187, 51, 0.1);
+            color: var(--neon-amber);
+            border-color: rgba(255, 187, 51, 0.2);
+        }
+        .sig-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .sig-status-badge::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        .sig-status-badge.timeout {
+            background: rgba(255, 187, 51, 0.1);
+            color: var(--neon-amber);
+            border: 1px solid rgba(255, 187, 51, 0.2);
+        }
+        .sig-status-badge.error {
+            background: var(--glow-red);
+            color: var(--neon-red);
+            border: 1px solid rgba(255, 68, 119, 0.2);
+        }
+        .sig-status-badge.ok {
+            background: var(--glow-green);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+        .sig-detail-section {
+            margin-bottom: 24px;
+        }
+        .sig-detail-content {
+            background: var(--surface-0);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .sig-response-body {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            padding: 14px;
+            background: var(--surface-2);
+            border-radius: 8px;
+            color: var(--text-dim);
+            word-break: break-all;
+            max-height: 120px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 8px;
+        }
+        .sig-conflict-item {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sig-conflict-item:last-child { border-bottom: none; }
+        .sig-no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-ghost);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-matrix"></div>
+    <div class="bg-grid"></div>
+    <div class="scanline"></div>
+
+    <header>
+        <div class="container">
+            <div class="logo">
+                <div class="logo-mark">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 7a2 2 0 0 1 2 2m4 0a6 6 0 0 1-7.743 5.743L11 17H9v2H7v2H4a1 1 0 0 1-1-1v-2.586a1 1 0 0 1 .293-.707l5.964-5.964A6 6 0 1 1 21 9z"/></svg>
+                </div>
+                <div class="logo-text">
+                    <h1>KeyHub</h1>
+                    <div class="tagline">API 密钥管理中心</div>
+                </div>
+            </div>
+            <div class="header-status">
+                <div class="status-indicator" id="proxy-status">
+                    <div class="status-dot"></div>
+                    <span>初始化中...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card" onclick="switchTab('all')">
+                <div class="stat-icon cyan"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+                <div class="stat-label">密钥总数</div>
+                <div class="stat-value cyan" id="total-keys">-</div>
+            </div>
+            <div class="stat-card" onclick="switchTab('valid')">
+                <div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                <div class="stat-label">有效</div>
+                <div class="stat-value green" id="valid-keys">-</div>
+            </div>
+            <div class="stat-card" onclick="switchTab('invalid')">
+                <div class="stat-icon red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+                <div class="stat-label">无效</div>
+                <div class="stat-value red" id="invalid-keys">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon magenta"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <div class="stat-label">服务商</div>
+                <div class="stat-value magenta" id="providers-count">-</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <!-- Row 1: Manual Check (full width) -->
+            <div class="action-card action-card-dropdown" style="grid-column: 1 / -1;">
+                <div class="action-header">
+                    <div class="action-icon check">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <h3>手动检测</h3>
+                    <div style="margin-left: auto; display: flex; gap: 8px;">
+                        <div class="custom-select" id="model-type-select">
+                            <div class="custom-select-trigger" onclick="toggleCustomSelect('model-type-select')">
+                                <span id="model-type-label">全部模型</span>
+                            </div>
+                            <div class="custom-select-dropdown">
+                                <div class="custom-select-option selected" data-value="all" onclick="selectCustomOption('model-type-select', 'all', '全部模型')">全部模型</div>
+                                <div class="custom-select-option" data-value="reasoning" onclick="selectCustomOption('model-type-select', 'reasoning', '推理模型')">推理模型</div>
+                                <div class="custom-select-option" data-value="vision" onclick="selectCustomOption('model-type-select', 'vision', '视觉模型')">视觉模型</div>
+                                <div class="custom-select-option" data-value="websearch" onclick="selectCustomOption('model-type-select', 'websearch', '联网模型')">联网模型</div>
+                                <div class="custom-select-option" data-value="free" onclick="selectCustomOption('model-type-select', 'free', '免费模型')">免费模型</div>
+                                <div class="custom-select-option" data-value="embedding" onclick="selectCustomOption('model-type-select', 'embedding', '嵌入模型')">嵌入模型</div>
+                                <div class="custom-select-option" data-value="rerank" onclick="selectCustomOption('model-type-select', 'rerank', '重排模型')">重排模型</div>
+                                <div class="custom-select-option" data-value="tooluse" onclick="selectCustomOption('model-type-select', 'tooluse', '工具调用')">工具调用</div>
+                            </div>
+                            <input type="hidden" id="model-type-filter" value="all">
+                        </div>
+                        <button onclick="getModels()" class="btn" style="padding: 8px 14px; border-radius: 8px; font-size: 12px;" title="获取当前 Key 的模型列表">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                            获取模型
+                        </button>
+                        <button onclick="checkAvailableModels()" class="btn" style="padding: 8px 14px; border-radius: 8px; font-size: 12px;" title="检测模型是否真正可用">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            检测可用
+                        </button>
+<div style="display: flex; align-items: center; gap: 4px;">
+<input type="number" id="concurrency-input" class="concurrency-input" placeholder="并发数" min="1" max="10000">
+<button onclick="runConcurrencyTest()" class="btn" style="padding: 8px 14px; border-radius: 8px; font-size: 12px;" title="测试当前 Key 的并发处理能力">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+并发测试
+</button>
+                        </div>                        <button onclick="runTokenTest()" class="btn" style="padding: 8px 14px; border-radius: 8px; font-size: 12px;" title="测试当前 Key 的最大Token输出限制">                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>                                Token上限                            </button>
+                        <button onclick="checkBalance()" class="btn" style="padding: 8px 14px; border-radius: 8px; font-size: 12px;" title="查询当前 Key 的账户余额">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            查询余额
+                        </button>
+                    </div>
+                </div>
+                <div class="action-body">
+                    <div class="manual-input-group">
+                        <input type="text" id="manual-key" placeholder="输入 API Key..." class="manual-input">
+                        <div class="custom-select" id="provider-select">
+                            <div class="custom-select-trigger" onclick="toggleCustomSelect('provider-select')">
+                                <span id="provider-label">自动识别</span>
+                            </div>
+                            <div class="custom-select-dropdown" id="provider-dropdown">
+                                <div class="custom-select-option selected" data-value="" onclick="selectCustomOption('provider-select', '', '自动识别')">自动识别</div>
+                            </div>
+                            <input type="hidden" id="manual-provider" value="">
+                        </div>
+                        <button onclick="checkManualKey()" class="btn-primary" style="padding: 10px 16px; border-radius: 8px; font-size: 12px;">检测</button>
+                    </div>
+                    <div style="margin-top: 8px;">
+                        <input type="text" id="custom-base-url" placeholder="自定义 Base URL（可选，如 http://your-proxy:8080）" style="width: 100%; padding: 8px 12px; border-radius: 8px; font-size: 12px; background: var(--surface-2); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: 'Fira Code', monospace;">
+                    </div>
+                    <div class="check-hint">实际调用 API 验证 Key 可用性 · 填写自定义 URL 可覆盖默认服务商地址</div>
+                    <div id="manual-result" class="manual-result"></div>
+                </div>
+            </div>
+
+            <!-- Row 2: Import + Batch Check -->
+            <div class="action-card">
+                <div class="action-header">
+                    <div class="action-icon import">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </div>
+                    <h3>导入 JSON</h3>
+                </div>
+                <div class="action-body">
+                    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+                        <input type="file" id="file-input" accept=".json" style="display:none" onchange="handleFileUpload(this)">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                        <p>点击或拖拽文件</p>
+                        <span>支持 .json 格式</span>
+                    </div>
+                    <div id="upload-status" class="upload-status"></div>
+                </div>
+            </div>
+
+            <div class="action-card">
+                <div class="action-header">
+                    <div class="action-icon" style="background: rgba(255, 187, 51, 0.1); color: var(--neon-amber);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+                    </div>
+                    <h3>批量检测</h3>
+                </div>
+                <div class="action-body">
+                    <textarea id="batch-keys-input" class="batch-textarea" placeholder="每行一个 API Key，支持直接粘贴完整 Key..."></textarea>
+                    <div style="margin-top: 8px;">
+                        <input type="text" id="batch-custom-url" placeholder="自定义 Base URL（可选）" style="width: 100%; padding: 8px 12px; border-radius: 8px; font-size: 12px; background: var(--surface-2); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: 'Fira Code', monospace;">
+                    </div>
+                    <div class="batch-actions" style="margin-top: 30px;">
+                        <button onclick="runBatchCheck()" class="btn-success" style="padding: 10px 20px; border-radius: 8px; font-size: 12px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            开始批量检测
+                        </button>
+                        <span class="batch-hint" id="batch-count-hint"></span>
+                    </div>
+                    <div id="batch-results" class="batch-results"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-bar">
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="all" onclick="switchTab('all')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    全部
+                    <span class="cnt" id="all-count">0</span>
+                </button>
+                <button class="nav-tab" data-tab="valid" onclick="switchTab('valid')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    有效
+                    <span class="cnt" id="valid-count">0</span>
+                </button>
+                <button class="nav-tab" data-tab="invalid" onclick="switchTab('invalid')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    无效
+                    <span class="cnt" id="invalid-count">0</span>
+                </button>
+                <button class="nav-tab" data-tab="error" onclick="switchTab('error')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    错误
+                    <span class="cnt" id="error-count">0</span>
+                </button>
+                <button class="nav-tab" data-tab="signature" onclick="showSignatureReport()" style="color: var(--neon-amber);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    签名报告
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Table Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="indicator"></div>
+                    <span id="table-title">密钥注册表</span>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn-ghost" onclick="exportValidKeys()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        导出有效
+                    </button>
+                </div>
+            </div>
+            <div class="toolbar">
+                <div class="search-input">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="search-input" placeholder="搜索 Key 或服务商..." oninput="filterKeys()">
+                </div>
+                <select id="provider-filter">
+                    <option value="">全部服务商</option>
+                </select>
+                <div class="toggle-wrap">
+                    <span class="toggle-label">完整KEY</span>
+                    <div class="toggle active" id="show-key-toggle" onclick="toggleKeyDisplay()"></div>
+                </div>
+                <div style="width: 1px; height: 28px; background: var(--border-subtle);"></div>
+                <button class="btn" onclick="loadKeys()" title="刷新 (Ctrl+R)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                    刷新
+                </button>
+                <button class="btn-success" onclick="runCheck()" title="检测 (Ctrl+Enter)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    检测
+                </button>
+                <button class="btn" onclick="runTokenTestBatch()" title="测试所有有效Key的最大Token输出限制">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Token检测
+                </button>
+                <button class="btn" onclick="runConcurrencyTestBatch()" title="测试所有有效Key的并发能力">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    并发测试
+                </button>
+                <button class="btn" onclick="clearAllKeys()" style="color: var(--neon-red); border-color: rgba(255, 68, 119, 0.3);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    清除全部
+                </button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 26%;">密钥</th>
+                            <th>服务商</th>
+                            <th>状态</th>
+                            <th>模型</th>
+                            <th>检测时间</th>
+                            <th>令牌</th>
+                            <th>并发</th>
+                            <th>余额</th>
+                        </tr>
+                    </thead>
+                    <tbody id="keys-table">
+                        <tr><td colspan="8" style="text-align: center; padding: 60px; color: var(--text-dim);">加载中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination" id="pagination-bar"></div>
+        </div>
+
+        <!-- Providers Card -->
+        <div class="card" style="margin-top: 24px;">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="indicator"></div>
+                    <span id="providers-card-title">支持的服务商</span>
+                </div>
+                <button class="btn-ghost" onclick="toggleProviders()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    展开
+                </button>
+            </div>
+            <div class="providers-grid" id="providers-grid"></div>
+        </div>
+
+        <!-- Logs Card -->
+        <div class="card" style="margin-top: 24px;">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="indicator"></div>
+                    <span>操作日志</span>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn-ghost" onclick="loadLogs()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                        刷新
+                    </button>
+                    <button class="btn-ghost" onclick="toggleLogs()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        展开
+                    </button>
+                </div>
+            </div>
+            <div class="logs-container" id="logs-container">
+                <div class="logs-content" id="logs-content">
+                    <div style="text-align: center; padding: 40px; color: var(--text-dim);">加载中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Progress Overlay -->
+    <div class="progress-overlay" id="progress-overlay">
+        <div class="progress-card">
+            <div class="progress-spinner"></div>
+            <div class="progress-title" id="progress-title">处理中...</div>
+            <div class="progress-sub" id="progress-subtitle">请稍候</div>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-stats">
+                <span>进度: <span class="num" id="progress-current">0</span> / <span id="progress-total">0</span></span>
+                <span id="progress-percent">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <div class="modal-body" style="padding: 32px; text-align: center;">
+                <div id="confirm-icon" style="margin-bottom: 20px;"></div>
+                <h3 id="confirm-title" style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 12px;"></h3>
+                <p id="confirm-message" style="font-size: 13px; color: var(--text-dim); line-height: 1.6; margin-bottom: 28px;"></p>
+                <div style="display: flex; gap: 12px; justify-content: center;">
+                    <button class="btn" onclick="confirmCancel()" style="min-width: 100px;">取消</button>
+                    <button id="confirm-ok-btn" class="btn-primary" onclick="confirmOk()" style="padding: 10px 24px; border-radius: 8px; min-width: 100px;">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal" id="export-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>导出有效密钥</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea class="export-textarea" id="export-text" readonly></textarea>
+                <div class="export-actions">
+                    <button class="btn" onclick="copyExport()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        复制
+                    </button>
+                    <button class="btn-primary" onclick="downloadExport()" style="padding: 10px 18px; border-radius: 8px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        下载
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Models Modal -->
+    <div class="modal" id="models-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="models-modal-title">模型</h3>
+                <button class="modal-close" onclick="closeModelsModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="models-list"></div>
+        </div>
+    </div>
+    <!-- Provider Detail Modal -->
+    <div class="modal" id="provider-detail-modal">
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3 id="provider-detail-title">服务商详情</h3>
+                <button class="modal-close" onclick="closeProviderDetailModal()">&times;</button>
+            </div>
+            <div class="provider-detail-body" id="provider-detail-body"></div>
+        </div>
+    </div>
+
+    <!-- Signature Report Modal -->
+    <div class="modal" id="signature-report-modal" style="z-index: 1600;">
+        <div class="modal-content" style="max-width: 960px; max-height: 90vh;">
+            <div class="modal-header">
+                <h3 style="display: flex; align-items: center; gap: 10px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    签名验证报告
+                </h3>
+                <button class="modal-close" onclick="closeSignatureReportModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="signature-report-body" style="padding: 0;"></div>
+        </div>
+    </div>
+
+
+    <!-- Shortcuts -->
+    <div class="shortcuts" onclick="showShortcutsModal()" style="cursor: pointer;">
+        <div class="sc"><kbd>/</kbd> 搜索</div>
+        <div class="sc"><kbd>Ctrl+R</kbd> 刷新</div>
+        <div class="sc"><kbd>Ctrl+Enter</kbd> 检测</div>
+        <div class="sc"><kbd>?</kbd> 快捷键</div>
+    </div>
+
+    <!-- Shortcuts Modal -->
+    <div class="modal" id="shortcuts-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>键盘快捷键</h3>
+                <button class="modal-close" onclick="closeShortcutsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcuts-grid">
+                    <div class="shortcut-item"><span>搜索</span><kbd>/</kbd></div>
+                    <div class="shortcut-item"><span>刷新数据</span><kbd>Ctrl+R</kbd></div>
+                    <div class="shortcut-item"><span>检测</span><kbd>Ctrl+Enter</kbd></div>
+                    <div class="shortcut-item"><span>清除搜索</span><kbd>Esc</kbd></div>
+                    <div class="shortcut-item"><span>显示快捷键</span><kbd>?</kbd></div>
+                    <div class="shortcut-item"><span>切换完整KEY</span><kbd>Ctrl+K</kbd></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>KeyHub // API 密钥管理中心 &copy; 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        const STATUS_MAP = {'valid': '有效', 'invalid': '无效', 'error': '错误', 'unknown': '未知'};
+        const TAB_TITLES = {'all': '密钥注册表', 'valid': '有效密钥', 'invalid': '无效密钥', 'error': '错误密钥'};
+
+        const ERROR_TRANSLATIONS = {
+            'invalid key': 'Key 无效或已失效',
+            'invalid key or forbidden': 'Key 无效或无权限',
+            'forbidden - check key permissions': '禁止访问',
+            'rate limited': '请求频率超限',
+            'insufficient balance': '账户余额不足',
+            'quota exceeded': '配额已用完',
+            'account suspended': '账户已被暂停',
+            'account disabled': '账户已被禁用',
+            'invalid api key': 'API Key 无效',
+            'authentication failed': '认证失败',
+            'unauthorized': '未授权',
+            'timeout': '请求超时',
+            'connection error': '连接错误',
+            'network error': '网络错误',
+            'server error': '服务器错误',
+            'service unavailable': '服务不可用',
+            'model not found': '模型不存在',
+            'context length exceeded': '超出上下文长度',
+            'maximum tokens exceeded': '超出最大Token',
+            'invalid request': '无效请求',
+            'bad request': '错误请求',
+            'not found': '资源不存在',
+            'internal server error': '内部服务器错误',
+            'gateway timeout': '网关超时',
+            'too many requests': '请求过多',
+            'payment required': '需要付费',
+            'billing not active': '计费未激活',
+            'token expired': 'Token已过期',
+            'key revoked': 'Key已被撤销',
+            'key deactivated': 'Key已被停用',
+            'invalid grant': '授权无效',
+            'access denied': '访问被拒绝',
+            'overdue-payment': '账户欠费',
+            'overdue payment': '账户欠费',
+            'good standing': '账户状态异常',
+            'not in good standing': '账户状态异常',
+            'please make sure your account is in good standing': '请确保账户状态正常',
+        };
+
+        const ERROR_TYPE_TRANSLATIONS = {
+            'invalid_key': 'Key 无效',
+            'rate_limited': '频率限制',
+            'insufficient_balance': '余额不足',
+            'quota_exceeded': '配额已用完',
+            'forbidden': '禁止访问',
+            'network_error': '网络错误',
+            'timeout': '请求超时',
+            'server_error': '服务器错误',
+            'account_disabled': '账户已禁用',
+            'account_suspended': '账户已暂停',
+            'key_expired': 'Key 已过期',
+            'key_revoked': 'Key 已撤销',
+            'authentication_failed': '认证失败',
+            'billing_not_active': '计费未激活',
+            'model_not_found': '模型不存在',
+            'service_unavailable': '服务不可用',
+            'unknown': '未知错误',
+        };
+
+        function translateErrorType(errorType) {
+            if (!errorType) return '';
+            const lower = errorType.toLowerCase().trim();
+            return ERROR_TYPE_TRANSLATIONS[lower] || errorType;
+        }
+
+        function translateError(error) {
+            if (!error) return '';
+            const lower = error.toLowerCase().trim();
+            if (ERROR_TRANSLATIONS[lower]) return ERROR_TRANSLATIONS[lower];
+            for (const [key, value] of Object.entries(ERROR_TRANSLATIONS)) {
+                if (lower.includes(key)) return value;
+            }
+            return '';
+        }
+
+        let showFullKeys = true;
+        let currentTab = 'all';
+        let allKeys = [];
+        let PROVIDER_WEBSITES_MAP = {};
+        let searchQuery = '';
+        let currentPage = 1;
+        let totalPages = 1;
+        let totalCount = 0;
+        let pageSize = 50;
+        let PROVIDERS_MAP = {};  // Loaded from /api/providers
+        let DISPLAY_NAMES = {};  // Provider display names
+
+        // HTML escaping helper to prevent broken onclick handlers
+        function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g, '&#39;'); }
+        function escAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        // Global error handler - prevents silent JS errors from breaking the UI
+        window.addEventListener('error', function(e) {
+            console.error('[KeyHub] Uncaught error:', e.message, 'at', e.filename + ':' + e.lineno);
+            e.preventDefault();
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('[KeyHub] Unhandled promise rejection:', e.reason);
+            e.preventDefault();
+        });
+        // Event delegation fallback - ensures clicks work even if inline handlers are blocked
+        document.addEventListener('click', function(e) {
+            const target = e.target;
+            // Provider chips in the grid
+            const chipItem = target.closest('.provider-chip-item[data-provider]');
+            if (chipItem) {
+                e.preventDefault();
+                const prov = chipItem.getAttribute('data-provider');
+                if (prov && typeof showProviderDetail === 'function') showProviderDetail(prov);
+                return;
+            }
+            // Provider chips in the table
+            const provChip = target.closest('.provider-chip');
+            if (provChip) {
+                e.preventDefault();
+                const m = provChip.getAttribute('onclick');
+                if (m) { const p = m.match(/showProviderDetail\('(.+?)'\)/); if (p) showProviderDetail(p[1]); }
+                return;
+            }
+            // Key cells in the table
+            const keyCell = target.closest('.key-cell');
+            if (keyCell) {
+                e.preventDefault();
+                const m = keyCell.getAttribute('onclick');
+                if (m) { const p = m.match(/copyKey\('(.+?)'\)/); if (p) copyKey(p[1]); }
+                return;
+            }
+            // Nav tabs
+            const navTab = target.closest('.nav-tab[data-tab]');
+            if (navTab) {
+                const tab = navTab.getAttribute('data-tab');
+                if (tab && tab !== 'signature' && typeof switchTab === 'function') {
+                    e.preventDefault();
+                    switchTab(tab);
+                }
+                return;
+            }
+        }, true);
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') { e.preventDefault(); loadKeys(); loadStats(); }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runCheck(); }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); toggleKeyDisplay(); }
+            if (e.key === 'Escape') {
+                const si = document.getElementById('search-input');
+                if (si === document.activeElement) { si.value = ''; filterKeys(); }
+                closeShortcutsModal();
+                closeProviderDetailModal();
+                closeSignatureReportModal();
+                confirmCancel();
+            }
+            if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); document.getElementById('search-input').focus(); }
+            if (e.key === '?' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); showShortcutsModal(); }
+        });
+
+        // Search debounce
+        let searchTimer = null;
+        function filterKeys() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+                renderKeys();
+            }, 150);
+        }
+
+        function showShortcutsModal() { document.getElementById('shortcuts-modal').classList.add('show'); }
+        function closeShortcutsModal() { document.getElementById('shortcuts-modal').classList.remove('show'); }
+        { const el = document.getElementById('shortcuts-modal'); if (el) el.addEventListener('click', (e) => { if (e.target === el) closeShortcutsModal(); }); }
+
+        async function safeFetch(url, options) {
+            const resp = await fetch(url, options);
+            if (!resp.ok) {
+                let msg = `服务器错误 (${resp.status})`;
+                try { const j = await resp.json(); if (j.error) { msg = (typeof j.error === 'object') ? (j.error.message || JSON.stringify(j.error)) : j.error; } } catch {}
+                throw new Error(msg);
+            }
+            const ct = resp.headers.get('content-type') || '';
+            if (!ct.includes('application/json')) throw new Error('服务器返回了非 JSON 响应');
+            return resp.json();
+        }
+
+        async function loadStats() {
+            const data = await safeFetch('/api/stats');
+
+            const animateValue = (el, nv) => {
+                const cv = parseInt(el.textContent) || 0;
+                if (cv === nv) return;
+                const dur = 500, start = performance.now();
+                const anim = (now) => {
+                    const p = Math.min((now - start) / dur, 1);
+                    el.textContent = Math.round(cv + (nv - cv) * (1 - Math.pow(1 - p, 3)));
+                    if (p < 1) requestAnimationFrame(anim);
+                };
+                requestAnimationFrame(anim);
+            };
+
+            animateValue(document.getElementById('total-keys'), data.total);
+            let valid = 0, invalid = 0, error = 0;
+            Object.values(data.providers).forEach(p => { valid += p.valid; invalid += p.invalid; error += p.error; });
+            animateValue(document.getElementById('valid-keys'), valid);
+            animateValue(document.getElementById('invalid-keys'), invalid);
+            document.getElementById('providers-count').textContent = Object.keys(data.providers).length;
+            document.getElementById('all-count').textContent = data.total;
+            document.getElementById('valid-count').textContent = valid;
+            document.getElementById('invalid-count').textContent = invalid;
+            document.getElementById('error-count').textContent = error;
+
+            const sel = document.getElementById('provider-filter');
+            const cv = sel.value;
+            sel.innerHTML = '<option value="">全部服务商</option>';
+            Object.keys(data.providers).sort().forEach(p => { const dn = data.providers[p].display_name || p; sel.innerHTML += `<option value="${p}">${dn}</option>`; DISPLAY_NAMES[p] = dn; });
+            sel.value = cv;
+        }
+
+        function renderKeys() {
+            let fk = allKeys;
+            if (searchQuery) fk = fk.filter(k => k.key.toLowerCase().includes(searchQuery) || k.key_masked.toLowerCase().includes(searchQuery) || k.provider.toLowerCase().includes(searchQuery));
+
+            const tbody = document.getElementById('keys-table');
+            document.getElementById('table-title').textContent = `${TAB_TITLES[currentTab]} (第${currentPage}页, 共${totalCount}条)`;
+
+            if (fk.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 7a2 2 0 0 1 2 2m4 0a6 6 0 0 1-7.743 5.743L11 17H9v2H7v2H4a1 1 0 0 1-1-1v-2.586a1 1 0 0 1 .293-.707l5.964-5.964A6 6 0 1 1 21 9z"/></svg><h3>暂无数据</h3><p>当前筛选条件下没有 Key</p></div></td></tr>';
+                updatePagination();
+                return;
+            }
+
+            tbody.innerHTML = fk.map((k, idx) => {
+                const dk = showFullKeys ? k.key : k.key_masked;
+                const models = k.models || [];
+                let md = '';
+                if (models.length > 0) {
+                    const mm = models.slice(0, 3);
+                    const rem = models.length - 3;
+                    md = `<div class="models-wrap"><div class="models-tags">${mm.map(m => `<span class="model-chip">${m.length > 15 ? m.split('/').pop().substring(0, 12) + '...' : m}</span>`).join('')}${rem > 0 ? `<span class="model-chip more" onclick="showModelsModal('${escAttr(k.key_masked)}', ${JSON.stringify(models).replace(/&/g,'&amp;').replace(/"/g, '&quot;')})">+${rem}</span>` : ''}</div></div>`;
+                } else {
+                    md = '<span style="font-size: 13px; color: var(--text-ghost);">-</span>';
+                }
+
+                const te = translateError(k.last_error || '');
+                const sd = k.status === 'valid'
+                    ? `<span class="badge badge-valid">有效</span>`
+                    : `<div class="error-group">
+                        <span class="badge badge-${k.status}">${STATUS_MAP[k.status] || k.status}</span>
+                        ${k.last_error ? `<span class="error-hint" title="${te ? te + ' (' + k.last_error + ')' : k.last_error}${k.error_type ? ' [' + translateErrorType(k.error_type) + ']' : ''}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span class="error-text">${te || k.last_error}${k.error_type ? ' <span style="color:var(--neon-amber);font-size:11px;">[' + translateErrorType(k.error_type) + ']</span>' : ''}</span></span>` : ''}
+                    </div>`;
+
+                return `<tr style="animation: fadeInRow 0.3s ease ${idx * 0.02}s both;">
+                    <td><div class="key-cell" onclick="copyKey('${escAttr(k.key)}')" title="点击复制">${dk}</div></td>
+                    <td><span class="provider-chip" onclick="showProviderDetail('${escAttr(k.provider)}')" style="cursor: pointer;" title="点击查看服务商详情">${DISPLAY_NAMES[k.provider] || k.provider}</span></td>
+                    <td>${sd}</td>
+                    <td>${md}</td>
+                    <td style="font-size: 12px; color: var(--text-dim);">${k.last_checked ? new Date(k.last_checked).toLocaleString('zh-CN') : '-'}</td>
+                    <td style="font-family: 'Fira Code', monospace; font-size: 12px;">${k.tests.max_tokens ? (k.tests.max_tokens >= 1000000 ? (k.tests.max_tokens/1000000).toFixed(1)+'M' : k.tests.max_tokens >= 1000 ? (k.tests.max_tokens/1000)+'K' : k.tests.max_tokens) : '-'}</td>
+                    <td style="font-family: 'Fira Code', monospace; font-size: 12px;">${k.tests.max_concurrency || '-'}</td>
+                    <td style="font-family: 'Fira Code', monospace; font-size: 12px; color: var(--text-dim);">${k.balance && k.balance.balance != null ? k.balance.balance + ' ' + (k.balance.currency || '') : '-'}</td>
+                </tr>`;
+            }).join('');
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const bar = document.getElementById('pagination-bar');
+            const sizes = [25, 50, 100, 200];
+            const sizeOpts = sizes.map(s => `<option value="${s}" ${s === pageSize ? 'selected' : ''}>${s} 条/页</option>`).join('');
+            const navHtml = totalPages > 1
+                ? `<button onclick="goToPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''}>«</button><span class="page-info">${currentPage} / ${totalPages}</span><button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''}>»</button>`
+                : '<span class="page-info">1 / 1</span>';
+            bar.innerHTML = `<select onchange="changePageSize(this.value)" style="background:var(--surface-2);color:var(--text-primary);border:1px solid var(--border-subtle);padding:6px 10px;border-radius:6px;font-family:'Fira Code',monospace;font-size:12px;cursor:pointer">${sizeOpts}</select><span class="page-info">共 ${totalCount} 条</span>${navHtml}`;
+        }
+
+        function changePageSize(size) {
+            pageSize = parseInt(size);
+            currentPage = 1;
+            loadKeys(1);
+        }
+
+        function goToPage(page) {
+            if (page >= 1 && page <= totalPages) loadKeys(page);
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            currentPage = 1;
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            const targetTab = document.querySelector(`[data-tab="${tab}"]`);
+            if (targetTab) targetTab.classList.add('active');
+            loadKeys(1);
+        }
+
+        function toggleKeyDisplay() {
+            showFullKeys = !showFullKeys;
+            document.getElementById('show-key-toggle').classList.toggle('active');
+            renderKeys();
+        }
+
+        function copyKey(key) { navigator.clipboard.writeText(key).then(() => showToast('已复制到剪贴板', 'success')); }
+
+        async function exportValidKeys() {
+            const data = await safeFetch('/api/keys/export');
+            if (data.keys.length === 0) { showToast('没有有效的 Key', 'error'); return; }
+            document.getElementById('export-text').value = data.keys.map(k => k.key).join('\n');
+            document.getElementById('export-modal').classList.add('show');
+        }
+
+        function closeModal() { document.getElementById('export-modal').classList.remove('show'); }
+
+        function copyExport() {
+            const ta = document.getElementById('export-text');
+            ta.select();
+            navigator.clipboard.writeText(ta.value).then(() => showToast('已复制', 'success'));
+        }
+
+        function downloadExport() {
+            const text = document.getElementById('export-text').value;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `valid_keys_${new Date().toISOString().slice(0,10)}.txt`; a.click();
+            URL.revokeObjectURL(url);
+            showToast('下载已开始', 'success');
+        }
+
+        function toggleProviders() { document.getElementById('providers-grid').classList.toggle('collapsed'); }
+
+        // Custom Confirm Modal
+        let confirmCallback = null;
+
+        function showConfirm({ title, message, icon = 'danger', okText = '确定', onConfirm }) {
+            const iconSvgs = {
+                danger: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+                warning: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+                success: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+            };
+
+            document.getElementById('confirm-icon').innerHTML = `<div class="confirm-icon-wrap ${icon}">${iconSvgs[icon] || iconSvgs.danger}</div>`;
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            const okBtn = document.getElementById('confirm-ok-btn');
+            okBtn.textContent = okText;
+            okBtn.className = icon === 'danger' ? 'btn-primary' : 'btn-primary';
+            okBtn.style.background = icon === 'danger'
+                ? 'linear-gradient(135deg, var(--neon-red), #cc2255)'
+                : 'linear-gradient(135deg, var(--neon-cyan), #00c8d4)';
+            confirmCallback = onConfirm;
+            document.getElementById('confirm-modal').classList.add('show');
+        }
+
+        function confirmOk() {
+            document.getElementById('confirm-modal').classList.remove('show');
+            if (confirmCallback) confirmCallback();
+            confirmCallback = null;
+        }
+
+        function confirmCancel() {
+            document.getElementById('confirm-modal').classList.remove('show');
+            confirmCallback = null;
+        }
+
+        { const el = document.getElementById('confirm-modal'); if (el) el.addEventListener('click', (e) => { if (e.target === el) confirmCancel(); }); }
+
+        async function clearAllKeys() {
+            showConfirm({
+                title: '清除所有密钥',
+                message: '此操作将删除所有已导入的 API Key，操作不可撤销。',
+                icon: 'danger',
+                okText: '确认清除',
+                onConfirm: async () => {
+                    try {
+                        const data = await safeFetch('/api/keys/clear', { method: 'POST' });
+                        showToast(`已清除 ${data.cleared} 个 Key`, 'success');
+                        loadStats(); loadKeys();
+                    } catch (e) {
+                        showToast('清除失败: ' + e.message, 'error');
+                    }
+                }
+            });
+        }
+
+        async function handleFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            uploadFile(file);
+        }
+
+        async function uploadFile(file) {
+            const status = document.getElementById('upload-status');
+            status.className = 'upload-status loading';
+            status.textContent = '正在上传...';
+            const fd = new FormData();
+            fd.append('file', file);
+            try {
+                const data = await safeFetch('/api/import/upload', { method: 'POST', body: fd });
+                if (data.error) {
+                    status.className = 'upload-status error';
+                    status.textContent = data.error || '上传失败';
+                    showToast(data.error || '上传失败', 'error');
+                } else {
+                    status.className = 'upload-status success';
+                    status.textContent = `完成: ${data.new} 新, ${data.duplicates} 重复`;
+                    showToast(`导入成功: ${data.new} 个新Key`, 'success');
+                    loadStats(); loadKeys();
+                }
+            } catch (e) {
+                status.className = 'upload-status error';
+                status.textContent = e.message;
+                showToast(e.message, 'error');
+            }
+            document.getElementById('file-input').value = '';
+        }
+
+        const uz = document.getElementById('upload-zone');
+        if (uz) {
+            uz.addEventListener('dragover', (e) => { e.preventDefault(); uz.style.borderColor = 'var(--neon-cyan)'; uz.style.background = 'var(--glow-cyan)'; });
+            uz.addEventListener('dragleave', () => { uz.style.borderColor = ''; uz.style.background = ''; });
+            uz.addEventListener('drop', (e) => { e.preventDefault(); uz.style.borderColor = ''; uz.style.background = ''; const f = e.dataTransfer.files[0]; if (f && f.name.endsWith('.json')) uploadFile(f); else showToast('请上传 .json 文件', 'error'); });
+        }
+
+        async function checkManualKey() {
+            const keyInput = document.getElementById('manual-key');
+            const providerSel = document.getElementById('manual-provider');
+            const resultEl = document.getElementById('manual-result');
+            const key = keyInput.value.trim();
+            if (!key) { showToast('请输入 Key', 'error'); return; }
+            const customUrl = document.getElementById('custom-base-url').value.trim();
+
+            resultEl.innerHTML = '<div class="result-card"><div style="color: var(--neon-cyan); display: flex; align-items: center; gap: 10px;"><div class="progress-spinner" style="width: 20px; height: 20px;"></div> 检测中...</div></div>';
+
+            const endpoint = '/api/check/single';
+            try {
+                const data = await safeFetch(endpoint, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({key, provider: providerSel.value, custom_base_url: customUrl || null}) });
+                if (data.error && !data.status) {
+                    resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-red);">${data.error}</div></div>`;
+                } else {
+                    const sc = data.status === 'valid' ? 'valid' : (data.status === 'invalid' ? 'invalid' : 'error');
+                    const tt = 'API 检测';
+                    const mh = data.models && data.models.length > 0
+                        ? `<div style="margin-top: 12px;"><label style="font-family: 'Fira Code', monospace; font-size: 12px; color: var(--text-ghost); text-transform: uppercase; letter-spacing: 1px;">模型 (${data.models.length})</label><div class="models-tags" style="margin-top: 6px;">${data.models.slice(0, 5).map(m => `<span class="model-chip">${m.length > 15 ? m.substring(0, 12) + '...' : m}</span>`).join('')}${data.models.length > 5 ? `<span class="model-chip more">+${data.models.length - 5}</span>` : ''}</div></div>` : '';
+
+                    const te = translateError(data.error || '');
+                    const tet = translateErrorType(data.error_type || '');
+                    const balanceHtml = data.balance ? `<div class="result-item"><label>余额</label><value style="color: var(--neon-green);">${data.balance.balance} ${data.balance.currency}</value></div>` : '';
+                    const errorTypeHtml = data.error_type ? `<div style="margin-top: 8px; padding: 8px 12px; background: var(--glow-red); border-radius: 8px; font-size: 13px;"><span style="color: var(--neon-amber);">⚠ ${tet || data.error_type}</span></div>` : '';
+                    resultEl.innerHTML = `
+                        <div class="result-card">
+                            <div class="result-header"><span class="result-key">${data.key_masked}</span><span class="badge badge-${sc}">${STATUS_MAP[data.status] || data.status}</span></div>
+                            <div class="result-grid">
+                                <div class="result-item"><label>检测方式</label><value>${tt}</value></div>
+                                <div class="result-item"><label>服务商</label><value>${data.display_name || data.provider}</value></div>
+                                <div class="result-item"><label>状态码</label><value>${data.status_code || '-'}</value></div>
+                                <div class="result-item"><label>延迟</label><value>${data.latency_ms ? Math.round(data.latency_ms) + 'ms' : '-'}</value></div>
+                                ${balanceHtml}
+                            </div>
+                            ${errorTypeHtml}
+                            ${data.error ? `<div class="result-error"><div class="label">错误信息</div><div>${te ? te : ''}</div><div class="msg">${data.error}</div></div>` : ''}
+                            ${mh}
+                        </div>`;
+
+                    if (data.status === 'valid') { showToast(`Key 可用 (${tt})`, 'success'); loadStats(); loadKeys(); }
+                }
+            } catch (e) {
+                resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-red);">检测失败: ${e.message}</div></div>`;
+            }
+        }
+
+        async function getModels() {
+            const key = document.getElementById('manual-key').value.trim();
+            const provider = document.getElementById('manual-provider').value;
+            
+            // Allow fetching models without key if provider is selected
+            if (!key && !provider) { showToast('请输入 Key 或选择服务商', 'error'); return; }
+
+            const typeFilter = document.getElementById('model-type-filter').value;
+            const resultEl = document.getElementById('manual-result');
+            resultEl.innerHTML = '<div class="result-card"><div style="color: var(--neon-cyan); display: flex; align-items: center; gap: 10px;"><div class="progress-spinner" style="width: 20px; height: 20px;"></div> 获取模型列表...</div></div>';
+
+            try {
+                const params = new URLSearchParams();
+                if (provider) params.set('provider', provider);
+                if (key) params.set('key', key);
+                if (typeFilter && typeFilter !== 'all') params.set('type_filter', typeFilter);
+
+                const data = await safeFetch(`/api/models?${params}`);
+
+                if (data.error) {
+                    resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-red);">${data.error}</div></div>`;
+                    return;
+                }
+
+                if (data.models.length === 0) {
+                    const typeLabel = typeFilter !== 'all' ? ` (${getTypeLabel(typeFilter)})` : '';
+                    resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-amber);">${data.provider}${typeLabel} 暂无模型</div></div>`;
+                    return;
+                }
+
+                const typeLabel = data.type_filter && data.type_filter !== 'all' ? ` - ${getTypeLabel(data.type_filter)}` : '';
+                const sourceLabel = data.source === 'static' ? ' <span class="badge" style="background: var(--neon-amber-dim); color: var(--neon-amber); font-size: 10px;">静态</span>' : '';
+                resultEl.innerHTML = `
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-key">${data.provider}${typeLabel}${sourceLabel}</span>
+                            <span class="badge badge-valid">${data.models.length} 个模型</span>
+                        </div>
+                        <div class="models-tags" style="margin-top: 12px;">
+                            ${data.models.map(m => `<span class="model-chip">${m}</span>`).join('')}
+                        </div>
+                    </div>`;
+            } catch (e) {
+                resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-red);">获取失败: ${e.message}</div></div>`;
+            }
+        }
+
+        // 检测状态管理
+        let currentCheckController = null;
+        let isChecking = false;
+
+        async function checkAvailableModels() {
+            // 如果正在检测，终止当前检测
+            if (isChecking && currentCheckController) {
+                currentCheckController.abort();
+                currentCheckController = null;
+                isChecking = false;
+                showToast('已终止检测', 'info');
+                return;
+            }
+
+            const key = document.getElementById('manual-key').value.trim();
+            if (!key) { showToast('请先输入 Key', 'error'); return; }
+
+            const provider = document.getElementById('manual-provider').value;
+            const typeFilter = document.getElementById('model-type-filter').value;
+            const resultEl = document.getElementById('manual-result');
+            
+            // 创建 AbortController
+            currentCheckController = new AbortController();
+            isChecking = true;
+            
+            // 显示进度
+            const typeLabel = typeFilter !== 'all' ? ` (${getTypeLabel(typeFilter)})` : '';
+            resultEl.innerHTML = `
+                <div class="result-card">
+                    <div style="display: flex; align-items: flex-start; gap: 10px;">
+                        <div class="progress-spinner" style="width: 20px; height: 20px; margin-top: 2px;"></div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500;">检测可用模型${typeLabel}中...</div>
+                            <div style="color: var(--neon-amber); font-size: 11px; margin-top: 4px;">(再次点击按钮终止)</div>
+                            <div id="check-progress" style="font-size: 11px; color: var(--text-ghost); margin-top: 4px;">准备中</div>
+                        </div>
+                    </div>
+                    <div id="check-results" style="margin-top: 12px;"></div>
+                </div>`;
+
+            try {
+                const response = await fetch('/api/models/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key, provider: provider || '', type: typeFilter }),
+                    signal: currentCheckController.signal
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                const progressEl = document.getElementById('check-progress');
+                const resultsEl = document.getElementById('check-results');
+                const availableModels = [];
+                const timeoutModels = [];
+                const errorModels = [];
+                let forceSerialMode = false;  // 被限流后强制串行模式
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const text = decoder.decode(value);
+                    const lines = text.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.slice(6));
+                                
+                                if (data.type === 'progress') {
+                                    const modeLabel = forceSerialMode ? ' (串行)' : (data.mode === 'serial' ? ' (串行)' : ' (并行)');
+                                    progressEl.textContent = `检测中: ${data.current}/${data.total} - ${data.model}${modeLabel}`;
+                                } else if (data.type === 'rate_limited') {
+                                    forceSerialMode = true;  // 标记为串行模式
+                                    progressEl.textContent = `被限流，切换到串行模式...`;
+                                    progressEl.style.color = 'var(--neon-amber)';
+                                } else if (data.type === 'model_timeout') {
+                                    // 超时模型显示红色 - 去重检查
+                                    if (!timeoutModels.includes(data.model)) {
+                                        timeoutModels.push(data.model);
+                                        progressEl.textContent = `模型 ${data.model} 超时，跳过...`;
+                                        progressEl.style.color = 'var(--neon-amber)';
+                                        
+                                        // 创建容器（如果不存在）
+                                        if (!document.getElementById('timeout-models-tags')) {
+                                            resultsEl.innerHTML += '<div style="margin-top: 8px;"><span style="color: var(--neon-red); font-size: 11px;">超时模型:</span><div class="models-tags" id="timeout-models-tags" style="margin-top: 4px;"></div></div>';
+                                        }
+                                        const timeoutTagsEl = document.getElementById('timeout-models-tags');
+                                        timeoutTagsEl.innerHTML += `<span class="model-chip" style="border-color: var(--neon-red); color: var(--neon-red); background: rgba(255, 68, 68, 0.1);">${data.model}</span> `;
+                                    }
+                                } else if (data.type === 'result') {
+                                    if (data.available) {
+                                        // 去重检查
+                                        if (!availableModels.includes(data.model)) {
+                                            availableModels.push(data.model);
+                                            // 从超时列表中移除（如果重试成功）
+                                            const timeoutIdx = timeoutModels.indexOf(data.model);
+                                            if (timeoutIdx > -1) {
+                                                timeoutModels.splice(timeoutIdx, 1);
+                                                // 移除超时标签
+                                                const timeoutTagsEl = document.getElementById('timeout-models-tags');
+                                                if (timeoutTagsEl) {
+                                                    const chips = timeoutTagsEl.querySelectorAll('.model-chip');
+                                                    chips.forEach(chip => {
+                                                        if (chip.textContent === data.model) chip.remove();
+                                                    });
+                                                }
+                                            }
+                                            // 创建容器（如果不存在）
+                                            if (!document.getElementById('available-models-tags')) {
+                                                resultsEl.innerHTML = '<div><span style="color: var(--neon-green); font-size: 11px;">可用模型:</span><div class="models-tags" id="available-models-tags" style="margin-top: 4px;"></div></div>' + resultsEl.innerHTML;
+                                            }
+                                            const tagsEl = document.getElementById('available-models-tags');
+                                            tagsEl.innerHTML += `<span class="model-chip" style="border-color: var(--neon-green); color: var(--neon-green); background: rgba(0, 255, 136, 0.1);">${data.model}</span> `;
+                                        }
+                                    } else if (data.status === 'error') {
+                                        // 检测失败的模型 - 去重检查
+                                        if (!errorModels) errorModels = [];
+                                        if (!errorModels.includes(data.model)) {
+                                            errorModels.push(data.model);
+                                            if (!document.getElementById('error-models-tags')) {
+                                                resultsEl.innerHTML += '<div style="margin-top: 8px;"><span style="color: var(--neon-magenta); font-size: 11px;">检测失败:</span><div class="models-tags" id="error-models-tags" style="margin-top: 4px;"></div></div>';
+                                            }
+                                            const errorTagsEl = document.getElementById('error-models-tags');
+                                            errorTagsEl.innerHTML += `<span class="model-chip" style="border-color: var(--neon-magenta); color: var(--neon-magenta); background: rgba(255, 68, 187, 0.1);">${data.model}</span> `;
+                                        }
+                                    } else if (data.status === 'rate_limited') {
+                                        // 被限流的模型
+                                        if (!document.getElementById('rate-limited-models-tags')) {
+                                            resultsEl.innerHTML += '<div style="margin-top: 8px;"><span style="color: var(--neon-amber); font-size: 11px;">被限流:</span><div class="models-tags" id="rate-limited-models-tags" style="margin-top: 4px;"></div></div>';
+                                        }
+                                        const rateLimitedTagsEl = document.getElementById('rate-limited-models-tags');
+                                        rateLimitedTagsEl.innerHTML += `<span class="model-chip" style="border-color: var(--neon-amber); color: var(--neon-amber); background: rgba(255, 187, 51, 0.1);">${data.model}</span> `;
+                                    }
+                                } else if (data.type === 'complete') {
+                                    const modeLabel = forceSerialMode ? ' (串行模式)' : (data.mode === 'serial' ? ' (串行模式)' : '');
+                                    const timeoutLabel = data.timeout > 0 ? `, ${data.timeout} 超时` : '';
+                                    
+                                    // 更新标题为"可用模型"
+                                    const titleEl = resultEl.querySelector('div[style*="font-weight: 500"]');
+                                    if (titleEl) {
+                                        titleEl.textContent = `可用模型 (${availableModels.length}/${data.total})`;
+                                    }
+                                    
+                                    // 更新进度文本
+                                    progressEl.textContent = `检测完成${timeoutLabel}${modeLabel}`;
+                                    progressEl.style.color = 'var(--neon-green)';
+                                    
+                                    // 移除转圈动画和终止提示
+                                    const spinner = resultEl.querySelector('.progress-spinner');
+                                    if (spinner) {
+                                        spinner.style.display = 'none';
+                                    }
+                                    const abortHint = resultEl.querySelector('div[style*="neon-amber"]');
+                                    if (abortHint && abortHint.textContent.includes('终止')) {
+                                        abortHint.style.display = 'none';
+                                    }
+                                    
+                                    // 更新完成状态
+                                    isChecking = false;
+                                    currentCheckController = null;
+                                }
+                            } catch (e) {
+                                // Ignore parse errors
+                            }
+                        }
+                    }
+                }
+
+                if (availableModels.length === 0 && timeoutModels.length === 0) {
+                    resultsEl.innerHTML = '<div style="color: var(--neon-amber); margin-top: 8px;">未找到可用模型</div>';
+                }
+            } catch (e) {
+                if (e.name === 'AbortError') {
+                    resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-amber);">检测已终止</div></div>`;
+                } else {
+                    resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-red);">检测失败: ${e.message}</div></div>`;
+                }
+            } finally {
+                isChecking = false;
+                currentCheckController = null;
+            }
+        }
+
+        // Custom Select Component
+        function toggleCustomSelect(selectId) {
+            const select = document.getElementById(selectId);
+            const isOpen = select.classList.contains('open');
+            
+            // Close all other selects
+            document.querySelectorAll('.custom-select.open').forEach(el => {
+                if (el.id !== selectId) {
+                    el.classList.remove('open');
+                }
+            });
+            
+            // Toggle current
+            select.classList.toggle('open');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.custom-select')) {
+                document.querySelectorAll('.custom-select.open').forEach(el => {
+                    el.classList.remove('open');
+                });
+            }
+        });
+
+        function selectCustomOption(selectId, value, label) {
+            const select = document.getElementById(selectId);
+            
+            // Update hidden input
+            const hiddenInput = select.querySelector('input[type=hidden]');
+            if (hiddenInput) hiddenInput.value = value;
+            
+            // Update label
+            const labelEl = select.querySelector('#' + selectId.replace('-select', '-label'));
+            if (labelEl) labelEl.textContent = label;
+            
+            // Update selected state
+            select.querySelectorAll('.custom-select-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.value === value);
+            });
+            
+            // Close dropdown
+            select.classList.remove('open');
+        }
+
+        // Populate provider dropdown dynamically
+        function populateProviderDropdown(providers) {
+            const dropdown = document.getElementById('provider-dropdown');
+            if (!dropdown) return;
+            
+            // Keep the first "auto detect" option
+            let html = '<div class="custom-select-option selected" data-value="" onclick="selectCustomOption(\'provider-select\', \'\', \'自动识别\')">自动识别</div>';
+            
+            providers.forEach(p => {
+                html += `<div class="custom-select-option" data-value="${p}" onclick="selectCustomOption('provider-select', '${p}', '${p}')">${p}</div>`;
+            });
+            
+            dropdown.innerHTML = html;
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                'all': '全部模型',
+                'reasoning': '推理模型',
+                'vision': '视觉模型',
+                'websearch': '联网模型',
+                'free': '免费模型',
+                'embedding': '嵌入模型',
+                'rerank': '重排模型',
+                'tooluse': '工具调用'
+            };
+            return labels[type] || type;
+        }
+async function runConcurrencyTest() {
+            const key = document.getElementById('manual-key').value.trim();
+            if (!key) { showToast('请先输入 Key', 'error'); return; }
+
+            const concurrencyInput = document.getElementById('concurrency-input');
+            const concurrency = parseInt(concurrencyInput.value);
+            if (!concurrency || concurrency < 1) {
+                showToast('请填写并发数（至少为 1）', 'error');
+                concurrencyInput.focus();
+                return;
+            }
+            if (concurrency > 10000) {
+                showToast('并发数不能超过 10000', 'error');
+                concurrencyInput.focus();
+                return;
+            }
+
+            const provider = document.getElementById('manual-provider').value;
+            const resultEl = document.getElementById('manual-result');
+            resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-cyan); display: flex; align-items: center; gap: 10px;"><div class="progress-spinner" style="width: 20px; height: 20px;"></div> 并发测试中（并发数: ${concurrency}）...</div></div>`;
+            try {
+                // Call /api/test/concurrency endpoint
+                const data = await safeFetch('/api/test/concurrency', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({key, provider: provider || '', concurrency: concurrency})
+                });
+
+                if (data.error) {
+                    resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-red);">${data.error}</div></div>`;
+                    return;
+                }
+
+                // Build per-model results
+                let modelResultsHtml = '';
+                if (data.results && data.results.length > 0) {
+                    modelResultsHtml = `
+                        <div style="margin-top: 12px;">
+                            <label style="font-family: 'Fira Code', monospace; font-size: 12px; color: var(--text-ghost); text-transform: uppercase; letter-spacing: 1px;">模型并发测试结果</label>
+                            <div style="margin-top: 8px; display: grid; gap: 8px;">
+                                ${data.results.map(r => `
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--surface-2); border-radius: 8px;">
+                                        <span class="model-chip">${r.model}</span>
+                                        <span style="color: ${r.max_concurrency ? 'var(--neon-green)' : 'var(--neon-red)'}; font-weight: 600;">
+                                            ${r.max_concurrency ? r.max_concurrency + ' 并发' : '失败'}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>`;
+                }
+
+                resultEl.innerHTML = `
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-key">${data.key_masked}</span>
+                            <span class="badge badge-valid">测试完成</span>
+                        </div>
+                        <div class="result-grid">
+                            <div class="result-item"><label>服务商</label><value>${data.provider}</value></div>
+                            <div class="result-item"><label>可用模型</label><value>${data.total_models}</value></div>
+                            <div class="result-item"><label>已测试</label><value>${data.tested_models}</value></div>
+                        </div>
+                        ${modelResultsHtml}
+                    </div>`;
+                showToast('并发测试完成', 'success');
+            } catch (e) {
+                resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-red);">测试失败: ${e.message}</div></div>`;
+            }
+        }
+        function parseTokenError(errorMsg) {
+            if (!errorMsg) return { friendly: '未知错误', maxTokens: null };
+            const rangeMatch = errorMsg.match(/\[(\d+),\s*(\d+)\]/);
+            if (rangeMatch) {
+                const min = parseInt(rangeMatch[1]);
+                const max = parseInt(rangeMatch[2]);
+                return {
+                    friendly: 'Token数超出范围',
+                    maxTokens: max,
+                    suggestion: '有效范围: ' + min.toLocaleString() + ' - ' + max.toLocaleString()
+                };
+            }
+            if (errorMsg.includes('max_tokens')) {
+                return { friendly: 'Token数无效', maxTokens: null, suggestion: '请检查Token值是否正确' };
+            }
+            return { friendly: errorMsg, maxTokens: null };
+        }
+        async function runTokenTest() {
+            const key = document.getElementById('manual-key').value.trim();
+            if (!key) { showToast('请先输入 Key', 'error'); return; }
+            const provider = document.getElementById('manual-provider').value;
+            const resultEl = document.getElementById('manual-result');
+            resultEl.innerHTML = '<div class="result-card"><div style="color: var(--neon-cyan); display: flex; align-items: center; gap: 10px;"><div class="progress-spinner" style="width: 20px; height: 20px;"></div> 正在测试Token上限...</div></div>';
+            try {
+                const data = await safeFetch('/api/test/token', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({key, provider: provider || ''})
+                });
+                if (data.error) {
+                    resultEl.innerHTML = '<div class="result-card"><div style="color: var(--neon-red);">' + data.error + '</div></div>';
+                    return;
+                }
+                let modelResultsHtml = '';
+                let allMaxTokens = [];
+                if (data.results && data.results.length > 0) {
+                    data.results.forEach(r => {
+                        if (r.max_tokens) {
+                            allMaxTokens.push(r.max_tokens);
+                        }
+                    });
+                    modelResultsHtml = '<div style="margin-top: 12px;"><label style="font-family: Fira Code, monospace; font-size: 12px; color: var(--text-ghost); text-transform: uppercase; letter-spacing: 1px;">各模型Token上限</label><div style="margin-top: 8px; display: grid; gap: 8px;">' +
+                        data.results.map(r => {
+                            const statusHtml = r.success
+                                ? '<span style="color: var(--neon-green); font-weight: 600;">' + r.max_tokens.toLocaleString() + ' tokens</span>'
+                                : (r.max_tokens
+                                    ? '<span style="color: var(--neon-cyan); font-weight: 600;">' + r.max_tokens.toLocaleString() + ' tokens</span>'
+                                    : '<span style="color: var(--neon-red);">检测失败</span>');
+                            return '<div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--surface-2); border-radius: 8px;"><span class="model-chip">' + r.model + '</span><div style="text-align: right;">' + statusHtml + '</div></div>';
+                        }).join('') + '</div></div>';
+                }
+                let summaryHtml = '';
+                if (allMaxTokens.length > 0) {
+                    const minMax = Math.min(...allMaxTokens);
+                    summaryHtml = '<div style="margin-top: 12px; padding: 10px 14px; background: rgba(0, 232, 255, 0.1); border: 1px solid rgba(0, 232, 255, 0.3); border-radius: 8px;"><div style="display: flex; align-items: center; gap: 8px; color: var(--neon-cyan); font-size: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><span>此Key的最大输出Token上限: <strong>' + minMax.toLocaleString() + '</strong></span></div></div>';
+                }
+                resultEl.innerHTML = '<div class="result-card"><div class="result-header"><span class="result-key">' + data.key_masked + '</span><span class="badge badge-valid">测试完成</span></div><div class="result-grid"><div class="result-item"><label>服务商</label><value>' + data.provider + '</value></div><div class="result-item"><label>可用模型</label><value>' + data.total_models + '</value></div><div class="result-item"><label>已测试</label><value>' + data.tested_models + '</value></div></div>' + modelResultsHtml + summaryHtml + '</div>';
+                showToast('Token上限测试完成', 'success');
+            } catch (e) {
+                resultEl.innerHTML = '<div class="result-card"><div style="color: var(--neon-red);">测试失败: ' + e.message + '</div></div>';
+            }
+        }
+
+        async function checkBalance() {
+            const key = document.getElementById('manual-key').value.trim();
+            if (!key) { showToast('请先输入 Key', 'error'); return; }
+            const provider = document.getElementById('manual-provider').value;
+            const customUrl = document.getElementById('custom-base-url').value.trim();
+            const resultEl = document.getElementById('manual-result');
+            resultEl.innerHTML = '<div class="result-card"><div style="color: var(--neon-cyan); display: flex; align-items: center; gap: 10px;"><div class="progress-spinner" style="width: 20px; height: 20px;"></div> 查询余额中...</div></div>';
+            try {
+                const data = await safeFetch('/api/balance', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({key, provider: provider || '', custom_base_url: customUrl || null}) });
+                if (data.error && !data.supported) {
+                    resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-amber);">${data.error}</div></div>`;
+                } else if (data.error) {
+                    resultEl.innerHTML = `<div class="result-card">
+                        <div class="result-header"><span class="result-key">${data.key_masked || key.substring(0,6) + '...' + key.substring(key.length-4)}</span><span class="badge badge-error">查询失败</span></div>
+                        <div class="result-error"><div class="label">错误信息</div><div class="msg">${data.error}</div></div>
+                    </div>`;
+                } else {
+                    resultEl.innerHTML = `<div class="result-card">
+                        <div class="result-header"><span class="result-key">${data.key_masked}</span><span class="badge badge-valid">查询成功</span></div>
+                        <div class="result-grid">
+                            <div class="result-item"><label>服务商</label><value>${data.provider}</value></div>
+                            <div class="result-item"><label>余额</label><value style="color: var(--neon-green); font-weight: 600;">${data.balance} ${data.currency}</value></div>
+                        </div>
+                    </div>`;
+                    showToast(`余额: ${data.balance} ${data.currency}`, 'success');
+                }
+            } catch (e) {
+                resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-red);">查询失败: ${e.message}</div></div>`;
+            }
+        }
+        document.getElementById('manual-key')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkManualKey(); });
+
+        function toggleLogs() { document.getElementById('logs-container').classList.toggle('collapsed'); }
+
+        async function loadLogs() {
+            const content = document.getElementById('logs-content');
+            content.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-dim);">加载中...</div>';
+            try {
+                const data = await safeFetch('/api/logs?lines=200');
+                if (data.logs.length === 0) { content.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-ghost);">暂无日志</div>'; return; }
+                content.innerHTML = data.logs.reverse().map(line => {
+                    try {
+                        const regex = new RegExp('\\[(.*?)\\]\\s*\\[(.*?)\\]\\s*\\[(.*?)\\]\\s*(.*?)\\s*->\\s*(.*?)(?:\\s*\\((.*?)\\))?$');
+                        const m = line.match(regex);
+                        if (m && m.length >= 6) {
+                            const [_, ts, act, prov, key, st, detail] = m;
+                            const ac = act.trim().toLowerCase();
+                            const sc = st.trim().toLowerCase() === 'valid' ? 'valid' : st.trim().toLowerCase() === 'invalid' ? 'invalid' : st.trim().toLowerCase() === 'ok' ? 'valid' : 'error';
+                            return `<div class="log-entry"><span class="log-ts">${ts}</span> <span class="log-act ${ac}">${act.trim()}</span> <span class="log-prov">[${prov.trim()}]</span> <span class="log-key">${key.trim()}</span> -> <span class="log-st ${sc}">${st.trim()}</span> ${detail ? `<span style="color: var(--text-ghost);">(${detail})</span>` : ''}</div>`;
+                        }
+                    } catch (e) {}
+                    return `<div class="log-entry">${line}</div>`;
+                }).join('');
+            } catch (e) {
+                content.innerHTML = `<div style="color: var(--neon-red); padding: 20px;">加载失败: ${e.message}</div>`;
+            }
+        }
+
+        function showProgress(title, sub) {
+            document.getElementById('progress-title').textContent = title;
+            document.getElementById('progress-subtitle').textContent = sub;
+            document.getElementById('progress-bar').style.width = '0%';
+            document.getElementById('progress-current').textContent = '0';
+            document.getElementById('progress-total').textContent = '0';
+            document.getElementById('progress-percent').textContent = '0%';
+            document.getElementById('progress-overlay').classList.add('active');
+        }
+
+        function updateProgress(cur, total) {
+            const pct = total > 0 ? Math.round((cur / total) * 100) : 0;
+            document.getElementById('progress-bar').style.width = `${pct}%`;
+            document.getElementById('progress-current').textContent = cur;
+            document.getElementById('progress-total').textContent = total;
+            document.getElementById('progress-percent').textContent = `${pct}%`;
+        }
+
+        function hideProgress() { document.getElementById('progress-overlay').classList.remove('active'); }
+
+        async function runCheck() {
+            const provider = document.getElementById('provider-filter').value;
+            showProgress('检测中', '正在调用 API 验证...');
+            const pi = setInterval(async () => { try { const d = await safeFetch('/api/progress'); if (d.active) updateProgress(d.current, d.total); } catch (e) {} }, 200);
+            try {
+                const data = await safeFetch('/api/check', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({provider: provider || null}) });
+                clearInterval(pi); hideProgress();
+                if (data.summary) {
+                    showToast(`检测完成: ${data.summary.valid.count} 有效, ${data.summary.invalid.count} 无效`, 'success');
+                    document.querySelectorAll('.stat-card').forEach((c, i) => { setTimeout(() => { c.style.animation = 'flash 0.6s ease'; setTimeout(() => c.style.animation = '', 600); }, i * 100); });
+                }
+                loadStats(); loadKeys();
+            } catch (e) { clearInterval(pi); hideProgress(); showToast('检测失败: ' + e.message, 'error'); }
+        }
+
+        async function runTokenTestBatch() {
+            const provider = document.getElementById('provider-filter').value;
+            showProgress('Token检测中', '正在逐模型测试Token上限...', 'token');
+            const pi = setInterval(async () => { try { const d = await safeFetch('/api/progress'); if (d.active) updateProgress(d.current, d.total); } catch (e) {} }, 200);
+            try {
+                const data = await safeFetch('/api/test/token/batch', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({provider: provider || null}) });
+                clearInterval(pi); hideProgress();
+                showToast(`Token检测完成: ${data.total_tested} 个Key`, 'success');
+                loadStats(); loadKeys();
+            } catch (e) { clearInterval(pi); hideProgress(); showToast('Token检测失败: ' + e.message, 'error'); }
+        }
+
+        async function runConcurrencyTestBatch() {
+            const provider = document.getElementById('provider-filter').value;
+            showProgress('并发测试中', '正在逐模型测试并发能力...');
+            const pi = setInterval(async () => { try { const d = await safeFetch('/api/progress'); if (d.active) updateProgress(d.current, d.total); } catch (e) {} }, 200);
+            try {
+                const data = await safeFetch('/api/test/concurrency/batch', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({provider: provider || null, concurrency: 10}) });
+                clearInterval(pi); hideProgress();
+                showToast(`并发测试完成: ${data.total_tested} 个Key`, 'success');
+                loadStats(); loadKeys();
+            } catch (e) { clearInterval(pi); hideProgress(); showToast('并发测试失败: ' + e.message, 'error'); }
+        }
+
+        async function loadKeys(page = currentPage) {
+            const provider = document.getElementById('provider-filter').value;
+            let params = new URLSearchParams({page, page_size: pageSize});
+            if (provider) params.set('provider', provider);
+            if (currentTab !== 'all') params.set('status', currentTab);
+            const tbody = document.getElementById('keys-table');
+            tbody.innerHTML = Array(5).fill('').map(() => `<tr class="skel-row"><td><div class="skeleton skel-bar" style="width: 180px;"></div></td><td><div class="skeleton skel-chip"></div></td><td><div class="skeleton skel-chip"></div></td><td><div class="skeleton skel-bar" style="width: 100px;"></div></td><td><div class="skeleton skel-bar" style="width: 80px;"></div></td><td><div class="skeleton skel-bar" style="width: 50px;"></div></td><td><div class="skeleton skel-chip" style="width: 30px;"></div></td><td><div class="skeleton skel-bar" style="width: 60px;"></div></td></tr>`).join('');
+            const data = await safeFetch(`/api/keys?${params}`);
+            allKeys = data.keys;
+            totalCount = data.total;
+            currentPage = data.page;
+            totalPages = data.total_pages;
+            renderKeys();
+        }
+
+        function showToast(msg, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.className = `toast ${type} show`;
+            const icons = { success: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>', error: '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>', info: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>' };
+            toast.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icons[type]}</svg><span>${msg}</span>`;
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        async function loadProxy() {
+            try {
+                const data = await safeFetch('/api/proxy');
+                const el = document.getElementById('proxy-status');
+                if (data.proxy) {
+                    el.innerHTML = `<div class="status-dot"></div><span>${data.proxy}</span>`;
+                } else {
+                    el.innerHTML = `<div class="status-dot offline"></div><span>无代理</span>`;
+                }
+            } catch (e) {
+                const el = document.getElementById('proxy-status');
+                el.innerHTML = `<div class="status-dot offline"></div><span>检测失败</span>`;
+            }
+        }
+        async function loadProviders() {
+            try {
+                const data = await safeFetch('/api/providers');
+                const grid = document.getElementById('providers-grid');
+                document.getElementById('providers-card-title').textContent = `支持的服务商 (${data.total})`;
+
+                // Load provider website details
+                try {
+                    const detailData = await safeFetch('/api/providers/detail');
+                    if (detailData.providers) {
+                        detailData.providers.forEach(p => { PROVIDER_WEBSITES_MAP[p.name] = p; });
+                    }
+                } catch (e) { console.error('Failed to load provider details:', e); }
+
+                // Group by prefix presence
+                const withPrefix = data.providers.filter(p => p.prefix !== '-');
+                const withoutPrefix = data.providers.filter(p => p.prefix === '-');
+
+                const renderChips = (list) => list.map(p =>
+                    `<span class="provider-chip-item ai" title="${escAttr(p.base_url || '')}" data-provider="${escAttr(p.name)}" onclick="showProviderDetail('${escAttr(p.name)}')" style="cursor: pointer;">${esc(p.display_name || p.name)}${p.prefix !== '-' ? ' <b>' + esc(p.prefix) + '</b>' : ''}</span>`
+                ).join('');
+
+                grid.innerHTML = `
+                    <div class="provider-cat">
+                        <div class="provider-cat-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
+                            唯一前缀 (${withPrefix.length})
+                        </div>
+                        <div class="provider-chips">${renderChips(withPrefix)}</div>
+                    </div>
+                    <div class="provider-cat">
+                        <div class="provider-cat-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>
+                            共享前缀 / 无固定前缀 (${withoutPrefix.length})
+                        </div>
+                        <div class="provider-chips">${renderChips(withoutPrefix)}</div>
+                    </div>
+                `;
+
+                // Populate manual check dropdown (custom select)
+                const dropdown = document.getElementById('provider-dropdown');
+                const hiddenInput = document.getElementById('manual-provider');
+                const currentVal = hiddenInput ? hiddenInput.value : '';
+                
+                let dropdownHtml = '<div class="custom-select-option' + (currentVal === '' ? ' selected' : '') + '" data-value="" onclick="selectCustomOption(\'provider-select\', \'\', \'自动识别\')">自动识别</div>';
+                data.providers.forEach(p => {
+                    const selected = p.name === currentVal ? ' selected' : '';
+                    dropdownHtml += `<div class="custom-select-option${selected}" data-value="${p.name}" onclick="selectCustomOption('provider-select', '${p.name}', '${esc(p.display_name || p.name)}')">${esc(p.display_name || p.name)}</div>`;
+                    PROVIDERS_MAP[p.name] = p;
+                    DISPLAY_NAMES[p.name] = p.display_name || p.name;
+                });
+                if (dropdown) dropdown.innerHTML = dropdownHtml;
+                if (hiddenInput) hiddenInput.value = currentVal;
+                // Update label
+                const labelEl = document.getElementById('provider-label');
+                if (labelEl && currentVal) {
+                    labelEl.textContent = DISPLAY_NAMES[currentVal] || currentVal;
+                }
+            } catch (e) {
+                console.error('Failed to load providers:', e);
+            }
+        }
+        function showModelsModal(name, models) {
+            document.getElementById('models-modal-title').textContent = `${name} - 模型 (${models.length})`;
+            document.getElementById('models-list').innerHTML = models.map((m, i) => `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; transition: all 0.2s; animation: fadeInRow 0.2s ease ${i * 0.02}s both;" onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background=''"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg><span style="flex: 1; font-family: 'Fira Code', monospace; font-size: 12px;">${m}</span><button onclick="copyKey('${m}')" style="background: none; border: 1px solid var(--border-subtle); color: var(--text-dim); padding: 4px; border-radius: 4px; cursor: pointer; display: flex; opacity: 0.5;" onmouseover="this.style.opacity=1; this.style.borderColor='var(--neon-cyan)'" onmouseout="this.style.opacity=0.5; this.style.borderColor='var(--border-subtle)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>`).join('');
+            document.getElementById('models-modal').classList.add('show');
+        }
+
+        function closeModelsModal() { document.getElementById('models-modal').classList.remove('show'); }
+
+        { const el = document.getElementById('provider-filter'); if (el) el.addEventListener('change', () => loadKeys(1)); }
+        { const el = document.getElementById('export-modal'); if (el) el.addEventListener('click', (e) => { if (e.target === el) closeModal(); }); }
+        { const el = document.getElementById('models-modal'); if (el) el.addEventListener('click', (e) => { if (e.target === el) closeModelsModal(); }); }
+
+        loadStats(); loadKeys(); loadProxy(); loadLogs(); loadProviders();
+
+        // Batch Check Functions
+        async function runBatchCheck() {
+            const textarea = document.getElementById('batch-keys-input');
+            const resultsEl = document.getElementById('batch-results');
+            const hintEl = document.getElementById('batch-count-hint');
+            const raw = textarea.value.trim();
+            if (!raw) { showToast('请输入要检测的 Key', 'error'); return; }
+            const keys = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            if (keys.length === 0) { showToast('未找到有效的 Key', 'error'); return; }
+            hintEl.textContent = `检测中 (${keys.length} 个)...`;
+            resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--neon-cyan);"><div class="progress-spinner" style="width: 24px; height: 24px; margin: 0 auto 8px;"></div>正在检测 ' + keys.length + ' 个 Key...</div>';
+
+            try {
+                const customUrl = document.getElementById('batch-custom-url')?.value.trim();
+                const data = await safeFetch('/api/check/batch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ keys: keys, custom_base_url: customUrl || null })
+                });
+                showBatchResults(data, hintEl);
+            } catch (e) {
+                resultsEl.innerHTML = `<div style="padding: 16px; color: var(--neon-red);">检测失败: ${e.message}</div>`;
+                hintEl.textContent = '';
+            }
+        }
+
+        function showBatchResults(data, hintEl) {
+            const resultsEl = document.getElementById('batch-results');
+            const results = data.results || [];
+            const validCount = results.filter(r => r.status === 'valid').length;
+            const invalidCount = results.filter(r => r.status === 'invalid').length;
+            const errorCount = results.filter(r => r.status === 'error').length;
+            hintEl.textContent = `${results.length} 个完成: ${validCount} 有效, ${invalidCount} 无效, ${errorCount} 错误`;
+
+            if (results.length === 0) {
+                resultsEl.innerHTML = '<div style="padding: 16px; color: var(--text-dim); text-align: center;">无检测结果</div>';
+                return;
+            }
+
+            resultsEl.innerHTML = `<div class="batch-summary"><span class="valid">✓ ${validCount} 有效</span><span class="invalid">✗ ${invalidCount} 无效</span><span class="error">⚠ ${errorCount} 错误</span></div>` + results.map((r, i) => {
+                const badgeClass = r.status === 'valid' ? 'badge-valid' : r.status === 'invalid' ? 'badge-invalid' : 'badge-error';
+                const badgeText = STATUS_MAP[r.status] || r.status;
+                const te = translateError(r.error || '');
+                const teType = translateErrorType(r.error_type || '');
+                return `<div class="batch-result-item" style="animation-delay: ${i * 0.03}s">
+                    <span class="batch-result-key">${r.key_masked || r.key || '-'}</span>
+                    <span class="badge ${badgeClass}" style="padding: 3px 10px; font-size: 11px;">${badgeText}</span>
+                    ${teType ? `<span class="batch-result-error" title="${teType}" style="color: var(--neon-amber);">${teType}</span>` : ''}
+                    ${r.error ? `<span class="batch-result-error" title="${r.error}">${te || r.error}</span>` : ''}
+                </div>`;
+            }).join('');
+
+            loadStats();
+            loadKeys();
+        }
+
+        // Provider Detail Modal
+
+        function showProviderDetail(providerName) {
+            const info = PROVIDER_WEBSITES_MAP[providerName];
+            const body = document.getElementById('provider-detail-body');
+            const title = document.getElementById('provider-detail-title');
+
+            if (!info) {
+                // Fallback: use DISPLAY_NAMES
+                const dn = DISPLAY_NAMES[providerName] || providerName;
+                title.textContent = dn;
+                body.innerHTML = `
+                    <div class="provider-detail-hero">
+                        <div class="prov-name">${dn}</div>
+                        <div class="prov-internal">${providerName}</div>
+                    </div>
+                    <div class="provider-detail-info">
+                        <div class="info-row"><span class="info-label">内部名称</span><span class="info-value">${providerName}</span></div>
+                        <div class="info-row"><span class="info-label">显示名称</span><span class="info-value">${dn}</span></div>
+                    </div>`;
+                document.getElementById('provider-detail-modal').classList.add('show');
+                return;
+            }
+
+            title.textContent = info.website_name || info.display_name;
+
+            const websiteHtml = info.website_url ? `
+                <a class="provider-detail-link" href="${info.website_url}" target="_blank" rel="noopener">
+                    <div class="link-icon website">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <div class="link-text">
+                        <div class="link-label">官方网站</div>
+                        <div class="link-url">${info.website_url}</div>
+                    </div>
+                    <svg class="link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                </a>` : '<div style="padding: 12px 18px; color: var(--text-ghost); font-size: 13px;">暂无官网链接</div>';
+
+            const docsHtml = info.docs_url ? `
+                <a class="provider-detail-link" href="${info.docs_url}" target="_blank" rel="noopener">
+                    <div class="link-icon docs">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <div class="link-text">
+                        <div class="link-label">API 文档</div>
+                        <div class="link-url">${info.docs_url}</div>
+                    </div>
+                    <svg class="link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                </a>` : '<div style="padding: 12px 18px; color: var(--text-ghost); font-size: 13px;">暂无文档链接</div>';
+
+            body.innerHTML = `
+                <div class="provider-detail-hero">
+                    <div class="prov-name">${info.website_name || info.display_name}</div>
+                    <div class="prov-internal">${info.name}</div>
+                </div>
+                <div class="provider-detail-links">
+                    ${websiteHtml}
+                    ${docsHtml}
+                </div>
+                <div class="provider-detail-info">
+                    <div class="info-row"><span class="info-label">内部名称</span><span class="info-value">${info.name}</span></div>
+                    <div class="info-row"><span class="info-label">显示名称</span><span class="info-value">${info.display_name}</span></div>
+                    ${info.prefix && info.prefix !== '-' ? `<div class="info-row"><span class="info-label">Key 前缀</span><span class="info-value" style="color: var(--neon-cyan);">${info.prefix}</span></div>` : ''}
+                    ${info.base_url ? `<div class="info-row"><span class="info-label">Base URL</span><span class="info-value" style="word-break: break-all; font-size: 11px;">${info.base_url}</span></div>` : ''}
+                </div>`;
+
+            document.getElementById('provider-detail-modal').classList.add('show');
+        }
+
+        function closeProviderDetailModal() {
+            document.getElementById('provider-detail-modal').classList.remove('show');
+        }
+
+        { const el = document.getElementById('provider-detail-modal'); if (el) el.addEventListener('click', (e) => { if (e.target === el) closeProviderDetailModal(); }); }
+
+
+        // Signature Report
+        async function showSignatureReport() {
+            const body = document.getElementById('signature-report-body');
+            body.innerHTML = '<div class="sig-no-data"><div class="progress-spinner" style="width: 32px; height: 32px; margin: 0 auto 16px;"></div>加载签名验证报告...</div>';
+            document.getElementById('signature-report-modal').classList.add('show');
+
+            try {
+                const report = await safeFetch('/api/signature-report');
+                renderSignatureReport(report);
+            } catch (e) {
+                body.innerHTML = `<div class="sig-no-data" style="color: var(--neon-red);">加载失败: ${e.message}</div>`;
+            }
+        }
+
+        function closeSignatureReportModal() {
+            document.getElementById('signature-report-modal').classList.remove('show');
+        }
+
+        { const el = document.getElementById('signature-report-modal'); if (el) el.addEventListener('click', (e) => { if (e.target === el) closeSignatureReportModal(); }); }
+
+        function renderSignatureReport(report) {
+            const body = document.getElementById('signature-report-body');
+            const summary = report.summary || {};
+            const results = report.results || [];
+
+            const generatedAt = report.generated_at ? new Date(report.generated_at).toLocaleString('zh-CN') : '未知';
+
+            // Summary cards
+            const summaryHtml = `
+                <div class="sig-report-container">
+                    <div style="font-family: 'Fira Code', monospace; font-size: 12px; color: var(--text-ghost); margin-bottom: 16px;">生成时间: ${generatedAt}</div>
+                    <div class="sig-summary-grid">
+                        <div class="sig-summary-card cyan">
+                            <div class="sig-val">${summary.total_providers || 0}</div>
+                            <div class="sig-label">总提供商</div>
+                        </div>
+                        <div class="sig-summary-card green">
+                            <div class="sig-val">${summary.successful_tests || 0}</div>
+                            <div class="sig-label">成功测试</div>
+                        </div>
+                        <div class="sig-summary-card blue">
+                            <div class="sig-val">${summary.full_match || 0}</div>
+                            <div class="sig-label">完全匹配</div>
+                        </div>
+                        <div class="sig-summary-card amber">
+                            <div class="sig-val">${summary.partial_match || 0}</div>
+                            <div class="sig-label">部分匹配</div>
+                        </div>
+                        <div class="sig-summary-card red">
+                            <div class="sig-val">${summary.no_match || 0}</div>
+                            <div class="sig-label">无匹配</div>
+                        </div>
+                        <div class="sig-summary-card magenta">
+                            <div class="sig-val">${summary.has_conflicts || 0}</div>
+                            <div class="sig-label">冲突数</div>
+                        </div>
+                        <div class="sig-summary-card purple">
+                            <div class="sig-val">${summary.has_new_signatures || 0}</div>
+                            <div class="sig-label">新发现签名</div>
+                        </div>
+                    </div>`;
+
+            // Results table
+            let tableHtml = `
+                    <div class="sig-detail-section">
+                        <div class="sig-section-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                            提供商详情
+                            <span class="count-badge">${results.length}</span>
+                        </div>
+                        <div class="sig-detail-content">
+                            <table class="sig-table">
+                                <thead><tr>
+                                    <th>提供商</th>
+                                    <th>状态</th>
+                                    <th>匹配率</th>
+                                    <th>已匹配</th>
+                                    <th>缺失</th>
+                                    <th>新签名</th>
+                                    <th>冲突</th>
+                                </tr></thead>
+                                <tbody>`;
+
+            results.forEach(r => {
+                const es = r.test_result || {};
+                const unique = r.unique_signatures || {};
+                const errorSig = r.error_signatures || {};
+                const newSigs = r.new_signatures || [];
+                const conflicts = r.conflicts || [];
+
+                // Determine status
+                let statusClass = 'ok';
+                let statusText = 'OK';
+                if (es.error === 'timeout') { statusClass = 'timeout'; statusText = '超时'; }
+                else if (es.error || !es.valid) { statusClass = 'error'; statusText = es.error || '错误'; }
+
+                // Match rate
+                const rate = unique.match_rate != null ? unique.match_rate : 0;
+                const ratePct = Math.round(rate * 100);
+                const rateClass = rate >= 0.8 ? 'high' : rate >= 0.3 ? 'mid' : 'low';
+
+                // Tags
+                const matchedTags = (unique.matched || []).map(s => `<span class="sig-tag matched">${s}</span>`).join('');
+                const missingTags = (unique.missing || []).map(s => `<span class="sig-tag missing">${s}</span>`).join('');
+                const newTags = newSigs.slice(0, 5).map(s => `<span class="sig-tag new-sig">${s}</span>`).join('') + (newSigs.length > 5 ? `<span class="sig-tag new-sig">+${newSigs.length - 5}</span>` : '');
+                const conflictTags = conflicts.map(c => `<span class="sig-tag conflict">${c.signature} → ${c.other_provider}</span>`).join('');
+
+                tableHtml += `
+                    <tr>
+                        <td><span style="font-weight: 600; color: var(--text-primary);">${r.provider}</span></td>
+                        <td><span class="sig-status-badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <div class="sig-match-rate">
+                                <span style="font-family: 'Fira Code', monospace; font-size: 12px; color: ${rateClass === 'high' ? 'var(--neon-green)' : rateClass === 'mid' ? 'var(--neon-amber)' : 'var(--neon-red)'};">${ratePct}%</span>
+                                <div class="sig-match-bar"><div class="sig-match-bar-fill ${rateClass}" style="width: ${ratePct}%;"></div></div>
+                            </div>
+                        </td>
+                        <td>${matchedTags || '<span style="color: var(--text-ghost);">-</span>'}</td>
+                        <td>${missingTags || '<span style="color: var(--text-ghost);">-</span>'}</td>
+                        <td>${newTags || '<span style="color: var(--text-ghost);">-</span>'}</td>
+                        <td>${conflictTags || '<span style="color: var(--text-ghost);">-</span>'}</td>
+                    </tr>`;
+            });
+
+            tableHtml += '</tbody></table></div></div>';
+
+            // Missing signatures section
+            let missingSigs = [];
+            results.forEach(r => {
+                (r.unique_signatures?.missing || []).forEach(s => {
+                    if (!missingSigs.find(m => m.sig === s && m.provider === r.provider)) {
+                        missingSigs.push({ provider: r.provider, sig: s });
+                    }
+                });
+            });
+
+            let missingHtml = '';
+            if (missingSigs.length > 0) {
+                missingHtml = `
+                    <div class="sig-detail-section sig-report-container">
+                        <div class="sig-section-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--neon-red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                            缺失签名
+                            <span class="count-badge" style="background: var(--glow-red); color: var(--neon-red);">${missingSigs.length}</span>
+                        </div>
+                        <div class="sig-detail-content">
+                            ${missingSigs.map(m => `<div class="sig-conflict-item"><span style="font-weight: 600; min-width: 120px;">${m.provider}</span><span class="sig-tag missing">${m.sig}</span></div>`).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            // Conflicts section
+            let allConflicts = [];
+            results.forEach(r => {
+                (r.conflicts || []).forEach(c => {
+                    if (!allConflicts.find(x => x.signature === c.signature && x.provider === r.provider)) {
+                        allConflicts.push({ provider: r.provider, signature: c.signature, other: c.other_provider });
+                    }
+                });
+            });
+
+            let conflictsHtml = '';
+            if (allConflicts.length > 0) {
+                conflictsHtml = `
+                    <div class="sig-detail-section sig-report-container">
+                        <div class="sig-section-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--neon-amber)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            签名冲突
+                            <span class="count-badge" style="background: rgba(255, 187, 51, 0.1); color: var(--neon-amber);">${allConflicts.length}</span>
+                        </div>
+                        <div class="sig-detail-content">
+                            ${allConflicts.map(c => `<div class="sig-conflict-item"><span style="font-weight: 600; min-width: 120px;">${c.provider}</span><span class="sig-tag conflict">${c.signature}</span><span style="color: var(--text-ghost);">与</span><span style="font-weight: 600;">${c.other}</span><span style="color: var(--text-ghost);">冲突</span></div>`).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            // Response body details
+            let detailsHtml = `
+                <div class="sig-detail-section sig-report-container">
+                    <div class="sig-section-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        测试响应详情
+                        <span class="count-badge">${results.length}</span>
+                    </div>
+                    <div class="sig-detail-content">
+                        ${results.map(r => {
+                            const es = r.test_result || {};
+                            const body = es.response_body || '(空)';
+                            const sc = es.error === 'timeout' ? 'timeout' : (es.valid ? 'ok' : 'error');
+                            return `<div class="sig-conflict-item" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+                                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                                    <span style="font-weight: 600; min-width: 120px;">${r.provider}</span>
+                                    <span class="sig-status-badge ${sc}">${es.valid ? '200 OK' : (es.status_code || es.error || 'N/A')}</span>
+                                    <span style="color: var(--text-ghost); font-family: 'Fira Code', monospace; font-size: 11px;">${es.latency_ms ? Math.round(es.latency_ms) + 'ms' : '-'}</span>
+                                </div>
+                                <div class="sig-response-body">${body.substring(0, 500)}</div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+
+            body.innerHTML = summaryHtml + tableHtml + missingHtml + conflictsHtml + detailsHtml + '</div>';
+        }
+
+    </script>
+</body>
+</html>

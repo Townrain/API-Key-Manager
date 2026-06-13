@@ -1,0 +1,38 @@
+{
+    "VALIDATION_MISSING_KEY": "API 密钥为必填项",
+    "VALIDATION_INVALID_FORMAT": "API 密钥格式无效",
+    "VALIDATION_PROVIDER_UNKNOWN": "无法检测提供商，请手动选择",
+    "VALIDATION_FILE_NOT_FOUND": "文件未找到",
+    "VALIDATION_FILE_FORMAT": "不支持的文件格式",
+    "STORAGE_READ_ERROR": "读取存储失败",
+    "STORAGE_WRITE_ERROR": "写入存储失败",
+    "STORAGE_ENCRYPTION_ERROR": "加密/解密操作失败",
+    "STORAGE_MIGRATION_ERROR": "数据迁移失败",
+    "PROVIDER_CHECK_FAILED": "提供商密钥检查失败",
+    "PROVIDER_NOT_SUPPORTED": "不支持该提供商",
+    "PROVIDER_RATE_LIMITED": "提供商请求频率超限",
+    "SYSTEM_INTERNAL_ERROR": "服务器内部错误",
+    "SYSTEM_PROGRESS_CONFLICT": "另一个操作正在进行中",
+    "AUTH_REQUIRED": "需要身份验证",
+
+    "SUCCESS_KEY_ADDED": "密钥添加成功",
+    "SUCCESS_KEY_DELETED": "密钥删除成功",
+    "SUCCESS_KEY_UPDATED": "密钥更新成功",
+    "SUCCESS_IMPORT_COMPLETE": "导入完成：添加了 {count} 个密钥",
+    "SUCCESS_EXPORT_COMPLETE": "导出完成：导出了 {count} 个密钥",
+
+    "STATUS_ACTIVE": "活跃",
+    "STATUS_INACTIVE": "未激活",
+    "STATUS_CHECKING": "检查中",
+    "STATUS_VALID": "有效",
+    "STATUS_INVALID": "无效",
+    "STATUS_UNKNOWN": "未知",
+
+    "LOG_KEY_CHECK_START": "开始检查提供商 {provider} 的密钥",
+    "LOG_KEY_CHECK_COMPLETE": "提供商 {provider} 密钥检查完成：{status}",
+    "LOG_IMPORT_STARTED": "正在从 {filename} 导入密钥",
+    "LOG_IMPORT_COMPLETE": "导入完成：{new} 个新增，{dupes} 个重复",
+    "LOG_EXPORT_STARTED": "正在导出 {count} 个密钥",
+    "LOG_SERVER_STARTED": "服务器已在 {host}:{port} 上启动",
+    "LOG_SERVER_STOPPED": "服务器已停止"
+}

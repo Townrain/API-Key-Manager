@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+cherry-studio/
+data/cache/
+data/logs/
+data/input/
+*.log
+*.jsonl
+
+# 敏感数据（包含 API 密钥）
+data/keys.json
+data/check_results.json
+data/test_results.json
+data/signature_verification_report.json
+config.yaml
