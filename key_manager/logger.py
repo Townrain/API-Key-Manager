@@ -181,8 +181,8 @@ class ProjectLogger:
             for line in f:
                 try:
                     entries.append(json.loads(line.strip()))
-                except:
-                    pass
+                except (json.JSONDecodeError, ValueError):
+                    pass  # Skip malformed lines
         return entries[-limit:]
 
     def get_log_files(self) -> list:

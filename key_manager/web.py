@@ -35,7 +35,7 @@ from key_manager.providers import (
     KEY_PREFIX_MAP,
 )
 from key_manager.providers.models_registry import PROVIDER_MODELS
-from key_manager.providers.base import simplify_error
+from key_manager.providers.base import simplify_error, CheckResult
 from key_manager.detector import detect_by_prefix, detect_provider
 from key_manager.logger import project_logger
 from key_manager.i18n import get_lang_from_header, set_lang, t
@@ -110,7 +110,7 @@ app = FastAPI(
     description="Manage and validate API keys for 37+ AI providers. "
     "Import, check validity, test token limits and concurrency, "
     "query balances, and export working keys.",
-    version="2.2.0",
+    version="3.0.0",
     openapi_tags=[
         {"name": "Keys", "description": "Key management operations"},
         {"name": "Check", "description": "Key validity checking"},
@@ -122,6 +122,16 @@ app = FastAPI(
         {"name": "Logs", "description": "Operation logs"},
         {"name": "Progress", "description": "Long-running task progress"},
     ],
+)
+
+# CORS middleware
+from fastapi.middleware.cors import CORSMiddleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,  # Must be False when allow_origins is "*" (CORS spec)
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Initialize debug system
@@ -522,7 +532,6 @@ async def api_list_keys(
     key_infos: list[KeyInfo] = []
     for key, info in paged:
         key_infos.append(KeyInfo(
-            key=key,
             key_masked=info.get("key_masked", mask_key(key)),
             provider=info.get("provider", "unknown"),
             status=info.get("status", "unknown"),
@@ -560,7 +569,7 @@ async def api_export_keys(
             continue
         tests = info.get("tests", {})
         exported.append(KeyExportItem(
-            key=key,
+            key_masked=info.get("key_masked", mask_key(key)),
             provider=info.get("provider", "unknown"),
             max_tokens=tests.get("max_tokens"),
             max_concurrency=tests.get("max_concurrency"),
@@ -678,8 +687,75 @@ async def api_check_single(body: CheckSingleRequest):
                     message=t("VALIDATION_PROVIDER_UNKNOWN"),
                 )
 
-            result = await provider_obj.check(client, key)
-
+            # If provider was auto-detected, the detection already validated the key
+            # Only call check() if provider was manually specified
+            model_name = body.model
+            from key_manager.providers.base import CheckResult
+            if body.provider:
+                if model_name:
+                    # Test specific model only
+                    import time as _time
+                    import re as _re
+                    headers = provider_obj.build_headers(key)
+                    headers["Content-Type"] = "application/json"
+                    # Extract version path from check_endpoint
+                    version_match = _re.match(r'(/v\d+)', provider_obj.check_endpoint or '')
+                    version_prefix = version_match.group(1) if version_match else ''
+                    chat_url = f"{provider_obj.get_base_url()}{version_prefix}/chat/completions"
+                    start = _time.monotonic()
+                    try:
+                        resp = await client.post(
+                            chat_url,
+                            headers=headers,
+                            json={"model": model_name, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
+                        )
+                        latency = (_time.monotonic() - start) * 1000
+                        if resp.status_code == 200:
+                            result = CheckResult(valid=True, status_code=200, latency_ms=latency, error=None)
+                        else:
+                            error_msg = f"status {resp.status_code}"
+                            try:
+                                error_msg = resp.json().get("error", {}).get("message", error_msg)
+                            except:
+                                pass
+                            result = CheckResult(valid=False, status_code=resp.status_code, latency_ms=latency, error=error_msg)
+                    except Exception as e:
+                        result = CheckResult(valid=False, status_code=None, latency_ms=(_time.monotonic() - start) * 1000, error=str(e))
+                else:
+                    result = await provider_obj.check(client, key)
+            else:
+                # Provider was auto-detected, still need to validate the key
+                if model_name:
+                    # Test specific model only
+                    import time as _time
+                    import re as _re
+                    headers = provider_obj.build_headers(key)
+                    headers["Content-Type"] = "application/json"
+                    # Extract version path from check_endpoint
+                    version_match = _re.match(r'(/v\d+)', provider_obj.check_endpoint or '')
+                    version_prefix = version_match.group(1) if version_match else ''
+                    chat_url = f"{provider_obj.get_base_url()}{version_prefix}/chat/completions"
+                    start = _time.monotonic()
+                    try:
+                        resp = await client.post(
+                            chat_url,
+                            headers=headers,
+                            json={"model": model_name, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
+                        )
+                        latency = (_time.monotonic() - start) * 1000
+                        if resp.status_code == 200:
+                            result = CheckResult(valid=True, status_code=200, latency_ms=latency, error=None)
+                        else:
+                            error_msg = f"status {resp.status_code}"
+                            try:
+                                error_msg = resp.json().get("error", {}).get("message", error_msg)
+                            except:
+                                pass
+                            result = CheckResult(valid=False, status_code=resp.status_code, latency_ms=latency, error=error_msg)
+                    except Exception as e:
+                        result = CheckResult(valid=False, status_code=None, latency_ms=(_time.monotonic() - start) * 1000, error=str(e))
+                else:
+                    result = await provider_obj.check(client, key)
             # Attempt balance query
             balance = None
             if result.valid and hasattr(provider_obj, "get_balance"):
@@ -1175,8 +1251,18 @@ async def api_models(
         await detector.load()
         if type_filter == "vision":
             filtered = [m for m in models if detector.is_vision_model(m)]
-        elif type_filter == "tool":
+        elif type_filter in ("tool", "tooluse"):
             filtered = [m for m in models if detector.is_tool_model(m)]
+        elif type_filter == "websearch":
+            filtered = [m for m in models if detector.is_websearch_model(m)]
+        elif type_filter == "reasoning":
+            filtered = [m for m in models if detector.is_reasoning_model(m)]
+        elif type_filter == "embedding":
+            filtered = [m for m in models if detector.is_embedding_model(m)]
+        elif type_filter == "rerank":
+            filtered = [m for m in models if detector.is_rerank_model(m)]
+        elif type_filter == "free":
+            filtered = [m for m in models if detector.is_free_model(m)]
     except Exception:
         pass
 
@@ -1188,6 +1274,27 @@ async def api_models(
         source=source,
     )
 
+
+@app.get("/api/models/capabilities", tags=["Models"])
+async def api_models_capabilities(
+    models: str = Query(..., description="Comma-separated model IDs"),
+):
+    """Get capabilities for a list of model IDs."""
+    model_list = [m.strip() for m in models.split(",") if m.strip()]
+    if not model_list:
+        return {"capabilities": {}}
+    
+    try:
+        from key_manager.model_capabilities import detector
+        await detector.load()
+        
+        result = {}
+        for model_id in model_list:
+            result[model_id] = detector.get_model_capabilities(model_id)
+        
+        return {"capabilities": result}
+    except Exception as e:
+        return {"capabilities": {}, "error": str(e)}
 
 @app.post("/api/models/check", tags=["Models"])
 async def api_models_check(request: Request):
@@ -1413,6 +1520,8 @@ async def api_stats_chart():
     keys_dict = data.get("keys", {})
 
     providers: dict[str, StatsChartProviderEntry] = {}
+    global_statuses = StatsChartStatuses()
+
     for key, info in keys_dict.items():
         provider = info.get("provider", "unknown")
         status = info.get("status", "unknown")
@@ -1426,14 +1535,22 @@ async def api_stats_chart():
 
         if status == "valid":
             providers[provider].statuses.valid += 1
+            providers[provider].valid += 1
+            global_statuses.valid += 1
         elif status == "invalid":
             providers[provider].statuses.invalid += 1
+            providers[provider].invalid += 1
+            global_statuses.invalid += 1
         else:
             providers[provider].statuses.error += 1
+            providers[provider].error += 1
+            global_statuses.error += 1
+
+        providers[provider].total += 1
 
     return StatsChartResponse(
         providers=list(providers.values()),
-        total=len(keys_dict),
+        statuses=global_statuses,
     )
 
 

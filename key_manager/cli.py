@@ -2,7 +2,7 @@ import argparse
 import asyncio
 import json
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from rich.console import Console
@@ -153,7 +153,7 @@ def cmd_report(args, config):
         return
 
     days = args.days or 7
-    cutoff = datetime.utcnow() - timedelta(days=days)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
 
     stats = {}
     for key, info in data["keys"].items():

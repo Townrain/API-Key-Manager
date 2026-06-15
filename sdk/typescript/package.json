@@ -1,6 +1,6 @@
 {
   "name": "@api-key-manager/sdk",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "TypeScript SDK for API Key Manager",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

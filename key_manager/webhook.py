@@ -12,9 +12,10 @@ import asyncio
 import hashlib
 import hmac
 import json
+import secrets
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Optional
 
@@ -89,7 +90,7 @@ class WebhookManager:
         max_retries: int = 3,
     ) -> str:
         """Register a new webhook."""
-        webhook_id = hashlib.md5(url.encode()).hexdigest()[:8]
+        webhook_id = secrets.token_hex(8)  # 16 hex chars = 64 bits of randomness
 
         event_list = []
         if events:
@@ -163,7 +164,7 @@ class WebhookManager:
 
         payload = {
             "event": event.value,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
             "data": data,
         }
 
@@ -218,7 +219,7 @@ class WebhookManager:
 
                     if 200 <= response.status_code < 300:
                         delivery.success = True
-                        delivery.delivered_at = datetime.utcnow().isoformat() + "Z"
+                        delivery.delivered_at = datetime.now(timezone.utc).isoformat() + "Z"
                         return delivery
 
                     last_error = f"HTTP {response.status_code}"
@@ -235,7 +236,7 @@ class WebhookManager:
                 await asyncio.sleep(delay)
 
         delivery.error = last_error
-        delivery.delivered_at = datetime.utcnow().isoformat() + "Z"
+        delivery.delivered_at = datetime.now(timezone.utc).isoformat() + "Z"
         return delivery
 
     def _log_delivery(self, delivery: WebhookDelivery):

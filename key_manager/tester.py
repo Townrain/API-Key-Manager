@@ -1,13 +1,12 @@
 import asyncio
-import json
-from datetime import datetime
-from pathlib import Path
+from datetime import datetime, timezone
 
 import httpx
 
 from .providers import PROVIDERS
 from .logger import KeyLogger
-
+from .storage import KeyStore
+from .config import load_config
 
 async def run_test(keys_file: str = "./data/keys.json",
                    results_file: str = "./data/test_results.json",
@@ -20,7 +19,8 @@ async def run_test(keys_file: str = "./data/keys.json",
                    concurrency_steps: list[int] = None,
                    provider_filter: str = None,
                    single_key: str = None,
-                   progress_callback=None) -> dict:
+                   progress_callback=None,
+                   config: dict = None) -> dict:
     # Reduced steps for faster testing
     if token_steps is None:
         token_steps = [4096, 16384, 65536, 131072]
@@ -29,8 +29,10 @@ async def run_test(keys_file: str = "./data/keys.json",
 
     logger = KeyLogger(logs_dir, "test")
 
-    with open(keys_file, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    # Use KeyStore for encrypted storage
+    cfg = config or load_config()
+    store = KeyStore(keys_file, cfg)
+    data = store.load()
 
     keys_to_test = []
     for key, info in data["keys"].items():
@@ -44,7 +46,7 @@ async def run_test(keys_file: str = "./data/keys.json",
 
     total = len(keys_to_test)
     results = {
-        "run_at": datetime.utcnow().isoformat() + "Z",
+        "run_at": datetime.now(timezone.utc).isoformat() + "Z",
         "total_tested": total,
         "results": []
     }
@@ -116,9 +118,9 @@ async def run_test(keys_file: str = "./data/keys.json",
                 "max_concurrency": test_result["concurrency_test"].get("max_concurrency"),
                 "rpm_limit": test_result["concurrency_test"].get("rpm_limit"),
                 "models": test_result["models"],
-                "tested_at": datetime.utcnow().isoformat() + "Z"
+                "tested_at": datetime.now(timezone.utc).isoformat() + "Z"
             }
-            data["keys"][key]["last_tested"] = datetime.utcnow().isoformat() + "Z"
+            data["keys"][key]["last_tested"] = datetime.now(timezone.utc).isoformat() + "Z"
 
             # Log
             token_info = f"TOKEN={test_result['token_test'].get('max_tokens', 'N/A')}"
@@ -126,11 +128,12 @@ async def run_test(keys_file: str = "./data/keys.json",
             model_info = f"MODELS={len(test_result['models'])}"
             logger.log("TEST", info["provider"], key_masked, "OK", f"{token_info}, {conc_info}, {model_info}")
 
-    # Save
-    with open(keys_file, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    # Save using KeyStore for encrypted storage
+    store.save(data)
 
+    # Results file is not sensitive, write directly
     with open(results_file, "w", encoding="utf-8") as f:
+        import json
         json.dump(results, f, indent=2, ensure_ascii=False)
 
     logger.flush()

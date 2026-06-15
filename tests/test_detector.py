@@ -244,3 +244,74 @@ class TestScoreProviderNoMatch:
         """Even with 429, no signature match means score is 0."""
         score = score_provider("anthropic", "", status_code=429)
         assert score == 0
+
+
+# ---------------------------------------------------------------------------
+# 9. test_detect_provider_balance_insufficient
+# ---------------------------------------------------------------------------
+class TestDetectProviderBalanceInsufficient:
+    """Test detect_provider when /v1/models returns 200 but /v1/chat/completions returns 402."""
+
+    @pytest.mark.asyncio
+    async def test_detect_provider_402_returns_provider(self):
+        """When /v1/models returns 200 and all models return 402, should return the provider."""
+        from unittest.mock import AsyncMock, MagicMock, patch
+        import httpx
+        
+        # Mock responses
+        models_response = MagicMock()
+        models_response.status_code = 200
+        models_response.json.return_value = {"data": [{"id": "model-1"}, {"id": "model-2"}]}
+        
+        chat_response = MagicMock()
+        chat_response.status_code = 402
+        chat_response.text = '{"error": {"message": "Insufficient Balance"}}'
+        
+        # Create mock client
+        mock_client = AsyncMock(spec=httpx.AsyncClient)
+        mock_client.get = AsyncMock(return_value=models_response)
+        mock_client.post = AsyncMock(return_value=chat_response)
+        
+        # Mock PROVIDERS to only include deepseek
+        mock_provider = MagicMock()
+        mock_provider.get_base_url.return_value = "https://api.deepseek.com/v1"
+        mock_provider.check_endpoint = "/models"
+        mock_provider.build_headers.return_value = {"Authorization": "Bearer test-key"}
+        
+        with patch("key_manager.detector.PROVIDERS", {"deepseek": mock_provider}):
+            from key_manager.detector import detect_provider
+            result = await detect_provider(mock_client, "sk-test-key-12345")
+        
+        assert result == "deepseek"
+
+    @pytest.mark.asyncio
+    async def test_detect_provider_200_returns_provider(self):
+        """When /v1/chat/completions returns 200, should return the provider immediately."""
+        from unittest.mock import AsyncMock, MagicMock, patch
+        import httpx
+        
+        # Mock responses
+        models_response = MagicMock()
+        models_response.status_code = 200
+        models_response.json.return_value = {"data": [{"id": "model-1"}]}
+        
+        chat_response = MagicMock()
+        chat_response.status_code = 200
+        chat_response.text = '{"choices": [{"message": {"content": "hi"}}]}'
+        
+        # Create mock client
+        mock_client = AsyncMock(spec=httpx.AsyncClient)
+        mock_client.get = AsyncMock(return_value=models_response)
+        mock_client.post = AsyncMock(return_value=chat_response)
+        
+        # Mock PROVIDERS to only include deepseek
+        mock_provider = MagicMock()
+        mock_provider.get_base_url.return_value = "https://api.deepseek.com/v1"
+        mock_provider.check_endpoint = "/models"
+        mock_provider.build_headers.return_value = {"Authorization": "Bearer test-key"}
+        
+        with patch("key_manager.detector.PROVIDERS", {"deepseek": mock_provider}):
+            from key_manager.detector import detect_provider
+            result = await detect_provider(mock_client, "sk-test-key-12345")
+        
+        assert result == "deepseek"

@@ -57,13 +57,13 @@ jobs:
         id: diff
         if: steps.check.outputs.found == 'true'
         run: |
-          git diff --quiet data/model_capabilities.json src/providers/models_registry.py || echo "changed=true" >> $GITHUB_OUTPUT
+          git diff --quiet data/model_capabilities.json key_manager/providers/models_registry.py || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit and push
         if: steps.check.outputs.found == 'true' && steps.diff.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/model_capabilities.json src/providers/models_registry.py
+          git add data/model_capabilities.json key_manager/providers/models_registry.py
           git commit -m "chore: sync from cherry-studio $(date +%Y-%m-%d)"
           git push

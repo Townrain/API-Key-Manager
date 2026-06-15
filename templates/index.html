@@ -992,6 +992,14 @@
 
         .manual-input::placeholder { color: var(--text-ghost); }
 
+        .manual-input:-webkit-autofill,
+        .manual-input:-webkit-autofill:hover,
+        .manual-input:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 1000px var(--surface-2) inset;
+            -webkit-text-fill-color: var(--text-primary);
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
         .manual-select,
         .model-type-select,
         .concurrency-input {
@@ -1672,6 +1680,142 @@
 
         .export-textarea:focus { outline: none; border-color: var(--neon-cyan); }
 
+        /* Model Detection Modal */
+        .model-detect-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background 0.15s;
+        }
+        .model-detect-item:hover {
+            background: var(--surface-2);
+        }
+        .model-detect-item:last-child {
+            border-bottom: none;
+        }
+        .model-detect-name {
+            flex: 1;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: 12px;
+        }
+        .model-detect-type {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .model-type-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .model-type-text {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .model-detect-check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-subtle);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        .model-detect-check:hover {
+            border-color: var(--neon-cyan);
+        }
+        .model-detect-check.selected {
+            background: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+        .model-detect-check.selected::after {
+            content: '✓';
+            color: var(--void);
+            font-size: 12px;
+            font-weight: bold;
+        }
+        /* Custom scrollbar for model detect list */
+        #model-detect-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        #model-detect-list::-webkit-scrollbar-track {
+            background: var(--surface-1);
+            border-radius: 3px;
+        }
+        #model-detect-list::-webkit-scrollbar-thumb {
+            background: var(--surface-3);
+            border-radius: 3px;
+        }
+        #model-detect-list::-webkit-scrollbar-thumb:hover {
+            background: var(--text-ghost);
+        }
+        /* Modal dropdown positioning fix */
+        #modal-type-select .custom-select-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        #modal-type-select .custom-select-dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+        #modal-type-select .custom-select-dropdown::-webkit-scrollbar-track {
+            background: var(--surface-1);
+            border-radius: 3px;
+        }
+        #modal-type-select .custom-select-dropdown::-webkit-scrollbar-thumb {
+            background: var(--surface-3);
+            border-radius: 3px;
+        }
+        #modal-type-select .custom-select-dropdown::-webkit-scrollbar-thumb:hover {
+            background: var(--text-ghost);
+        }
+        .model-detect-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        .model-detect-status.available {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--neon-green);
+        }
+        .model-detect-status.unavailable {
+            background: rgba(255, 68, 119, 0.15);
+            color: var(--neon-red);
+        }
+        .model-detect-status.checking {
+            background: rgba(0, 232, 255, 0.15);
+            color: var(--neon-cyan);
+        }
+
         .export-actions {
             display: flex;
             gap: 12px;
@@ -2301,9 +2445,9 @@
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                             获取模型
                         </button>
-                        <button onclick="checkAvailableModels()" class="btn" style="padding: 8px 14px; border-radius: 8px; font-size: 12px;" title="检测模型是否真正可用">
+                        <button onclick="openModelDetectModal()" class="btn" style="padding: 8px 14px; border-radius: 8px; font-size: 12px;" title="模型检测">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                            检测可用
+                            模型检测
                         </button>
 <div style="display: flex; align-items: center; gap: 4px;">
 <input type="number" id="concurrency-input" class="concurrency-input" placeholder="并发数" min="1" max="10000">
@@ -2613,6 +2757,52 @@
                 <button class="modal-close" onclick="closeSignatureReportModal()">&times;</button>
             </div>
             <div class="modal-body" id="signature-report-body" style="padding: 0;"></div>
+        </div>
+    </div>
+
+    <!-- Model Detection Modal -->
+    <div class="modal" id="model-detect-modal">
+        <div class="modal-content" style="max-width: 800px; overflow: visible;">
+            <div class="modal-header">
+                <h3>模型检测</h3>
+                <button class="modal-close" onclick="closeModelDetectModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="overflow: visible; max-height: none;">
+                <!-- 搜索框 + 类型筛选 -->
+                <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                    <input type="text" id="model-search-input" placeholder="搜索模型..." oninput="filterModels()" class="manual-input" style="flex: 1;">
+                    <div class="custom-select" id="modal-type-select" style="min-width: 120px;">
+                        <div class="custom-select-trigger" onclick="toggleCustomSelect('modal-type-select')">
+                            <span id="modal-type-label">全部</span>
+                        </div>
+                        <div class="custom-select-dropdown">
+                            <div class="custom-select-option selected" data-value="all" onclick="selectCustomOption('modal-type-select', 'all', '全部'); fetchModelsForModal();">全部</div>
+                            <div class="custom-select-option" data-value="reasoning" onclick="selectCustomOption('modal-type-select', 'reasoning', '推理'); fetchModelsForModal();">推理</div>
+                            <div class="custom-select-option" data-value="vision" onclick="selectCustomOption('modal-type-select', 'vision', '视觉'); fetchModelsForModal();">视觉</div>
+                            <div class="custom-select-option" data-value="websearch" onclick="selectCustomOption('modal-type-select', 'websearch', '联网'); fetchModelsForModal();">联网</div>
+                            <div class="custom-select-option" data-value="free" onclick="selectCustomOption('modal-type-select', 'free', '免费'); fetchModelsForModal();">免费</div>
+                            <div class="custom-select-option" data-value="embedding" onclick="selectCustomOption('modal-type-select', 'embedding', '嵌入'); fetchModelsForModal();">嵌入</div>
+                            <div class="custom-select-option" data-value="rerank" onclick="selectCustomOption('modal-type-select', 'rerank', '重排'); fetchModelsForModal();">重排</div>
+                            <div class="custom-select-option" data-value="tooluse" onclick="selectCustomOption('modal-type-select', 'tooluse', '工具'); fetchModelsForModal();">工具</div>
+                        </div>
+                        <input type="hidden" id="modal-type-filter" value="all">
+                    </div>
+                </div>
+                <!-- 模型列表 -->
+                <div id="model-detect-list" style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border-subtle); border-radius: 8px;">
+                    <div style="color: var(--text-ghost); text-align: center; padding: 40px;">
+                        请先点击"获取模型"按钮
+                    </div>
+                </div>
+                <!-- 底部按钮 -->
+                <div style="display: flex; justify-content: space-between; margin-top: 16px;">
+                    <button onclick="selectAllModels()" class="btn btn-ghost" id="select-all-btn">全选</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="fetchModelsForModal()" class="btn">获取模型</button>
+                        <button onclick="detectSelectedModels()" class="btn btn-primary" id="detect-selected-btn">检测模型</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -3086,7 +3276,8 @@
 
             const endpoint = '/api/check/single';
             try {
-                const data = await safeFetch(endpoint, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({key, provider: providerSel.value, custom_base_url: customUrl || null}) });
+                const body = {key, provider: providerSel.value, custom_base_url: customUrl || null};
+                const data = await safeFetch(endpoint, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
                 if (data.error && !data.status) {
                     resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-red);">${data.error}</div></div>`;
                 } else {
@@ -3106,7 +3297,7 @@
                                 <div class="result-item"><label>检测方式</label><value>${tt}</value></div>
                                 <div class="result-item"><label>服务商</label><value>${data.display_name || data.provider}</value></div>
                                 <div class="result-item"><label>状态码</label><value>${data.status_code || '-'}</value></div>
-                                <div class="result-item"><label>延迟</label><value>${data.latency_ms ? Math.round(data.latency_ms) + 'ms' : '-'}</value></div>
+                                <div class="result-item"><label>延迟</label><value>${data.latency_ms > 0 ? Math.round(data.latency_ms) + 'ms' : (data.status_code === 200 && !data.latency_ms ? '自动识别' : '-')}</value></div>
                                 ${balanceHtml}
                             </div>
                             ${errorTypeHtml}
@@ -3150,6 +3341,7 @@
                     resultEl.innerHTML = `<div class="result-card"><div style="color: var(--neon-amber);">${data.provider}${typeLabel} 暂无模型</div></div>`;
                     return;
                 }
+
 
                 const typeLabel = data.type_filter && data.type_filter !== 'all' ? ` - ${getTypeLabel(data.type_filter)}` : '';
                 const sourceLabel = data.source === 'static' ? ' <span class="badge" style="background: var(--neon-amber-dim); color: var(--neon-amber); font-size: 10px;">静态</span>' : '';
@@ -4123,6 +4315,354 @@ async function runConcurrencyTest() {
 
             body.innerHTML = summaryHtml + tableHtml + missingHtml + conflictsHtml + detailsHtml + '</div>';
         }
+
+
+        // ===========================================
+        // Model Detection Modal Functions
+        // ===========================================
+        let modalModels = [];  // All models in modal
+        let selectedModels = new Set();  // Selected model IDs
+        let modalModelsData = {};  // Model capabilities data
+        let modalModelsCache = {};  // Cache: { provider+key: { models: [...], caps: {...} } }
+
+        function openModelDetectModal() {
+            document.getElementById('model-detect-modal').classList.add('show');
+            // Reset state
+            modalModels = [];
+            selectedModels = new Set();
+            modalModelsData = {};
+            renderModelList([]);
+        }
+
+        function closeModelDetectModal() {
+            document.getElementById('model-detect-modal').classList.remove('show');
+        }
+
+        async function fetchModelsForModal() {
+            const key = document.getElementById('manual-key').value.trim();
+            const provider = document.getElementById('manual-provider').value;
+            
+            if (!key && !provider) {
+                showToast('请先输入 Key 或选择服务商', 'error');
+                return;
+            }
+
+            const listEl = document.getElementById('model-detect-list');
+            const typeFilter = document.getElementById('modal-type-filter').value;
+            const cacheKey = `${provider || 'all'}:${key || ''}`;
+
+            // Check cache first
+            if (modalModelsCache[cacheKey] && typeFilter !== 'all') {
+                const cached = modalModelsCache[cacheKey];
+                const filtered = filterModelsByType(cached.models, typeFilter);
+                modalModels = filtered;
+                modalModelsData = cached.caps;
+                selectedModels = new Set(filtered);
+                renderModelList(filtered);
+                updateSelectAllButton();
+                showToast(`已从缓存筛选 ${filtered.length} 个模型`, 'success');
+                return;
+            }
+
+            listEl.innerHTML = '<div style="color: var(--neon-cyan); text-align: center; padding: 40px;"><div class="progress-spinner" style="width: 20px; height: 20px; margin: 0 auto 10px;"></div>获取模型中...</div>';
+
+            try {
+                const params = new URLSearchParams();
+                if (provider) params.set('provider', provider);
+                if (key) params.set('key', key);
+                // Always fetch all models first for caching
+                params.set('type_filter', 'all');
+
+                const data = await safeFetch(`/api/models?${params}`);
+
+                if (data.error) {
+                    listEl.innerHTML = `<div style="color: var(--neon-red); text-align: center; padding: 40px;">${data.error}</div>`;
+                    return;
+                }
+
+                if (!data.models || data.models.length === 0) {
+                    listEl.innerHTML = '<div style="color: var(--neon-amber); text-align: center; padding: 40px;">未找到模型</div>';
+                    return;
+                }
+
+                // Fetch capabilities
+                let caps = {};
+                try {
+                    const capsParams = new URLSearchParams({ models: data.models.join(',') });
+                    const capsData = await safeFetch(`/api/models/capabilities?${capsParams}`);
+                    caps = capsData.capabilities || {};
+                } catch (e) {
+                    console.warn('Failed to fetch capabilities:', e);
+                }
+
+                // Cache all models + capabilities
+                modalModelsCache[cacheKey] = { models: data.models, caps: caps };
+
+                // Apply type filter if needed
+                let finalModels = data.models;
+                if (typeFilter && typeFilter !== 'all') {
+                    finalModels = filterModelsByType(data.models, typeFilter);
+                }
+
+                modalModels = finalModels;
+                modalModelsData = caps;
+                selectedModels = new Set(finalModels);
+                renderModelList(finalModels);
+                updateSelectAllButton();
+
+                showToast(`已获取 ${data.models.length} 个模型`, 'success');
+            } catch (e) {
+                listEl.innerHTML = `<div style="color: var(--neon-red); text-align: center; padding: 40px;">获取失败: ${e.message}</div>`;
+            }
+        }
+
+        // Client-side model type filtering using cached capabilities
+        function filterModelsByType(models, typeFilter) {
+            if (!typeFilter || typeFilter === 'all') return models;
+            return models.filter(m => {
+                const caps = modalModelsData[m];
+                if (!caps) return false;
+                switch (typeFilter) {
+                    case 'vision': return caps.vision;
+                    case 'reasoning': return caps.reasoning;
+                    case 'websearch': return caps.websearch;
+                    case 'tooluse': return caps.tooluse;
+                    case 'embedding': return caps.embedding;
+                    case 'rerank': return caps.rerank;
+                    case 'free': return caps.free;
+                    default: return true;
+                }
+            });
+        }
+
+
+        function renderModelList(models) {
+            const listEl = document.getElementById('model-detect-list');
+            
+            if (!models || models.length === 0) {
+                listEl.innerHTML = '<div style="color: var(--text-ghost); text-align: center; padding: 40px;">请先点击"获取模型"按钮</div>';
+                return;
+            }
+
+            const searchTerm = document.getElementById('model-search-input').value.toLowerCase();
+            const filtered = searchTerm ? models.filter(m => m.toLowerCase().includes(searchTerm)) : models;
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = '<div style="color: var(--text-ghost); text-align: center; padding: 40px;">未找到匹配的模型</div>';
+                return;
+            }
+
+            // Type icon/text mapping
+            const typeConfig = {
+                vision: { icon: '👁️', color: '#00b96b', label: 'Vision' },
+                reasoning: { icon: '💡', color: '#6372bd', label: 'Reasoning' },
+                websearch: { icon: '🌐', color: '#1677ff', label: 'Web Search' },
+                tooluse: { icon: '🔧', color: '#f18737', label: 'Tools' },
+                embedding: { text: '嵌入', color: '#FFA500', label: 'Embedding' },
+                rerank: { text: '重排', color: '#6495ED', label: 'Reranker' },
+                free: { text: '免费', color: '#7cb305', label: 'Free' },
+            };
+
+            let html = '';
+            for (const model of filtered) {
+                const isSelected = selectedModels.has(model);
+                const caps = modalModelsData[model] || {};
+                
+                // Build type icons/html
+                let typeHtml = '';
+                for (const [key, config] of Object.entries(typeConfig)) {
+                    if (caps[key]) {
+                        if (config.icon) {
+                            typeHtml += `<span class="model-type-icon" style="color: ${config.color};" title="${config.label}">${config.icon}</span>`;
+                        } else if (config.text) {
+                            typeHtml += `<span class="model-type-text" style="background: ${config.color}22; color: ${config.color};" title="${config.label}">${config.text}</span>`;
+                        }
+                    }
+                }
+                if (!typeHtml) {
+                    typeHtml = '<span style="color: var(--text-ghost); font-size: 11px;">-</span>';
+                }
+
+                html += `
+                    <div class="model-detect-item" data-model="${model}">
+                        <span class="model-detect-name" title="${model}">${model}</span>
+                        <div class="model-detect-type">${typeHtml}</div>
+                        <div class="model-detect-check ${isSelected ? 'selected' : ''}" onclick="toggleModelSelection('${model.replace(/'/g, "\\'")}')"></div>
+                    </div>`;
+            }
+
+            listEl.innerHTML = html;
+            updateSelectAllButton();
+        }
+
+        function toggleModelSelection(model) {
+            if (selectedModels.has(model)) {
+                selectedModels.delete(model);
+            } else {
+                selectedModels.add(model);
+            }
+            
+            // Update UI
+            const item = document.querySelector(`.model-detect-item[data-model="${model}"] .model-detect-check`);
+            if (item) {
+                item.classList.toggle('selected', selectedModels.has(model));
+            }
+            updateSelectAllButton();
+        }
+
+        function selectAllModels() {
+            const searchTerm = document.getElementById('model-search-input').value.toLowerCase();
+            const filtered = searchTerm ? modalModels.filter(m => m.toLowerCase().includes(searchTerm)) : modalModels;
+            
+            // Check if all filtered models are selected
+            const allSelected = filtered.every(m => selectedModels.has(m));
+            
+            if (allSelected) {
+                // Deselect all filtered
+                for (const m of filtered) {
+                    selectedModels.delete(m);
+                }
+            } else {
+                // Select all filtered
+                for (const m of filtered) {
+                    selectedModels.add(m);
+                }
+            }
+            
+            renderModelList(modalModels);
+        }
+
+        function updateSelectAllButton() {
+            const btn = document.getElementById('select-all-btn');
+            const searchTerm = document.getElementById('model-search-input').value.toLowerCase();
+            const filtered = searchTerm ? modalModels.filter(m => m.toLowerCase().includes(searchTerm)) : modalModels;
+            const allSelected = filtered.length > 0 && filtered.every(m => selectedModels.has(m));
+            btn.textContent = allSelected ? '取消全选' : '全选';
+        }
+
+        function filterModels() {
+            renderModelList(modalModels);
+        }
+
+        async function detectSelectedModels() {
+            if (selectedModels.size === 0) {
+                showToast('请先选择要检测的模型', 'error');
+                return;
+            }
+
+            const key = document.getElementById('manual-key').value.trim();
+            const provider = document.getElementById('manual-provider').value;
+            
+            if (!key && !provider) {
+                showToast('请先输入 Key 或选择服务商', 'error');
+                return;
+            }
+
+            const listEl = document.getElementById('model-detect-list');
+            const detectBtn = document.getElementById('detect-selected-btn');
+            detectBtn.disabled = true;
+            detectBtn.textContent = '检测中...';
+
+            // Mark all selected as checking
+            for (const model of selectedModels) {
+                const item = document.querySelector(`.model-detect-item[data-model="${model}"]`);
+                if (item) {
+                    const checkEl = item.querySelector('.model-detect-check');
+                    checkEl.className = 'model-detect-check';
+                    // Add status indicator
+                    let statusEl = item.querySelector('.model-detect-status');
+                    if (!statusEl) {
+                        statusEl = document.createElement('span');
+                        statusEl.className = 'model-detect-status checking';
+                        statusEl.textContent = '检测中';
+                        item.appendChild(statusEl);
+                    } else {
+                        statusEl.className = 'model-detect-status checking';
+                        statusEl.textContent = '检测中';
+                    }
+                }
+            }
+
+            try {
+                const response = await fetch('/api/models/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        key,
+                        provider: provider || '',
+                        models: Array.from(selectedModels)
+                    })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let availableCount = 0;
+                let unavailableCount = 0;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const text = decoder.decode(value);
+                    const lines = text.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.slice(6));
+                                
+                                if (data.type === 'result') {
+                                    const model = data.model;
+                                    const isAvailable = data.available;
+                                    
+                                    const item = document.querySelector(`.model-detect-item[data-model="${model}"]`);
+                                    if (item) {
+                                        let statusEl = item.querySelector('.model-detect-status');
+                                        if (!statusEl) {
+                                            statusEl = document.createElement('span');
+                                            statusEl.className = 'model-detect-status';
+                                            item.appendChild(statusEl);
+                                        }
+                                        
+                                        if (isAvailable) {
+                                            statusEl.className = 'model-detect-status available';
+                                            statusEl.textContent = '可用';
+                                            availableCount++;
+                                        } else {
+                                            statusEl.className = 'model-detect-status unavailable';
+                                            statusEl.textContent = '不可用';
+                                            unavailableCount++;
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                // Ignore parse errors
+                            }
+                        }
+                    }
+                }
+
+                showToast(`检测完成: ${availableCount} 可用, ${unavailableCount} 不可用`, 'success');
+            } catch (e) {
+                showToast(`检测失败: ${e.message}`, 'error');
+            } finally {
+                detectBtn.disabled = false;
+                detectBtn.textContent = '检测模型';
+                
+                // Update remaining checking status
+                document.querySelectorAll('.model-detect-status.checking').forEach(el => {
+                    el.className = 'model-detect-status unavailable';
+                    el.textContent = '超时';
+                });
+            }
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('model-detect-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('model-detect-modal')) {
+                closeModelDetectModal();
+            }
+        });
 
     </script>
 </body>

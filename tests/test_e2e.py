@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 os.environ.setdefault("KEY_MANAGER_SECRET", "test-secret-for-e2e")
+os.environ.setdefault("KEY_MANAGER_API_KEY", "test-api-key-12345")
 
 
 def _write_keys(path: Path, data: dict):
@@ -31,6 +32,8 @@ def _make_config(tmp_path):
         "proxy": "",
         "check": {"concurrency": 10, "timeout_seconds": 10, "retry_failed": False, "retry_count": 0},
         "test": {"token_steps": [1024], "concurrency_steps": [1, 5], "concurrency_timeout_seconds": 30},
+        "auth": {"api_key": "test-api-key-12345"},
+        "rate_limit": {"requests_per_minute": 0},
     }
 
 
@@ -57,7 +60,7 @@ def client(tmp_path):
     cfg = _make_config(tmp_path)
     with patch("key_manager.web.config", cfg):
         from key_manager.web import app
-        yield TestClient(app)
+        yield TestClient(app, headers={"Authorization": "Bearer test-api-key-12345"})
 
 
 class TestE2EWorkflow:

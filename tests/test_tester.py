@@ -1,5 +1,6 @@
 """Tests for tester module."""
 import json
+import os
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -7,10 +8,24 @@ import pytest
 
 from key_manager.tester import run_test
 
+os.environ.setdefault("KEY_MANAGER_SECRET", "test-secret-for-tester")
+
 
 @pytest.fixture
-def sample_keys_with_valid(tmp_data_dir):
+def test_config(tmp_data_dir):
+    """Create a test config."""
+    return {
+        "storage": {
+            "keys_file": str(tmp_data_dir / "keys.json"),
+        },
+        "encryption": {
+            "passphrase": "test-secret-for-tester"
+        }
+    }
+@pytest.fixture
+def sample_keys_with_valid(tmp_data_dir, test_config):
     """Create a keys.json with valid keys for testing."""
+    from key_manager.storage import KeyStore
     keys_file = tmp_data_dir / "keys.json"
     keys_data = {
         "keys": {
@@ -46,7 +61,9 @@ def sample_keys_with_valid(tmp_data_dir):
             }
         }
     }
-    keys_file.write_text(json.dumps(keys_data, indent=2), encoding="utf-8")
+    # Use KeyStore to write encrypted data
+    store = KeyStore(keys_file, test_config)
+    store.save(keys_data)
     return keys_file
 
 
@@ -74,7 +91,7 @@ class TestRunTest:
     """Tests for run_test function."""
 
     @pytest.mark.asyncio
-    async def test_run_test_basic(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory):
+    async def test_run_test_basic(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory, test_config):
         """Runs test on valid keys."""
         results_file = str(tmp_data_dir / "results.json")
         logs_dir = str(tmp_data_dir / "logs")
@@ -86,7 +103,8 @@ class TestRunTest:
                 results_file=results_file,
                 logs_dir=logs_dir,
                 token_steps=[4096, 16384],
-                concurrency_steps=[1, 5, 10]
+                concurrency_steps=[1, 5, 10],
+                config=test_config
             )
 
         assert results["total_tested"] == 2  # Only valid keys
@@ -148,7 +166,7 @@ class TestRunTest:
         assert results["results"][0]["provider"] == "openai"
 
     @pytest.mark.asyncio
-    async def test_run_test_token_test(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory):
+    async def test_run_test_token_test(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory, test_config):
         """Runs token limit test."""
         results_file = str(tmp_data_dir / "results.json")
         logs_dir = str(tmp_data_dir / "logs")
@@ -162,7 +180,8 @@ class TestRunTest:
                 single_key="sk-test-openai-12345",
                 token_test=True,
                 concurrency_test=False,
-                token_steps=[4096, 16384, 65536]
+                token_steps=[4096, 16384, 65536],
+                config=test_config
             )
 
         result = results["results"][0]
@@ -171,7 +190,7 @@ class TestRunTest:
         assert result["concurrency_test"]["tested"] is False
 
     @pytest.mark.asyncio
-    async def test_run_test_concurrency_test(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory):
+    async def test_run_test_concurrency_test(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory, test_config):
         """Runs concurrency test."""
         results_file = str(tmp_data_dir / "results.json")
         logs_dir = str(tmp_data_dir / "logs")
@@ -185,7 +204,8 @@ class TestRunTest:
                 single_key="sk-test-openai-12345",
                 token_test=False,
                 concurrency_test=True,
-                concurrency_steps=[1, 5, 10, 20]
+                concurrency_steps=[1, 5, 10, 20],
+                config=test_config
             )
 
         result = results["results"][0]
@@ -194,7 +214,7 @@ class TestRunTest:
         assert result["token_test"]["tested"] is False
 
     @pytest.mark.asyncio
-    async def test_run_test_updates_keys_json(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory):
+    async def test_run_test_updates_keys_json(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory, test_config):
         """Updates keys.json with test results."""
         results_file = str(tmp_data_dir / "results.json")
         logs_dir = str(tmp_data_dir / "logs")
@@ -205,12 +225,14 @@ class TestRunTest:
                 keys_file=str(sample_keys_with_valid),
                 results_file=results_file,
                 logs_dir=logs_dir,
-                single_key="sk-test-openai-12345"
+                single_key="sk-test-openai-12345",
+                config=test_config
             )
 
-        # Read updated keys file
-        with open(str(sample_keys_with_valid), "r", encoding="utf-8") as f:
-            data = json.load(f)
+        # Read updated keys file using KeyStore
+        from key_manager.storage import KeyStore
+        store = KeyStore(sample_keys_with_valid, test_config)
+        data = store.load()
 
         key_data = data["keys"]["sk-test-openai-12345"]
         assert key_data["tests"]["max_tokens"] == 32768
@@ -219,7 +241,7 @@ class TestRunTest:
         assert key_data["last_tested"] is not None
 
     @pytest.mark.asyncio
-    async def test_run_test_saves_results(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory):
+    async def test_run_test_saves_results(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory, test_config):
         """Saves results to results file."""
         results_file = str(tmp_data_dir / "results.json")
         logs_dir = str(tmp_data_dir / "logs")
@@ -230,7 +252,8 @@ class TestRunTest:
                 keys_file=str(sample_keys_with_valid),
                 results_file=results_file,
                 logs_dir=logs_dir,
-                single_key="sk-test-openai-12345"
+                single_key="sk-test-openai-12345",
+                config=test_config
             )
 
         # Check results file exists
@@ -256,7 +279,8 @@ class TestRunTest:
                 keys_file=str(sample_keys_with_valid),
                 results_file=results_file,
                 logs_dir=logs_dir,
-                progress_callback=progress_callback
+                progress_callback=progress_callback,
+                config=test_config
             )
 
         # Should have initial (0, 2) and final (2, 2) calls
@@ -265,7 +289,7 @@ class TestRunTest:
         assert progress_calls[-1] == (2, 2)
 
     @pytest.mark.asyncio
-    async def test_run_test_unknown_provider(self, tmp_data_dir, sample_keys_with_valid):
+    async def test_run_test_unknown_provider(self, tmp_data_dir, sample_keys_with_valid, test_config):
         """Handles unknown provider gracefully."""
         results_file = str(tmp_data_dir / "results.json")
         logs_dir = str(tmp_data_dir / "logs")
@@ -274,14 +298,15 @@ class TestRunTest:
             results = await run_test(
                 keys_file=str(sample_keys_with_valid),
                 results_file=results_file,
-                logs_dir=logs_dir
+                logs_dir=logs_dir,
+                config=test_config
             )
 
         # Should still complete, just skip testing
         assert results["total_tested"] == 2
 
     @pytest.mark.asyncio
-    async def test_run_test_provider_error(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory):
+    async def test_run_test_provider_error(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory, test_config):
         """Handles provider test error gracefully."""
         results_file = str(tmp_data_dir / "results.json")
         logs_dir = str(tmp_data_dir / "logs")
@@ -293,7 +318,8 @@ class TestRunTest:
                 keys_file=str(sample_keys_with_valid),
                 results_file=results_file,
                 logs_dir=logs_dir,
-                single_key="sk-test-openai-12345"
+                single_key="sk-test-openai-12345",
+                config=test_config
             )
 
         result = results["results"][0]

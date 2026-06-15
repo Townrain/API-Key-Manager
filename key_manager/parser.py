@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -11,14 +11,14 @@ def load_keys_file(path: str) -> dict:
             return json.load(f)
     return {
         "version": "1.0",
-        "updated_at": datetime.utcnow().isoformat() + "Z",
+        "updated_at": datetime.now(timezone.utc).isoformat() + "Z",
         "imports": [],
         "keys": {}
     }
 
 
 def save_keys_file(data: dict, path: str):
-    data["updated_at"] = datetime.utcnow().isoformat() + "Z"
+    data["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
@@ -96,7 +96,7 @@ def import_keys(file_path: Optional[str] = None,
             import_record = {
                 "file": fp.name,
                 "batch": file_batch,
-                "imported_at": datetime.utcnow().isoformat() + "Z",
+                "imported_at": datetime.now(timezone.utc).isoformat() + "Z",
                 "key_count": len(items),
                 "new_keys": 0,
                 "duplicates": 0
@@ -111,7 +111,7 @@ def import_keys(file_path: Optional[str] = None,
                     data["keys"][key]["sources"].append({
                         "file": item.get("file_path", ""),
                         "batch": file_batch,
-                        "imported_at": datetime.utcnow().isoformat() + "Z",
+                        "imported_at": datetime.now(timezone.utc).isoformat() + "Z",
                         "original_path": item.get("file_path", ""),
                         "repo": item.get("repo_name", ""),
                         "repo_url": item.get("repo_url", ""),
@@ -128,7 +128,7 @@ def import_keys(file_path: Optional[str] = None,
                         "sources": [{
                             "file": item.get("file_path", ""),
                             "batch": file_batch,
-                            "imported_at": datetime.utcnow().isoformat() + "Z",
+                            "imported_at": datetime.now(timezone.utc).isoformat() + "Z",
                             "original_path": item.get("file_path", ""),
                             "repo": item.get("repo_name", ""),
                             "repo_url": item.get("repo_url", ""),
@@ -136,10 +136,10 @@ def import_keys(file_path: Optional[str] = None,
                         }],
                         "checks": [],
                         "tests": {},
-                        "first_seen": datetime.utcnow().isoformat() + "Z",
+                        "first_seen": datetime.now(timezone.utc).isoformat() + "Z",
                         "last_checked": None,
                         "last_tested": None,
-                        "created_at": datetime.utcnow().isoformat() + "Z"
+                        "created_at": datetime.now(timezone.utc).isoformat() + "Z"
                     }
                     new_keys += 1
                     import_record["new_keys"] += 1

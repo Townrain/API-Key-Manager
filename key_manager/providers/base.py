@@ -194,6 +194,18 @@ class ProviderBase(ABC):
                 latency = (time.monotonic() - start) * 1000
                 
                 if resp.status_code == 200:
+                    # Check if response body contains error (e.g., DashScope returns 200 with error in body for insufficient balance)
+                    try:
+                        data = resp.json()
+                        if isinstance(data, dict) and "error" in data:
+                            error_msg = data["error"].get("message", "unknown error")
+                            error_code = data["error"].get("code", "")
+                            # Log for debugging
+                            import logging
+                            logging.getLogger(__name__).warning(f"Model {model} returned 200 but has error: {error_code} - {error_msg}")
+                            return CheckResult(False, 200, latency, simplify_error(error_msg, 200))
+                    except Exception:
+                        pass  # Response parsing failed, treat as valid
                     return CheckResult(True, 200, latency, None)
                 elif resp.status_code in (401, 403):
                     return CheckResult(False, resp.status_code, latency, "invalid key or forbidden")
@@ -202,7 +214,7 @@ class ProviderBase(ABC):
                 else:
                     try:
                         error_msg = resp.json().get("error", {}).get("message", f"status {resp.status_code}")
-                    except:
+                    except Exception:
                         error_msg = f"status {resp.status_code}"
                     return CheckResult(False, resp.status_code, latency, simplify_error(error_msg, resp.status_code))
             except Exception as e:
@@ -219,8 +231,15 @@ class ProviderBase(ABC):
             return result if models else CheckResult(False, None, 0, "no models available")
         else:
             # Test all models concurrently (no batching)
+            import logging
+            logging.getLogger(__name__).info(f"Testing {len(models)} models concurrently for {self.name}")
             tasks = [test_model(m) for m in models]
             results = await asyncio.gather(*tasks)
+            
+            # Log results for debugging
+            for i, (model, result) in enumerate(zip(models, results)):
+                if not result.valid:
+                    logging.getLogger(__name__).info(f"Model {model} failed: status={result.status_code}, error={result.error}")
             
             # Return first success or first error
             for result in results:

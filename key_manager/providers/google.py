@@ -47,7 +47,7 @@ class GoogleProvider(ProviderBase):
                 try:
                     data = resp.json()
                     error_msg = data.get("error", {}).get("message", f"status {resp.status_code}")
-                except:
+                except Exception:
                     error_msg = f"status {resp.status_code}"
                 return CheckResult(False, resp.status_code, latency, error_msg)
         except Exception as e:

@@ -116,9 +116,9 @@ class TestSSRFProtection:
 class TestAuthWarning:
     """T6: Auth-disabled warning."""
 
-    def test_auth_warning_code_present(self):
-        """Auth middleware contains warning code."""
+    def test_auth_timing_attack_protection(self):
+        """Auth middleware uses hmac.compare_digest for timing-safe comparison."""
         import inspect
         from key_manager.web import auth_middleware
         source = inspect.getsource(auth_middleware)
-        assert "Authentication is disabled" in source
+        assert "hmac.compare_digest" in source, "Auth middleware should use hmac.compare_digest()"

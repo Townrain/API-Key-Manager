@@ -28,6 +28,30 @@ CAPABILITY_MAP = {
     "embedding": ["embedding"],
 }
 
+# Cherry Studio 数据中缺失的 web-search 模型（已知支持联网搜索但未标记）
+# 格式: 模型 ID 前缀列表
+KNOWN_WEBSEARCH_MODELS = [
+    # Qwen 系列 (DashScope 支持联网搜索)
+    "qwen-plus",
+    "qwen-max",
+    "qwen-turbo",
+    "qwen-long",
+    "qwen3-plus",
+    "qwen3-max",
+    "qwen3-turbo",
+    "qwq-plus",
+    "qvq-max",
+    # DeepSeek
+    "deepseek-chat",
+    "deepseek-v3",
+    # 豆包
+    "doubao-pro",
+    "doubao-lite",
+    # Kimi
+    "kimi-k2",
+    "moonshot-v1",
+]
+
 
 def extract_capabilities_from_json(file_path: Path) -> dict:
     """从 JSON 文件提取模型能力"""
@@ -47,6 +71,7 @@ def extract_capabilities_from_json(file_path: Path) -> dict:
         "reasoning": [],
         "websearch": [],
         "embedding": [],
+        "rerank": [],
     }
 
     for model in models:
@@ -77,6 +102,19 @@ def extract_capabilities_from_json(file_path: Path) -> dict:
         # 嵌入：有 embedding 能力
         if "embedding" in capabilities:
             capability_models["embedding"].append(model_id)
+
+        # 重排：有 rerank 能力
+        if "rerank" in capabilities:
+            capability_models["rerank"].append(model_id)
+
+    # 补充 Cherry Studio 数据中缺失的 web-search 模型
+    all_model_ids = {m.get("id", "") for m in models}
+    for prefix in KNOWN_WEBSEARCH_MODELS:
+        # 检查是否有以该前缀开头的模型
+        matching = [mid for mid in all_model_ids if mid.startswith(prefix)]
+        for mid in matching:
+            if mid not in capability_models["websearch"]:
+                capability_models["websearch"].append(mid)
 
     return capability_models
 
@@ -111,12 +149,28 @@ def main():
     # 转换为正则匹配格式（精确匹配模型 ID）
     for cap_name, models in capability_models.items():
         if models:
-            # 创建精确匹配的正则列表
-            patterns = [re.escape(m) for m in models]
+            # 创建精确匹配的正则列表（使用 ^$ 锚定避免子串误匹配）
+            patterns = ["^" + re.escape(m) + "$" for m in models]
             output["capabilities"][cap_name] = {
                 "allowed_patterns": patterns,
                 "excluded_patterns": []
             }
+
+    # 生成 embedding_regex 和 rerank_regex
+    embedding_models = capability_models.get("embedding", [])
+    rerank_models = capability_models.get("rerank", [])
+
+    # 生成 embedding_regex
+    if embedding_models:
+        escaped = ["^" + re.escape(m) + "$" for m in embedding_models]
+        output["capabilities"]["embedding"]["embedding_regex"] = "(?i)(?:" + "|".join(escaped) + ")"
+        print(f"  embedding_regex: {len(embedding_models)} models")
+
+    # 生成 rerank_regex
+    if rerank_models:
+        escaped = ["^" + re.escape(m) + "$" for m in rerank_models]
+        output["capabilities"]["embedding"]["rerank_regex"] = "(?i)(?:" + "|".join(escaped) + ")"
+        print(f"  rerank_regex: {len(rerank_models)} models")
 
     # 写入文件
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)

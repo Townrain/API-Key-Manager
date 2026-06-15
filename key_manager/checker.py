@@ -1,13 +1,10 @@
 import asyncio
-import json
 from datetime import datetime
-from pathlib import Path
 
 import httpx
 
 from .providers import PROVIDERS
 from .validator import validate_keys
-
 
 async def run_check(keys_file: str = "./data/keys.json",
                     results_file: str = "./data/check_results.json",
@@ -16,14 +13,16 @@ async def run_check(keys_file: str = "./data/keys.json",
                     timeout: int = 30,
                     proxy: str = None,
                     retry_failed: bool = True,
-                    retry_count: int = 2) -> dict:
+                    retry_count: int = 2,
+                    config: dict = None) -> dict:
     results = await validate_keys(
         keys_file=keys_file,
         results_file=results_file,
         logs_dir=logs_dir,
         concurrency=concurrency,
         timeout=timeout,
-        proxy=proxy
+        proxy=proxy,
+        config=config
     )
 
     # Retry failed keys
@@ -40,12 +39,18 @@ async def run_check(keys_file: str = "./data/keys.json",
                 concurrency=concurrency,
                 timeout=timeout,
                 proxy=proxy,
-                status_filter="error"
+                status_filter="error",
+                config=config
             )
 
-            # Merge results
-            results["summary"]["valid"]["count"] += retry_results["summary"]["valid"]["count"]
-            results["summary"]["invalid"]["count"] += retry_results["summary"]["invalid"]["count"]
+            # Recompute summary from details to avoid double-counting
+            # The retry only re-checks error keys, so we need to update the summary
+            # based on what changed
             results["summary"]["error"]["count"] = retry_results["summary"]["error"]["count"]
+            results["summary"]["error"]["keys"] = retry_results["summary"]["error"]["keys"]
+            results["summary"]["valid"]["count"] += retry_results["summary"]["valid"]["count"]
+            results["summary"]["valid"]["keys"].extend(retry_results["summary"]["valid"]["keys"])
+            results["summary"]["invalid"]["count"] += retry_results["summary"]["invalid"]["count"]
+            results["summary"]["invalid"]["keys"].extend(retry_results["summary"]["invalid"]["keys"])
 
     return results

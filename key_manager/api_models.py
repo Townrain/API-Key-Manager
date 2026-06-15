@@ -71,6 +71,7 @@ class KeyListResponse(BaseModel):
 
 
 class KeyExportItem(BaseModel):
+    key_masked: str = Field(..., description="Masked key for display")
     provider: str = Field(..., description="Provider identifier")
     max_tokens: int | None = Field(None, description="Maximum token limit")
     max_concurrency: int | None = Field(None, description="Maximum concurrency limit")
@@ -111,11 +112,12 @@ class ImportResponse(BaseModel):
 class CheckSingleRequest(BaseModel):
     key: str = Field(..., min_length=1, description="API key to check")
     provider: str = Field("", description="Provider name (auto-detected if empty)")
+    model: str | None = Field(None, description="Specific model to test (tests all if empty)")
     custom_base_url: str | None = Field(None, description="Override provider base URL")
 
     model_config = {
         "json_schema_extra": {
-            "examples": [{"key": "sk-abc123", "provider": "openai"}]
+            "examples": [{"key": "sk-abc123", "provider": "openai", "model": "gpt-4o"}]
         }
     }
 
@@ -296,23 +298,26 @@ class StatsResponse(BaseModel):
     total: int = Field(0, description="Total key count")
 
 
-class StatsChartProviderEntry(BaseModel):
-    total: int = Field(0, description="Total keys for this provider")
-    valid: int = Field(0, description="Valid keys")
-    invalid: int = Field(0, description="Invalid keys")
-    error: int = Field(0, description="Errored keys")
-
-
 class StatsChartStatuses(BaseModel):
     valid: int = Field(0, description="Total valid keys")
     invalid: int = Field(0, description="Total invalid keys")
     error: int = Field(0, description="Total errored keys")
     unknown: int = Field(0, description="Total unknown-status keys")
 
+class StatsChartProviderEntry(BaseModel):
+    provider: str = Field(..., description="Provider identifier")
+    display_name: str = Field("", description="Human-readable provider name")
+    total: int = Field(0, description="Total keys for this provider")
+    valid: int = Field(0, description="Valid keys")
+    invalid: int = Field(0, description="Invalid keys")
+    error: int = Field(0, description="Errored keys")
+    statuses: StatsChartStatuses = Field(
+        default_factory=StatsChartStatuses, description="Status breakdown"
+    )
 
 class StatsChartResponse(BaseModel):
-    providers: dict[str, StatsChartProviderEntry] = Field(
-        default_factory=dict, description="Per-provider breakdown for charts"
+    providers: list[StatsChartProviderEntry] = Field(
+        default_factory=list, description="Per-provider breakdown for charts"
     )
     statuses: StatsChartStatuses = Field(
         default_factory=StatsChartStatuses, description="Global status counts"

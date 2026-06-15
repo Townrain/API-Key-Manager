@@ -12,7 +12,7 @@
 - **Web 界面** - 赛博朋克风格的管理界面
 - **代理支持** - 支持 HTTP/SOCKS 代理
 - **加密存储** - AES-256-GCM 加密存储 API 密钥，随机盐值
-- **安全防护** - 路径遍历防护、SSRF 防护、时序安全认证
+- **安全防护** - 路径遍历防护、SSRF 防护（含 IPv6）、时序安全认证、强制认证、CORS 配置
 - **API 文档** - Swagger UI 和 Redoc 自动文档
 - **国际化** - 支持中英文错误信息
 - **SDK 支持** - Python 和 TypeScript 客户端库
@@ -164,11 +164,13 @@ python web.py
 ### 安全防护
 
 - **路径遍历防护** - 导入端点验证路径在允许目录内
-- **SSRF 防护** - `custom_base_url` 验证域名白名单，阻止私有 IP，已接入 `check/single` 和 `balance` 端点
+- **SSRF 防护** - `custom_base_url` 验证域名白名单，阻止私有 IP（含 IPv6），DNS 重绑定防护
 - **时序安全认证** - 使用 `hmac.compare_digest()` 防止时序攻击
-- **认证警告** - 未配置 API Key 时启动警告
+- **强制认证** - 未配置 API Key 时自动生成随机密钥，拒绝未认证请求
 - **密钥掩码** - API 响应中只返回 `key_masked`，不暴露完整密钥
-- **Webhook 安全** - Webhook 端点使用正确的 API 方法，防止运行时错误
+- **CORS 配置** - 跨域资源共享安全配置
+- **Webhook 安全** - 使用 `secrets.token_hex` 生成不可预测的 webhook ID
+- **存储安全** - 密钥文件权限加固 (0o600)，AES-256-GCM 加密，PBKDF2 600,000 次迭代
 
 ### API 认证
 
@@ -685,6 +687,45 @@ const result = await client.checkSingleKey({ key: 'sk-xxx', provider: 'openai' }
 
 ## 更新日志
 
+
+### v3.0.0 (2026-06-15)
+
+- **安全修复**: 移除 API 响应中的明文密钥，只返回 key_masked
+- **安全修复**: 强制认证，无配置时自动生成随机 API Key
+- **安全修复**: 使用 hmac.compare_digest 防止时序攻击
+- **安全修复**: 添加 CORS 中间件配置
+- **性能优化**: PBKDF2 密钥缓存，迭代次数提升至 600,000 (OWASP 推荐)
+- **性能优化**: 速率限制器添加 TTL 驱逐，防止内存泄漏
+- **可靠性**: 修复 checker.py 合并逻辑错误
+- **可靠性**: 替换所有裸 except 为 except Exception
+- **可靠性**: 添加配置验证和错误处理
+- **可靠性**: 添加 /healthz 健康检查端点
+- **可靠性**: 修复 datetime.utcnow() 废弃警告
+- **SSRF 防护**: 添加 IPv6 私有范围和 DNS 重绑定防护
+- **Webhook 安全**: 使用 secrets.token_hex 替代 MD5 生成 webhook ID
+- **存储安全**: 密钥文件权限加固 (0o600)
+- **前端**: 模型检测列表添加自定义滚轮条样式
+- **前端**: 修复模型类型下拉窗口被弹窗裁剪的问题
+- **精确匹配修复**: 能力检测从子串匹配改为 ^$ 锚定精确匹配
+- **API Bug 修复**: 修复 /api/stats/chart 运行时崩溃
+- **测试补充**: 新增 8 个端点的测试，覆盖率 91.47%
+
+### v2.2.2 (2026-06-14)
+
+- **模型检测二级窗口**: 新增模型检测弹窗，支持搜索、类型筛选、全选、批量检测
+- **模型类型图标**: 显示模型能力图标（视觉/推理/联网/工具/嵌入/重排/免费）
+- **模型能力数据更新**: 从 Cherry Studio 同步最新模型能力数据（3184 条记录）
+- **检测逻辑优化**: DeepSeek 欠费密钥正确识别，不再误判为其他服务商
+- **指定模型检测**: 自动检测服务商时也支持指定模型检测
+
+### v2.2.1 (2026-06-14)
+
+- **检测逻辑修复**: 自动识别后必须调用 check() 验证 key 有效性
+- **签名匹配修复**: 状态码不再硬编码 401，使用实际状态码
+- **不可靠服务商**: ppio、nvidia、modelscope 不参与加分
+- **模型选择器**: 新增模型下拉框，支持选择具体模型检测
+- **Cherry Studio 同步**: 修复 ownedBy 映射（alibaba→dashscope 等）
+- **测试补充**: 新增 test_parser_supplement、test_ssrf_supplement、test_validator_supplement
 ### v2.2.0 (2026-06-14)
 
 - **检测逻辑重构**: 添加三步检测逻辑（/v1/models → 并发测试）

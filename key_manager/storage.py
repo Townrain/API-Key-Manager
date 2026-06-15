@@ -9,22 +9,30 @@ from cryptography.hazmat.primitives import hashes
 from key_manager.errors import ErrorCode, StorageError
 
 
-_ITERATIONS = 100_000
+_ITERATIONS = 600_000  # OWASP 2023 recommendation for PBKDF2-HMAC-SHA256
 _LEGACY_SALT = b"key-manager-aes256gcm-salt-v1"  # For backward compatibility
 _SALT_LEN = 16
 _NONCE_LEN = 12
+
+# Key cache: (passphrase, salt) -> derived key
+_key_cache: dict[tuple[str, bytes], bytes] = {}
 
 
 def _derive_key(passphrase: str, salt: bytes = None) -> bytes:
     if salt is None:
         salt = _LEGACY_SALT
+    cache_key = (passphrase, salt)
+    if cache_key in _key_cache:
+        return _key_cache[cache_key]
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
         iterations=_ITERATIONS,
     )
-    return kdf.derive(passphrase.encode("utf-8"))
+    key = kdf.derive(passphrase.encode("utf-8"))
+    _key_cache[cache_key] = key
+    return key
 
 
 def _get_passphrase(config: dict | None = None) -> str:
@@ -75,6 +83,11 @@ class KeyStore:
             json.dumps(envelope, indent=2, ensure_ascii=False),
             encoding="utf-8",
         )
+        # Set restrictive file permissions (owner only)
+        try:
+            os.chmod(self.path, 0o600)
+        except (OSError, AttributeError):
+            pass  # Windows doesn't support chmod the same way
 
     def migrate(self) -> dict:
         data = self.load()

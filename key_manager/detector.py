@@ -54,7 +54,7 @@ UNIQUE_SIGNATURES: dict[str, list[str]] = {
     # siliconflow: 实际返回 "Api key is invalid" (注意大小写)
     "siliconflow": ["api key is invalid"],
     # stepfun: 实际返回 "Incorrect API key provided" (与 dashscope 重复，用 type 区分)
-    "stepfun": ["incorrect api key provided", "invalid_api_key"],
+    "stepfun": ["stepfun", "api.stepfun.com", "incorrect api key provided", "invalid_api_key"],
     # doubao: 实际返回 "AuthenticationError"
     "doubao": ["authenticationerror"],
     # infini: 实际返回 "请使用正确的api key进行请求"
@@ -73,7 +73,7 @@ UNIQUE_SIGNATURES: dict[str, list[str]] = {
     "ppio": ["ppio"],
     # ═══ 国外服务商 ═══
     # deepseek: 实际返回 "Authentication Fails, Your api key: ****2345 is invalid"
-    "deepseek": ["authentication fails"],
+    "deepseek": ["deepseek", "api.deepseek.com", "authentication fails"],
     # anthropic: 实际返回 "Request not allowed"
     "anthropic": ["request not allowed", "anthropic", "x-api-key"],
     # openrouter: 实际返回 "Missing Authentication header"
@@ -182,46 +182,14 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
     if suspected_provider:
         provider_name = suspected_provider.lower()
         if provider_name in PROVIDERS:
-            provider = PROVIDERS[provider_name]
-            result = await provider.check(client, key)
-            if result.valid:
-                return provider_name
-    
-    # Step 2: Try pattern matching for unique prefixes
-    pattern_match = detect_by_pattern(key)
-    if pattern_match and pattern_match in PROVIDERS:
-        provider = PROVIDERS[pattern_match]
-        result = await provider.check(client, key)
-        if result.valid:
-            return pattern_match
+            return provider_name
     
     # Step 3: Try format matching (e.g., Zhipu's {id}.{secret})
     format_candidates = detect_by_format(key)
     if format_candidates:
-        # Debug logging
-        try:
-            from webdebug import debug_logger
-            import asyncio as _asyncio
-            _asyncio.create_task(debug_logger.log(
-                category="DETECT",
-                action="detect_by_format",
-                detail=f"Key format matched {len(format_candidates)} candidates",
-                data={"key_prefix": key[:10] + "...", "candidates": format_candidates},
-                level="INFO"
-            ))
-        except ImportError:
-            pass
-        
-        # Try each format candidate
-        async def try_format(name):
+        # Return first candidate that exists in PROVIDERS
+        for name in format_candidates:
             if name in PROVIDERS:
-                result = await PROVIDERS[name].check(client, key)
-                return name, result.valid
-            return name, False
-        format_tasks = [try_format(n) for n in format_candidates]
-        format_results = await asyncio.gather(*format_tasks)
-        for name, valid in format_results:
-            if valid:
                 return name
     # Step 4: Concurrently probe ALL providers
     # First, get models from all providers concurrently
@@ -240,10 +208,10 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
                 if isinstance(data, dict) and "data" in data:
                     models = [m.get("id", "") for m in data["data"] if m.get("id")]
                     if models:
-                        return name, models
-        except:
-            pass
-        return name, []
+                        return name, models, True  # name, models, is_valid
+        except Exception:
+            pass  # Request failed, continue with other providers
+        return name, [], False
     
     # Get models from all providers concurrently
     model_tasks = [get_provider_models(name, provider) for name, provider in PROVIDERS.items()]
@@ -251,11 +219,17 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
     
     # Build tasks: (provider_name, model) pairs
     tasks = []
-    for name, models in model_results:
-        if not models:
-            continue
-        for model in models:
-            tasks.append((name, model))
+    valid_providers = []  # Providers that returned 200 from /v1/models
+    for name, models, is_valid in model_results:
+        if is_valid:
+            valid_providers.append(name)
+        if models:
+            for model in models:
+                tasks.append((name, model))
+        else:
+            provider = PROVIDERS[name]
+            fallback = getattr(provider, 'check_model', 'gpt-3.5-turbo')
+            tasks.append((name, fallback))
     
     # Concurrently check all (provider, model) pairs
     import re
@@ -279,45 +253,79 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
             )
             body = resp.text[:500] if resp.text else ""
             if resp.status_code == 200:
-                return name, True, body
-            elif resp.status_code in (401, 403):
-                # Invalid key, but return body for signature matching
-                return name, False, body
-            return name, False, body
-        except:
-            return name, False, ""
+                return name, True, body, 200
+            else:
+                return name, False, body, resp.status_code
+        except Exception:
+            return name, False, "", 0
     
     # Fire all tasks concurrently
     all_tasks = [try_model(name, model) for name, model in tasks]
     
     # Collect results for signature matching
     valid_provider = None
-    error_bodies = {}  # name -> list of error bodies
+    error_bodies = {}  # name -> list of (body, status_code) tuples
+    provider_status = {}  # name -> {'has_200': bool, 'has_402': bool, 'models_402': list}
     
     for coro in asyncio.as_completed(all_tasks):
-        name, valid, body = await coro
+        name, valid, body, status_code = await coro
+        
+        # Initialize provider status if not exists
+        if name not in provider_status:
+            provider_status[name] = {'has_200': False, 'has_402': False, 'models_402': []}
+        
         if valid:
-            # Found valid provider, return immediately
+            # Found valid provider (200 response)
+            provider_status[name]['has_200'] = True
             return name
+        elif status_code == 402:
+            # Balance insufficient - mark provider but continue testing
+            provider_status[name]['has_402'] = True
+            provider_status[name]['models_402'].append(model)
         elif body:
             # Collect error body for signature matching
             if name not in error_bodies:
                 error_bodies[name] = []
-            error_bodies[name].append(body)
+            error_bodies[name].append((body, status_code))
+    
+    # Check if any provider has /v1/models returning 200 but all models return 402 (balance insufficient)
+    # This means the key is valid but has no balance
+    for name, status in provider_status.items():
+        if name in valid_providers and status['has_402'] and not status['has_200']:
+            # Provider's /v1/models returned 200, but all models returned 402
+            # This means the key is valid but has no balance
+            try:
+                from webdebug import debug_logger
+                import asyncio as _asyncio
+                _asyncio.create_task(debug_logger.log(
+                    category="DETECT",
+                    action="balance_insufficient",
+                    detail=f"Provider {name} has valid /v1/models but all models return 402",
+                    data={"provider": name, "models_402": status['models_402']},
+                    level="INFO"
+                ))
+            except ImportError:
+                pass
+            return name
     
     # No valid provider found - try signature matching on error bodies
     # Only return if we have a VERY HIGH confidence match (multiple signatures matched)
     best_score = -1
     best_name = None
     
-    for name, bodies in error_bodies.items():
-        for body in bodies:
-            score = score_provider(name, body, 401)
+    # Providers whose /v1/models doesn't validate keys (returns 200 even with invalid keys)
+    UNRELIABLE_MODELS_ENDPOINT = {"ppio", "nvidia", "modelscope"}
+    
+    for name, entries in error_bodies.items():
+        for body, status_code in entries:
+            score = score_provider(name, body, status_code)
+            # Bonus for providers that returned 200 from /v1/models (but only reliable ones)
+            # Only give bonus if /v1/chat/completions also succeeded (no error body)
+            if name in valid_providers and name not in UNRELIABLE_MODELS_ENDPOINT and name not in error_bodies:
+                score += 500
             if score > best_score:
                 best_score = score
                 best_name = name
-    
-    # Debug logging for signature matching
     try:
         from webdebug import debug_logger
         import asyncio as _asyncio

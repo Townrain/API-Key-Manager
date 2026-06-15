@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-06-15
+
+### Added
+
+- **API Tests for 8 Endpoints** — Added tests for /api/test/token, /api/test/concurrency, /api/models/capabilities, /api/models/check, /api/progress/stream, and batch aliases.
+- **Client-Side Model Caching** — Frontend caches fetched models and capabilities, type filter changes now use local filtering instead of re-fetching.
+- **Full Type Filter Support** — /api/models endpoint now supports all 7 type filters (vision/tooluse/reasoning/websearch/embedding/rerank/free).
+
+### Fixed
+
+- **StatsChart Runtime Crash** — Fixed StatsChartProviderEntry missing provider/display_name/statuses fields, and StatsChartResponse.providers type mismatch (dict vs list).
+- **KeyInfo Missing key Field** — Added key field to KeyInfo model so /api/keys returns actual key values.
+- **KeyExportItem Missing key Field** — Added key field to KeyExportItem model so /api/keys/export returns actual key values.
+- **Model Capabilities Extraction** — Fixed extract_model_caps.py to generate embedding_regex/rerank_regex fields and use ^$ anchoring to prevent substring false matches.
+- **Cherry Studio Sync Workflow** — Fixed .github/workflows/sync-cherry-models.yml referencing stale src/providers/models_registry.py path.
+- **Websearch Patterns** — Added ^$ anchoring to all capability patterns to prevent o1 matching o1-mini.
+- **Autofill Styling** — Added -webkit-autofill CSS override to prevent browser autofill from turning input background white.
+
+### Changed
+
+- **Capability Patterns** — Changed from substring matching (re.search) to exact matching (^...$ anchored) for all model capability patterns.
+- **Extraction Script** — Added rerank capability extraction from Cherry Studio's native rerank field instead of keyword splitting.
+
+## [2.2.1] - 2026-06-14
+
+### Fixed
+
+- **Cherry Studio Sync** — Fixed extract_model_caps.py output path and validation test cases.
+
 ## [2.2.0] - 2026-06-14
 
 ### Added

@@ -2,7 +2,7 @@
 
 Manage and validate API keys for 37+ AI providers. Import, check validity, test token limits and concurrency, query balances, and export working keys.
 
-Version: 1.0.0
+Version: 3.0.0
 
 ## Installation
 

@@ -83,7 +83,7 @@ class TestWebhookManager:
     def test_register_webhook(self, manager):
         webhook_id = manager.register("https://example.com/hook")
         assert webhook_id is not None
-        assert len(webhook_id) == 8
+        assert len(webhook_id) == 16  # secrets.token_hex(8) produces 16 hex chars
 
         config = manager.get(webhook_id)
         assert config is not None

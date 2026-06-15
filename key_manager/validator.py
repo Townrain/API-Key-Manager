@@ -1,13 +1,12 @@
 import asyncio
-import json
-from datetime import datetime
-from pathlib import Path
+from datetime import datetime, timezone
 
 import httpx
 
 from .providers import PROVIDERS
 from .logger import KeyLogger
-
+from .storage import KeyStore
+from .config import load_config
 
 async def validate_keys(keys_file: str = "./data/keys.json",
                         results_file: str = "./data/check_results.json",
@@ -18,11 +17,14 @@ async def validate_keys(keys_file: str = "./data/keys.json",
                         provider_filter: str = None,
                         status_filter: str = None,
                         single_key: str = None,
-                        progress_callback=None) -> dict:
+                        progress_callback=None,
+                        config: dict = None) -> dict:
     logger = KeyLogger(logs_dir, "check")
 
-    with open(keys_file, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    # Use KeyStore for encrypted storage
+    cfg = config or load_config()
+    store = KeyStore(keys_file, cfg)
+    data = store.load()
 
     keys_to_check = []
     for key, info in data["keys"].items():
@@ -36,7 +38,7 @@ async def validate_keys(keys_file: str = "./data/keys.json",
 
     total = len(keys_to_check)
     results = {
-        "run_at": datetime.utcnow().isoformat() + "Z",
+        "run_at": datetime.now(timezone.utc).isoformat() + "Z",
         "total": total,
         "summary": {
             "valid": {"count": 0, "keys": []},
@@ -165,7 +167,7 @@ async def validate_keys(keys_file: str = "./data/keys.json",
 
         data["keys"][key]["status"] = status
         data["keys"][key]["checks"].append({
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
             "status": status,
             "status_code": result.status_code,
             "latency_ms": result.latency_ms,
@@ -173,12 +175,14 @@ async def validate_keys(keys_file: str = "./data/keys.json",
             "error_type": getattr(result, 'error_type', None),
             "balance": getattr(result, 'balance', None)
         })
-        data["keys"][key]["last_checked"] = datetime.utcnow().isoformat() + "Z"
+        data["keys"][key]["last_checked"] = datetime.now(timezone.utc).isoformat() + "Z"
 
-    with open(keys_file, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    # Use KeyStore for encrypted storage
+    store.save(data)
 
+    # Results file is not sensitive, write directly
     with open(results_file, "w", encoding="utf-8") as f:
+        import json
         json.dump(results, f, indent=2, ensure_ascii=False)
 
     logger.flush()

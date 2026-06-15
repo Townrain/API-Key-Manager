@@ -1,5 +1,9 @@
+import copy
+import logging
 import yaml
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_CONFIG = {
     "scan": {
@@ -47,15 +51,53 @@ def _deep_merge(base: dict, override: dict) -> dict:
     return result
 
 
+def _validate_config(config: dict) -> dict:
+    """Validate config values and warn about unknown keys."""
+    valid_keys = set(DEFAULT_CONFIG.keys())
+    unknown_keys = set(config.keys()) - valid_keys
+    if unknown_keys:
+        logger.warning(f"Unknown config keys (ignored): {unknown_keys}")
+
+    # Validate numeric values
+    check_config = config.get("check", {})
+    if check_config.get("concurrency", 100) < 1:
+        logger.warning("check.concurrency must be >= 1, using default")
+        check_config["concurrency"] = 100
+    if check_config.get("timeout_seconds", 30) < 1:
+        logger.warning("check.timeout_seconds must be >= 1, using default")
+        check_config["timeout_seconds"] = 30
+
+    rate_limit = config.get("rate_limit", {})
+    if rate_limit.get("requests_per_minute", 60) < 0:
+        logger.warning("rate_limit.requests_per_minute must be >= 0, using default")
+        rate_limit["requests_per_minute"] = 60
+
+    return config
+
+
 def load_config(path: str = "config.yaml") -> dict:
     config_path = Path(path)
     if config_path.exists():
-        with open(config_path, "r", encoding="utf-8") as f:
-            user_config = yaml.safe_load(f) or {}
-        return _deep_merge(DEFAULT_CONFIG, user_config)
-    return DEFAULT_CONFIG.copy()
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                user_config = yaml.safe_load(f) or {}
+            if not isinstance(user_config, dict):
+                logger.warning(f"Config file {path} is not a dict, using defaults")
+                return copy.deepcopy(DEFAULT_CONFIG)
+            config = _deep_merge(DEFAULT_CONFIG, user_config)
+            return _validate_config(config)
+        except yaml.YAMLError as e:
+            logger.error(f"Failed to parse config file {path}: {e}")
+            return copy.deepcopy(DEFAULT_CONFIG)
+        except Exception as e:
+            logger.error(f"Failed to load config file {path}: {e}")
+            return copy.deepcopy(DEFAULT_CONFIG)
+    return copy.deepcopy(DEFAULT_CONFIG)
 
 
 def save_config(config: dict, path: str = "config.yaml"):
-    with open(path, "w", encoding="utf-8") as f:
-        yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
+    except Exception as e:
+        logger.error(f"Failed to save config file {path}: {e}")

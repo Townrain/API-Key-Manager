@@ -32,3 +32,9 @@ data/check_results.json
 data/test_results.json
 data/signature_verification_report.json
 config.yaml
+
+# 测试和覆盖率
+.coverage
+.pytest_cache/
+*.pyc
+__pycache__/

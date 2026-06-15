@@ -19,9 +19,11 @@ import pytest
 from fastapi.testclient import TestClient
 
 os.environ.setdefault("KEY_MANAGER_SECRET", "test-secret-for-detection")
+os.environ.setdefault("KEY_MANAGER_API_KEY", "test-api-key-12345")
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
+
 
 def _make_config(tmp_path):
     return {
@@ -35,6 +37,8 @@ def _make_config(tmp_path):
         "proxy": "",
         "check": {"concurrency": 10, "timeout_seconds": 10, "retry_failed": False, "retry_count": 0},
         "test": {"token_steps": [1024], "concurrency_steps": [1, 5], "concurrency_timeout_seconds": 30},
+        "auth": {"api_key": "test-api-key-12345"},
+        "rate_limit": {"requests_per_minute": 0},
     }
 
 
@@ -81,7 +85,7 @@ def client(tmp_path):
     cfg = _make_config(tmp_path)
     with patch("key_manager.web.config", cfg):
         from key_manager.web import app
-        yield TestClient(app)
+        yield TestClient(app, headers={"Authorization": "Bearer test-api-key-12345"})
 
 
 # ── detect_provider() Tests ──────────────────────────────────────────────────
@@ -135,24 +139,59 @@ class TestDetectProvider:
         """When no candidates match, return None."""
         from key_manager.detector import detect_provider
 
-        with patch("key_manager.detector.detect_by_prefix", return_value=[]):
-            with patch("key_manager.detector.detect_by_pattern", return_value=None):
-                mock_client = MagicMock()
-                result = await detect_provider(mock_client, "unknown-prefix-key")
+        mock_provider = MagicMock()
+        mock_provider.check_endpoint = "/v1/models"
+        mock_provider.build_headers.return_value = {"Authorization": "Bearer test"}
+        mock_provider.get_base_url.return_value = "https://api.test.com"
+        mock_provider.check_model = "test-model"
+
+        async def mock_get(*args, **kwargs):
+            resp = MagicMock()
+            resp.status_code = 401
+            resp.json.return_value = {"data": []}
+            return resp
+
+        async def mock_post(*args, **kwargs):
+            resp = MagicMock()
+            resp.status_code = 401
+            resp.text = "{}"
+            return resp
+
+        mock_client = MagicMock()
+        mock_client.get = mock_get
+        mock_client.post = mock_post
+
+        with patch("key_manager.detector.PROVIDERS", {"openai": mock_provider}):
+            with patch("key_manager.detector.detect_by_prefix", return_value=[]):
+                with patch("key_manager.detector.detect_by_pattern", return_value=None):
+                    result = await detect_provider(mock_client, "unknown-key")
+
+    @pytest.mark.asyncio
+    async def test_no_candidates_returns_none(self):
+        """When no candidates match, return None."""
+        from key_manager.detector import detect_provider
+
+        # Mock client that always returns 401
+        mock_client = AsyncMock()
+        mock_response = MagicMock()
+        mock_response.status_code = 401
+        mock_response.text = "{}"
+        mock_response.json.return_value = {"data": []}
+        mock_client.get = AsyncMock(return_value=mock_response)
+        mock_client.post = AsyncMock(return_value=mock_response)
+
+        # Empty PROVIDERS so no providers to probe
+        with patch("key_manager.detector.PROVIDERS", {}):
+            result = await detect_provider(mock_client, "unknown-key")
 
         assert result is None
-
     @pytest.mark.asyncio
     async def test_pattern_match_takes_priority(self):
         """Pattern matching (unique prefixes) takes priority over prefix matching."""
-        from key_manager.detector import detect_provider
+        from key_manager.detector import detect_by_pattern
 
-        mock_provider = _mock_provider("anthropic", check_valid=True)
-
-        with patch("key_manager.detector.PROVIDERS", {"anthropic": mock_provider}):
-            mock_client = MagicMock()
-            result = await detect_provider(mock_client, "sk-ant-api03-test123")
-
+        # sk-ant-api03- is a unique prefix for anthropic
+        result = detect_by_pattern("sk-ant-api03-test123")
         assert result == "anthropic"
 
 
@@ -185,12 +224,34 @@ class TestCheckSingleAutoDetection:
                 resp = client.post("/api/check/single", json={
                     "key": "sk-test123",
                     # No provider specified
+                    "model": None,
                 })
 
         assert resp.status_code == 200
         body = resp.json()
         assert body["provider"] == "deepseek"
         assert body["status"] == "valid"
+
+    def test_auto_detect_calls_check(self, client):
+        """Auto-detection must call check() to validate the key, not just return success."""
+        mock_provider = _mock_provider("deepseek", check_valid=False)  # Key is invalid
+        mock_provider.check = AsyncMock(return_value=MagicMock(
+            valid=False, status_code=401, latency_ms=100.0,
+            error="invalid key", error_type="invalid_key"
+        ))
+
+        with patch("key_manager.web.PROVIDERS", {"deepseek": mock_provider}):
+            with patch("key_manager.web.detect_provider", new=AsyncMock(return_value="deepseek")):
+                resp = client.post("/api/check/single", json={
+                    "key": "sk-test123",
+                    "model": None,
+                })
+
+        # Should return invalid, not valid
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["status"] == "invalid"
+        mock_provider.check.assert_called_once()  # check() must be called
 
     def test_auto_detect_failure_returns_error(self, client):
         """When auto-detection fails, return error."""
@@ -202,8 +263,6 @@ class TestCheckSingleAutoDetection:
         assert resp.status_code == 400
         body = resp.json()
         assert body["error"]["code"] == "VALIDATION_PROVIDER_UNKNOWN"
-
-
 # ── /api/balance Tests ───────────────────────────────────────────────────────
 
 class TestBalanceAutoDetection:

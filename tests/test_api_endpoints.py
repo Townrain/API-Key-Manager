@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 os.environ.setdefault("KEY_MANAGER_SECRET", "test-secret-for-api")
+os.environ.setdefault("KEY_MANAGER_API_KEY", "test-api-key-12345")
 
 
 def _make_config(tmp_path):
@@ -28,7 +29,7 @@ def _make_config(tmp_path):
             "concurrency_steps": [1, 5],
             "concurrency_timeout_seconds": 30,
         },
-        "auth": {"api_key": ""},
+        "auth": {"api_key": "test-api-key-12345"},
         "rate_limit": {"requests_per_minute": 0},
     }
 
@@ -50,7 +51,7 @@ def _make_keys_data():
                 "checks": [],
                 "tests": {"max_tokens": 16384, "max_concurrency": 10},
                 "sources": [{"file": "test.json"}],
-                "balance": {"balance": 100.0, "currency": "USD"},
+                "balance": 100.0,
             },
             "sk-test-anthropic-67890": {
                 "key": "sk-test-anthropic-67890",
@@ -71,7 +72,7 @@ def client(tmp_path):
     cfg = _make_config(tmp_path)
     with patch("key_manager.web.config", cfg):
         from key_manager.web import app
-        yield TestClient(app)
+        yield TestClient(app, headers={"Authorization": "Bearer test-api-key-12345"})
 
 
 @pytest.fixture
@@ -139,11 +140,19 @@ class TestStatsEndpoints:
         assert body["providers"]["anthropic"]["invalid"] == 1
 
     def test_stats_chart_bug(self, client, keys_file):
-        """GET /api/stats/chart has a bug - StatsChartProviderEntry missing statuses."""
-        # This is a known bug in web.py:1426
-        # providers[provider].statuses.valid += 1 should be providers[provider].valid += 1
-        # Skipping this test until bug is fixed
-        pytest.skip("Known bug: StatsChartProviderEntry has no 'statuses' attribute")
+        """GET /api/stats/chart returns chart data."""
+        resp = client.get("/api/stats/chart")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert "providers" in body
+        assert "statuses" in body
+        # Should have providers for our test keys
+        provider_names = [p["provider"] for p in body["providers"]]
+        assert "openai" in provider_names
+        assert "anthropic" in provider_names
+        # Check statuses
+        assert body["statuses"]["valid"] == 1
+        assert body["statuses"]["invalid"] == 1
 
 class TestProxyEndpoint:
     """Tests for /api/proxy endpoint."""
@@ -498,3 +507,179 @@ class TestUploadEndpoint:
         assert resp.status_code == 200
         body = resp.json()
         assert body["new"] == 1
+
+
+# ---------------------------------------------------------------------------
+# Test check/single with specific model and auto-detected provider
+# ---------------------------------------------------------------------------
+class TestCheckSingleSpecificModel:
+    """Test /api/check/single with specific model when provider is auto-detected."""
+
+    def test_check_single_with_model_auto_detected(self, client):
+        """When provider is auto-detected and model is specified, should test only that model."""
+        from unittest.mock import AsyncMock, MagicMock, patch
+        
+        # Mock detect_provider to return a provider name
+        mock_detect = AsyncMock(return_value="deepseek")
+        
+        # Mock the provider
+        mock_provider = MagicMock()
+        mock_provider.build_headers.return_value = {"Authorization": "Bearer test-key"}
+        mock_provider.get_base_url.return_value = "https://api.deepseek.com/v1"
+        mock_provider.check_endpoint = "/models"
+        mock_provider.check = AsyncMock(return_value=MagicMock(valid=True, status_code=200, latency_ms=100.0, error=None, error_type=None))
+        mock_provider.get_balance = AsyncMock(return_value=MagicMock(supported=False))
+        mock_provider.get_models = AsyncMock(return_value=["model-1", "model-2"])
+        
+        # Mock httpx.AsyncClient.post to return 200
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"choices": [{"message": {"content": "hi"}}]}
+        
+        with patch("key_manager.web.detect_provider", mock_detect), \
+             patch("key_manager.web.PROVIDERS", {"deepseek": mock_provider}), \
+             patch("httpx.AsyncClient.post", return_value=mock_response):
+            resp = client.post(
+                "/api/check/single",
+                json={"key": "sk-test-key-12345", "model": "deepseek-chat"}
+            )
+        
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["provider"] == "deepseek"
+        assert body["status"] == "valid"
+
+    def test_check_single_without_model_auto_detected(self, client):
+        """When provider is auto-detected and no model specified, should test all models."""
+        from unittest.mock import AsyncMock, MagicMock, patch
+        
+        # Mock detect_provider to return a provider name
+        mock_detect = AsyncMock(return_value="deepseek")
+        
+        # Mock the provider's check method
+        mock_check_result = MagicMock()
+        mock_check_result.valid = True
+        mock_check_result.status_code = 200
+        mock_check_result.latency_ms = 100.0
+        mock_check_result.error = None
+        
+        mock_provider = MagicMock()
+        mock_provider.check = AsyncMock(return_value=mock_check_result)
+        mock_provider.build_headers.return_value = {"Authorization": "Bearer test-key"}
+        mock_provider.get_base_url.return_value = "https://api.deepseek.com/v1"
+        mock_provider.check_endpoint = "/models"
+        mock_provider.get_balance = AsyncMock(return_value=MagicMock(supported=False))
+        mock_provider.get_models = AsyncMock(return_value=["model-1", "model-2"])
+        
+        with patch("key_manager.web.detect_provider", mock_detect), \
+             patch("key_manager.web.PROVIDERS", {"deepseek": mock_provider}):
+            resp = client.post(
+                "/api/check/single",
+                json={"key": "sk-test-key-12345"}
+            )
+        
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["provider"] == "deepseek"
+        assert body["status"] == "valid"
+
+
+# =============================================================================
+# Test Token / Concurrency Endpoints
+# =============================================================================
+
+
+class TestTestTokenEndpoint:
+    """Tests for /api/test/token endpoint."""
+
+    def test_test_token_starts_async(self, client):
+        """POST /api/test/token starts async token test."""
+        resp = client.post("/api/test/token")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["message"] == "Token test started"
+        assert body["status"] == "loading"
+
+    def test_test_token_batch_starts_async(self, client):
+        """POST /api/test/token/batch starts async token test (alias)."""
+        resp = client.post("/api/test/token/batch")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["message"] == "Token test started"
+        assert body["status"] == "loading"
+
+
+class TestTestConcurrencyEndpoint:
+    """Tests for /api/test/concurrency endpoint."""
+
+    def test_test_concurrency_starts_async(self, client):
+        """POST /api/test/concurrency starts async concurrency test."""
+        resp = client.post("/api/test/concurrency")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["message"] == "Concurrency test started"
+        assert body["status"] == "loading"
+
+    def test_test_concurrency_batch_starts_async(self, client):
+        """POST /api/test/concurrency/batch starts async concurrency test (alias)."""
+        resp = client.post("/api/test/concurrency/batch")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["message"] == "Concurrency test started"
+        assert body["status"] == "loading"
+
+
+class TestModelsCapabilitiesEndpoint:
+    """Tests for /api/models/capabilities endpoint."""
+
+    def test_models_capabilities_empty(self, client):
+        """GET /api/models/capabilities with empty models returns empty."""
+        resp = client.get("/api/models/capabilities?models=")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert "capabilities" in body
+        assert body["capabilities"] == {}
+
+    def test_models_capabilities_with_models(self, client):
+        """GET /api/models/capabilities with model IDs returns capabilities."""
+        resp = client.get("/api/models/capabilities?models=gpt-4o,claude-3-opus")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert "capabilities" in body
+        # Each model should have capability entries
+        for model_id in ["gpt-4o", "claude-3-opus"]:
+            assert model_id in body["capabilities"]
+
+
+class TestModelsCheckEndpoint:
+    """Tests for /api/models/check endpoint (SSE stream)."""
+
+    def test_models_check_missing_provider(self, client):
+        """POST /api/models/check without provider returns error."""
+        resp = client.post("/api/models/check", json={})
+        # Should return 400 for missing provider
+        assert resp.status_code == 400
+
+    def test_models_check_with_provider(self, client):
+        """POST /api/models/check with provider starts SSE stream."""
+        mock_provider = MagicMock()
+        mock_provider.get_models = AsyncMock(return_value=["gpt-4", "gpt-3.5-turbo"])
+        mock_provider.check = AsyncMock(return_value=MagicMock(valid=True, status_code=200, latency_ms=50.0, error=None, error_type=None))
+        mock_provider.build_headers.return_value = {"Authorization": "Bearer test"}
+        mock_provider.get_base_url.return_value = "https://api.openai.com/v1"
+        mock_provider.check_endpoint = "/models"
+
+        with patch("key_manager.web.PROVIDERS", {"openai": mock_provider}):
+            resp = client.post("/api/models/check", json={"provider": "openai", "key": "sk-test-12345"})
+        # SSE endpoint returns 200 with text/event-stream
+        assert resp.status_code == 200
+
+
+class TestProgressStreamEndpoint:
+    """Tests for /api/progress/stream endpoint (SSE stream)."""
+
+    def test_progress_stream_returns_sse(self, client):
+        """GET /api/progress/stream returns SSE stream."""
+        resp = client.get("/api/progress/stream")
+        assert resp.status_code == 200
+        assert "text/event-stream" in resp.headers.get("content-type", "")
