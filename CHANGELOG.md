@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.1] - 2026-06-16
+
+### Fixed
+
+- **DashScope API Key Detection** — Fixed `sk-sp-` prefix mapping: now correctly maps to `dashscope-coding` (was incorrectly mapped to `dashscope`).
+- **New DashScope Key Format** — Added `sk-ws-` prefix support for DashScope's new API key format.
+- **Prefix Consistency** — Removed `sk-cp-` from `KEY_PATTERNS` (single-provider dict) since it maps to multiple providers (`minimax-plan` and `infini-coding`), keeping only in `KEY_PREFIX_MAP`.
+
 ## [3.0.0] - 2026-06-15
 
 ### Added

@@ -12,7 +12,7 @@
 - **Web 界面** - 赛博朋克风格的管理界面
 - **代理支持** - 支持 HTTP/SOCKS 代理
 - **加密存储** - AES-256-GCM 加密存储 API 密钥，随机盐值
-- **安全防护** - 路径遍历防护、SSRF 防护（含 IPv6）、时序安全认证、强制认证、CORS 配置
+- **安全防护** - 路径遍历防护、SSRF 防护、时序安全认证
 - **API 文档** - Swagger UI 和 Redoc 自动文档
 - **国际化** - 支持中英文错误信息
 - **SDK 支持** - Python 和 TypeScript 客户端库
@@ -52,7 +52,8 @@
 
 | 服务商 | 前缀 | 显示名 |
 |--------|------|--------|
-| DashScope | `sk-sp-` | 阿里百炼 |
+| 阿里百炼 | `sk-ws-` / `sk-` |
+| 阿里百炼编程 | `sk-sp-` |
 | ModelScope | `ms-` | 魔搭 |
 | Zhipu GLM | `sk-` | 智谱 |
 | Kimi | `sk-` | 月之暗面 |
@@ -164,13 +165,11 @@ python web.py
 ### 安全防护
 
 - **路径遍历防护** - 导入端点验证路径在允许目录内
-- **SSRF 防护** - `custom_base_url` 验证域名白名单，阻止私有 IP（含 IPv6），DNS 重绑定防护
+- **SSRF 防护** - `custom_base_url` 验证域名白名单，阻止私有 IP，已接入 `check/single` 和 `balance` 端点
 - **时序安全认证** - 使用 `hmac.compare_digest()` 防止时序攻击
-- **强制认证** - 未配置 API Key 时自动生成随机密钥，拒绝未认证请求
+- **认证警告** - 未配置 API Key 时启动警告
 - **密钥掩码** - API 响应中只返回 `key_masked`，不暴露完整密钥
-- **CORS 配置** - 跨域资源共享安全配置
-- **Webhook 安全** - 使用 `secrets.token_hex` 生成不可预测的 webhook ID
-- **存储安全** - 密钥文件权限加固 (0o600)，AES-256-GCM 加密，PBKDF2 600,000 次迭代
+- **Webhook 安全** - Webhook 端点使用正确的 API 方法，防止运行时错误
 
 ### API 认证
 
@@ -310,7 +309,7 @@ if best_score >= 200:
 ### 检测优先级
 
 | 优先级 | 方法 | 说明 |
-||------||------|
+|--------|------|------|
 | 1 | 模式匹配 | 唯一前缀，如 `sk-proj-` → OpenAI |
 | 2 | 格式匹配 | 特殊格式，如 `{id}.{secret}` → 智谱 |
 | 3 | 全并发探测 | 第一个返回200的服务商胜出 |
@@ -337,9 +336,6 @@ if best_score >= 200:
 - 基于状态码的简化（401 → Key 无效，402 → 余额不足，429 → 请求过于频繁）
 - 基于关键词的模式匹配（authentication、expired、rate limit 等）
 - 长错误信息截断（超过100字符时截断并添加省略号）
-
-## 项目结构
-
 
 ## 模型检测
 
@@ -690,25 +686,12 @@ const result = await client.checkSingleKey({ key: 'sk-xxx', provider: 'openai' }
 
 ### v3.0.0 (2026-06-15)
 
-- **安全修复**: 移除 API 响应中的明文密钥，只返回 key_masked
-- **安全修复**: 强制认证，无配置时自动生成随机 API Key
-- **安全修复**: 使用 hmac.compare_digest 防止时序攻击
-- **安全修复**: 添加 CORS 中间件配置
-- **性能优化**: PBKDF2 密钥缓存，迭代次数提升至 600,000 (OWASP 推荐)
-- **性能优化**: 速率限制器添加 TTL 驱逐，防止内存泄漏
-- **可靠性**: 修复 checker.py 合并逻辑错误
-- **可靠性**: 替换所有裸 except 为 except Exception
-- **可靠性**: 添加配置验证和错误处理
-- **可靠性**: 添加 /healthz 健康检查端点
-- **可靠性**: 修复 datetime.utcnow() 废弃警告
-- **SSRF 防护**: 添加 IPv6 私有范围和 DNS 重绑定防护
-- **Webhook 安全**: 使用 secrets.token_hex 替代 MD5 生成 webhook ID
-- **存储安全**: 密钥文件权限加固 (0o600)
-- **前端**: 模型检测列表添加自定义滚轮条样式
-- **前端**: 修复模型类型下拉窗口被弹窗裁剪的问题
-- **精确匹配修复**: 能力检测从子串匹配改为 ^$ 锚定精确匹配
-- **API Bug 修复**: 修复 /api/stats/chart 运行时崩溃
-- **测试补充**: 新增 8 个端点的测试，覆盖率 91.47%
+- **精确匹配修复**: 能力检测从子串匹配改为 ^$ 锚定精确匹配，修复 o1 误匹配 o1-mini 等问题
+- **API Bug 修复**: 修复 /api/stats/chart 运行时崩溃、/api/keys 和 /api/keys/export 丢失 key 字段
+- **测试补充**: 新增 8 个端点的测试（test/token, test/concurrency, models/capabilities, models/check, progress/stream 等）
+- **前端缓存优化**: 模型类型切换使用本地缓存过滤，不再重复请求 API
+- **Cherry Studio 同步工作流修复**: 修复 GitHub Actions 路径错误和验证脚本
+- **Autofill 样式修复**: 修复浏览器 autofill 导致输入框底色变白
 
 ### v2.2.2 (2026-06-14)
 
@@ -733,7 +716,6 @@ const result = await client.checkSingleKey({ key: 'sk-xxx', provider: 'openai' }
 - **并发优化**: /v1/models 和 chat/completions 都并发调用
 - **超时控制**: 所有网络请求 5 秒超时
 - **模型同步**: 从 Cherry Studio 同步模型数据，支持 ownedBy 映射
-- **新增服务商**: OpenCode Go、OpenCode Zen
 - **新增服务商**: OpenCode Go、OpenCode Zen
 
 ### v2.1.2 (2026-06-11)
