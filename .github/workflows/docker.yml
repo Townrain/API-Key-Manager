@@ -4,7 +4,7 @@ on:
   release:
     types: [published]
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - 'key_manager/**'
       - 'static/**'
@@ -15,7 +15,7 @@ on:
       - 'Dockerfile'
       - '.github/workflows/docker.yml'
   pull_request:
-    branches: [main]
+    branches: [master]
     paths:
       - 'key_manager/**'
       - 'static/**'

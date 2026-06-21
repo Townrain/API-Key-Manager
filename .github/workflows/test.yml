@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - 'key_manager/**'
       - 'tests/**'
@@ -10,7 +10,7 @@ on:
       - 'requirements.txt'
       - '.github/workflows/test.yml'
   pull_request:
-    branches: [main]
+    branches: [master]
     paths:
       - 'key_manager/**'
       - 'tests/**'
