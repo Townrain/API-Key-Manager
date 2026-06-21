@@ -6,7 +6,6 @@ for backward compatibility.
 """
 from key_manager.web._app import *  # noqa: F401, F403
 from key_manager.web._app import (  # noqa: F401
-    _progress_tracker,
     app,
     auth_middleware,
     config,
