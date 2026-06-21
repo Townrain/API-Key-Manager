@@ -12,6 +12,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from key_manager.config import load_config
+from key_manager.providers import PROVIDERS
+from key_manager.storage import KeyStore
 from key_manager.storage import KeyStore
 
 # Module-level config
