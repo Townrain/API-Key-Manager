@@ -31,6 +31,7 @@ dependencies = [
     "uvicorn>=0.32.0",
     "python-multipart>=0.0.9",
     "cryptography>=42.0.0",
+    "jinja2>=3.0.0",
 ]
 
 [project.optional-dependencies]
