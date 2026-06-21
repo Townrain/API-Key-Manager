@@ -48,7 +48,7 @@ jobs:
           pip install -e ".[dev]"
 
       - name: Lint with ruff
-        run: ruff check .
+        run: ruff check key_manager/ --select=E,W,F,I,B,C4,UP --ignore=E501
 
       - name: Run tests
         env:
