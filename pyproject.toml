@@ -82,6 +82,11 @@ select = [
 ]
 ignore = [
     "E501",  # line too long (handled by formatter)
+    "E402",  # module level import not at top of file
+    "B904",  # raise ... from within except clause
+    "B008",  # function call in argument defaults
+    "F821",  # undefined name (asyncio)
+    "F401",  # imported but unused (re-exports)
 ]
 
 [tool.ruff.lint.isort]

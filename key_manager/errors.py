@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -92,8 +92,8 @@ class ErrorResponse(BaseModel):
     def error_factory(
         cls,
         code: ErrorCode,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> "ErrorResponse":
         return cls(
             error=ErrorDetail(
@@ -110,15 +110,15 @@ class KeyManagerError(Exception):
     def __init__(
         self,
         code: ErrorCode,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         self.code = code
         self.message = message or DEFAULT_MESSAGES.get(code, code.value)
         self.details = details or {}
         super().__init__(self.message)
 
-    def to_response(self, status_code: Optional[int] = None) -> tuple[int, ErrorResponse]:
+    def to_response(self, status_code: int | None = None) -> tuple[int, ErrorResponse]:
         """Convert to HTTP status code and ErrorResponse body."""
         http_code = status_code or ERROR_STATUS_CODES.get(self.code, 500)
         body = ErrorResponse(
@@ -137,8 +137,8 @@ class ValidationError(KeyManagerError):
     def __init__(
         self,
         code: ErrorCode = ErrorCode.VALIDATION_MISSING_KEY,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(code=code, message=message, details=details)
 
@@ -149,8 +149,8 @@ class StorageError(KeyManagerError):
     def __init__(
         self,
         code: ErrorCode = ErrorCode.STORAGE_READ_ERROR,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(code=code, message=message, details=details)
 
@@ -161,8 +161,8 @@ class ProviderError(KeyManagerError):
     def __init__(
         self,
         code: ErrorCode = ErrorCode.PROVIDER_CHECK_FAILED,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(code=code, message=message, details=details)
 
@@ -173,7 +173,7 @@ class SystemError(KeyManagerError):
     def __init__(
         self,
         code: ErrorCode = ErrorCode.SYSTEM_INTERNAL_ERROR,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(code=code, message=message, details=details)

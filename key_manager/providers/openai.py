@@ -1,6 +1,6 @@
 import asyncio
-import time
-from .base import ProviderBase, CheckResult, TestResult
+
+from .base import CheckResult, ProviderBase, TestResult
 
 
 class OpenAIProvider(ProviderBase):
@@ -26,7 +26,7 @@ class OpenAIProvider(ProviderBase):
                 tasks.append(self._concurrency_probe(client, headers))
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
-            success = sum(1 for r in results if not isinstance(r, Exception) and r)
+            sum(1 for r in results if not isinstance(r, Exception) and r)
             rate_limited = sum(1 for r in results if not isinstance(r, Exception) and not r)
 
             if rate_limited / step >= 0.3:

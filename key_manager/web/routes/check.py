@@ -1,33 +1,33 @@
 """Key validation check routes."""
 
 import asyncio
-import httpx
-from fastapi import APIRouter, Form, Body
 
-from key_manager.parser import mask_key
-from key_manager.proxy import get_proxy
-from key_manager.providers import get_display_name
-from key_manager.providers.base import simplify_error, CheckResult
-from key_manager.detector import detect_by_prefix
-from key_manager.logger import project_logger
-from key_manager.i18n import t
-from key_manager.webhook import webhook_manager, WebhookEvent
-from key_manager.ssrf import validate_custom_base_url, get_allowed_domains
-from key_manager.url_override import custom_base_url
-from key_manager.errors import ErrorCode, ValidationError
-from key_manager.api_models import (
-    CheckSingleRequest,
-    CheckSingleResponse,
-    CheckBatchItem,
-    CheckBatchRequest,
-    CheckBatchResult,
-    CheckBatchSummary,
-    CheckBatchResponse,
-)
-from key_manager.web.progress import _make_progress_callback
+import httpx
+from fastapi import APIRouter, Body, Form
 
 # Import _app module for patchable names (tests patch key_manager.web._app.*)
 import key_manager.web._app as _app_mod
+from key_manager.api_models import (
+    CheckBatchItem,
+    CheckBatchRequest,
+    CheckBatchResponse,
+    CheckBatchResult,
+    CheckBatchSummary,
+    CheckSingleRequest,
+    CheckSingleResponse,
+)
+from key_manager.detector import detect_by_prefix
+from key_manager.errors import ErrorCode, ValidationError
+from key_manager.i18n import t
+from key_manager.logger import project_logger
+from key_manager.parser import mask_key
+from key_manager.providers import get_display_name
+from key_manager.providers.base import CheckResult, simplify_error
+from key_manager.proxy import get_proxy
+from key_manager.ssrf import get_allowed_domains, validate_custom_base_url
+from key_manager.url_override import custom_base_url
+from key_manager.web.progress import _make_progress_callback
+from key_manager.webhook import WebhookEvent, webhook_manager
 
 router = APIRouter(tags=["Check"])
 
@@ -39,13 +39,14 @@ async def _check_model_specific(
     model_name: str,
 ) -> 'CheckResult':
     """Check a specific model against a provider.
-    
+
     Extracted to eliminate duplication in api_check_single.
     """
-    from key_manager.providers.base import CheckResult
-    import time as _time
     import re as _re
-    
+    import time as _time
+
+    from key_manager.providers.base import CheckResult
+
     headers = provider_obj.build_headers(key)
     headers["Content-Type"] = "application/json"
     # Extract version path from check_endpoint
@@ -129,7 +130,7 @@ async def api_check_single(body: CheckSingleRequest):
 
     # Detect provider if not given - use smart detection with probe+check verification
     proxy = get_proxy(_app_mod.config.get("proxy")) or None
-    
+
     # Debug logging for proxy config
     if _app_mod.DEBUG_ENABLED and _app_mod.debug_logger:
         import asyncio as _asyncio
@@ -141,7 +142,7 @@ async def api_check_single(body: CheckSingleRequest):
             level="INFO"
         ))
         task.add_done_callback(lambda t: t.exception() if not t.cancelled() else None)  # Suppress unhandled exception warning
-    
+
     try:
         async with httpx.AsyncClient(
             timeout=_app_mod.config["check"]["timeout_seconds"],
@@ -167,7 +168,6 @@ async def api_check_single(body: CheckSingleRequest):
             # If provider was auto-detected, the detection already validated the key
             # Only call check() if provider was manually specified
             model_name = body.model
-            from key_manager.providers.base import CheckResult
             if body.provider:
                 if model_name:
                     result = await _check_model_specific(client, provider_obj, key, model_name)

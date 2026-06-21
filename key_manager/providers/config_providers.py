@@ -1,6 +1,8 @@
 """Load custom providers from config.yaml."""
-import yaml
 import logging
+
+import yaml
+
 from .base import ProviderBase
 
 logger = logging.getLogger(__name__)
@@ -9,7 +11,7 @@ logger = logging.getLogger(__name__)
 def load_custom_providers() -> dict[str, ProviderBase]:
     """Load custom providers from config.yaml providers.custom section."""
     try:
-        with open("config.yaml", "r", encoding="utf-8") as f:
+        with open("config.yaml", encoding="utf-8") as f:
             config = yaml.safe_load(f) or {}
     except FileNotFoundError:
         return {}
@@ -90,7 +92,7 @@ def _create_provider_from_config(config: dict) -> ProviderBase:
 def save_custom_provider(config: dict) -> None:
     """Save a custom provider to config.yaml."""
     try:
-        with open("config.yaml", "r", encoding="utf-8") as f:
+        with open("config.yaml", encoding="utf-8") as f:
             full_config = yaml.safe_load(f) or {}
     except FileNotFoundError:
         full_config = {}
@@ -116,7 +118,7 @@ def save_custom_provider(config: dict) -> None:
 def remove_custom_provider(name: str) -> bool:
     """Remove a custom provider from config.yaml."""
     try:
-        with open("config.yaml", "r", encoding="utf-8") as f:
+        with open("config.yaml", encoding="utf-8") as f:
             full_config = yaml.safe_load(f) or {}
     except FileNotFoundError:
         return False
