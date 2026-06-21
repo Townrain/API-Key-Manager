@@ -145,7 +145,7 @@ class TestCheckSingleAutoDetection:
         """When provider is specified, use it directly."""
         mock_provider = _mock_provider("openai", check_valid=True)
 
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"openai": mock_provider}):
             resp = client.post("/api/check/single", json={
                 "key": "sk-test123",
                 "provider": "openai",
@@ -160,8 +160,8 @@ class TestCheckSingleAutoDetection:
         """When no provider specified, auto-detect using detect_provider()."""
         mock_provider = _mock_provider("deepseek", check_valid=True, models=["deepseek-chat"])
 
-        with patch("key_manager.web._app.PROVIDERS", {"deepseek": mock_provider}):
-            with patch("key_manager.web._app.detect_provider", new=AsyncMock(return_value="deepseek")):
+        with patch("key_manager.providers.PROVIDERS", {"deepseek": mock_provider}):
+            with patch("key_manager.detector.detect_provider", new=AsyncMock(return_value="deepseek")):
                 resp = client.post("/api/check/single", json={
                     "key": "sk-test123",
                     # No provider specified
@@ -181,8 +181,8 @@ class TestCheckSingleAutoDetection:
             error="invalid key", error_type="invalid_key"
         ))
 
-        with patch("key_manager.web._app.PROVIDERS", {"deepseek": mock_provider}):
-            with patch("key_manager.web._app.detect_provider", new=AsyncMock(return_value="deepseek")):
+        with patch("key_manager.providers.PROVIDERS", {"deepseek": mock_provider}):
+            with patch("key_manager.detector.detect_provider", new=AsyncMock(return_value="deepseek")):
                 resp = client.post("/api/check/single", json={
                     "key": "sk-test123",
                     "model": None,
@@ -196,7 +196,7 @@ class TestCheckSingleAutoDetection:
 
     def test_auto_detect_failure_returns_error(self, client):
         """When auto-detection fails, return error."""
-        with patch("key_manager.web._app.detect_provider", new=AsyncMock(return_value="unknown")):
+        with patch("key_manager.detector.detect_provider", new=AsyncMock(return_value="unknown")):
             resp = client.post("/api/check/single", json={
                 "key": "unknown-prefix-key",
             })
@@ -213,7 +213,7 @@ class TestBalanceAutoDetection:
         """When provider is specified, use it directly."""
         mock_provider = _mock_provider("deepseek", balance=50.0)
 
-        with patch("key_manager.web._app.PROVIDERS", {"deepseek": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"deepseek": mock_provider}):
             resp = client.post("/api/balance", json={
                 "key": "sk-test123",
                 "provider": "deepseek",
@@ -229,8 +229,8 @@ class TestBalanceAutoDetection:
         """When no provider specified, auto-detect using detect_provider()."""
         mock_provider = _mock_provider("deepseek", balance=75.0)
 
-        with patch("key_manager.web._app.PROVIDERS", {"deepseek": mock_provider}):
-            with patch("key_manager.web._app.detect_provider", new=AsyncMock(return_value="deepseek")):
+        with patch("key_manager.providers.PROVIDERS", {"deepseek": mock_provider}):
+            with patch("key_manager.detector.detect_provider", new=AsyncMock(return_value="deepseek")):
                 resp = client.post("/api/balance", json={
                     "key": "sk-test123",
                     # No provider specified
@@ -243,7 +243,7 @@ class TestBalanceAutoDetection:
 
     def test_auto_detect_failure_returns_error(self, client):
         """When auto-detection fails, return error."""
-        with patch("key_manager.web._app.detect_provider", new=AsyncMock(return_value="unknown")):
+        with patch("key_manager.detector.detect_provider", new=AsyncMock(return_value="unknown")):
             resp = client.post("/api/balance", json={
                 "key": "unknown-prefix-key",
             })
@@ -262,7 +262,7 @@ class TestModelsAutoDetection:
         """When provider is specified, return its models."""
         mock_provider = _mock_provider("openai", models=["gpt-3.5-turbo", "gpt-4"])
 
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"openai": mock_provider}):
             resp = client.get("/api/models?provider=openai&key=sk-test123")
 
         assert resp.status_code == 200
@@ -274,8 +274,8 @@ class TestModelsAutoDetection:
         """When no provider specified but key provided, auto-detect."""
         mock_provider = _mock_provider("deepseek", models=["deepseek-chat", "deepseek-coder"])
 
-        with patch("key_manager.web._app.PROVIDERS", {"deepseek": mock_provider}):
-            with patch("key_manager.web._app.detect_provider", new=AsyncMock(return_value="deepseek")):
+        with patch("key_manager.providers.PROVIDERS", {"deepseek": mock_provider}):
+            with patch("key_manager.detector.detect_provider", new=AsyncMock(return_value="deepseek")):
                 resp = client.get("/api/models?key=sk-test123")
 
         assert resp.status_code == 200
@@ -391,8 +391,8 @@ class TestTestSingleAutoDetection:
         """When no provider specified, auto-detect using detect_provider()."""
         mock_provider = _mock_provider("deepseek", check_valid=True, models=["deepseek-chat"])
 
-        with patch("key_manager.web._app.PROVIDERS", {"deepseek": mock_provider}):
-            with patch("key_manager.web._app.detect_provider", new=AsyncMock(return_value="deepseek")):
+        with patch("key_manager.providers.PROVIDERS", {"deepseek": mock_provider}):
+            with patch("key_manager.detector.detect_provider", new=AsyncMock(return_value="deepseek")):
                 resp = client.post("/api/test/single", json={
                     "key": "sk-test123",
                     # No provider specified
@@ -412,7 +412,7 @@ class TestRegression:
         """Existing behavior: check with specified provider should still work."""
         mock_provider = _mock_provider("openai", check_valid=True)
 
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"openai": mock_provider}):
             resp = client.post("/api/check/single", json={
                 "key": "sk-proj-test123",
                 "provider": "openai",
@@ -425,7 +425,7 @@ class TestRegression:
         """Existing behavior: balance with specified provider should still work."""
         mock_provider = _mock_provider("deepseek", balance=100.0)
 
-        with patch("key_manager.web._app.PROVIDERS", {"deepseek": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"deepseek": mock_provider}):
             resp = client.post("/api/balance", json={
                 "key": "sk-test123",
                 "provider": "deepseek",
@@ -438,7 +438,7 @@ class TestRegression:
         """Existing behavior: models with specified provider should still work."""
         mock_provider = _mock_provider("openai", models=["gpt-4"])
 
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"openai": mock_provider}):
             resp = client.get("/api/models?provider=openai&key=sk-test123")
 
         assert resp.status_code == 200

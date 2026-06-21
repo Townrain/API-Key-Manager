@@ -75,7 +75,7 @@ class TestE2EWorkflow:
             "summary": {"valid": {"count": 1}, "invalid": {"count": 0}, "error": {"count": 0}},
             "results": [],
         }
-        with patch("key_manager.web._app.validate_keys", new=AsyncMock(return_value=check_result)):
+        with patch("key_manager.validator.validate_keys", new=AsyncMock(return_value=check_result)):
             resp = client.post("/api/check", json={})
             assert resp.status_code == 200
             assert resp.json()["total"] == 1

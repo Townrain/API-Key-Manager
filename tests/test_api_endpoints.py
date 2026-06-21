@@ -164,7 +164,7 @@ class TestCheckBatchEndpoint:
         mock_provider = MagicMock()
         mock_provider.check = AsyncMock(return_value=mock_result)
 
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"openai": mock_provider}):
             resp = client.post("/api/check/batch", json={
                 "keys": [
                     {"key": "sk-test-12345", "provider": "openai"}
@@ -199,7 +199,7 @@ class TestTestEndpoints:
         mock_provider.test_concurrency = AsyncMock(return_value=MagicMock(max_concurrency=10, error=None))
         mock_provider.get_models = AsyncMock(return_value=["gpt-4"])
 
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"openai": mock_provider}):
             resp = client.post("/api/test/single", json={"key": "sk-test-12345", "provider": "openai"})
         assert resp.status_code == 200
         body = resp.json()
@@ -233,7 +233,7 @@ class TestModelEndpoints:
         mock_provider.get_models = AsyncMock(return_value=["gpt-4", "gpt-3.5-turbo"])
         mock_provider.models = ["gpt-4", "gpt-3.5-turbo"]
 
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"openai": mock_provider}):
             resp = client.get("/api/models?provider=openai")
         assert resp.status_code == 200
         body = resp.json()
@@ -274,7 +274,7 @@ class TestBalanceEndpoint:
             supported=True, balance=100.0, currency="USD", error=None
         ))
 
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"openai": mock_provider}):
             resp = client.post("/api/balance", json={"key": "sk-test-12345", "provider": "openai"})
         assert resp.status_code == 200
         body = resp.json()
@@ -286,7 +286,7 @@ class TestBalanceEndpoint:
         """POST /api/balance with provider that doesn't support balance."""
         mock_provider = MagicMock(spec=[])  # No get_balance method
 
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"openai": mock_provider}):
             resp = client.post("/api/balance", json={"key": "sk-test-12345", "provider": "openai"})
         assert resp.status_code == 200
         body = resp.json()
@@ -442,8 +442,8 @@ class TestUploadEndpoint:
         keys_data = [{"key": "sk-new-key-12345", "provider": "openai"}]
         json_bytes = json.dumps(keys_data).encode("utf-8")
 
-        with patch("key_manager.web._app.import_keys", return_value=(1, 0, [])), \
-             patch("key_manager.web._app.validate_import_path", side_effect=lambda p, d: Path(p)):
+        with patch("key_manager.parser.import_keys", return_value=(1, 0, [])), \
+             patch("key_manager.parser.validate_import_path", side_effect=lambda p, d: Path(p)):
             resp = client.post(
                 "/api/import/upload",
                 files={"file": ("test.json", BytesIO(json_bytes), "application/json")}
@@ -480,8 +480,8 @@ class TestCheckSingleSpecificModel:
         mock_response.status_code = 200
         mock_response.json.return_value = {"choices": [{"message": {"content": "hi"}}]}
         
-        with patch("key_manager.web._app.detect_provider", mock_detect), \
-             patch("key_manager.web._app.PROVIDERS", {"deepseek": mock_provider}), \
+        with patch("key_manager.detector.detect_provider", mock_detect), \
+             patch("key_manager.providers.PROVIDERS", {"deepseek": mock_provider}), \
              patch("httpx.AsyncClient.post", return_value=mock_response):
             resp = client.post(
                 "/api/check/single",
@@ -515,8 +515,8 @@ class TestCheckSingleSpecificModel:
         mock_provider.get_balance = AsyncMock(return_value=MagicMock(supported=False))
         mock_provider.get_models = AsyncMock(return_value=["model-1", "model-2"])
         
-        with patch("key_manager.web._app.detect_provider", mock_detect), \
-             patch("key_manager.web._app.PROVIDERS", {"deepseek": mock_provider}):
+        with patch("key_manager.detector.detect_provider", mock_detect), \
+             patch("key_manager.providers.PROVIDERS", {"deepseek": mock_provider}):
             resp = client.post(
                 "/api/check/single",
                 json={"key": "sk-test-key-12345"}
@@ -613,7 +613,7 @@ class TestModelsCheckEndpoint:
         mock_provider.get_base_url.return_value = "https://api.openai.com/v1"
         mock_provider.check_endpoint = "/models"
 
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
+        with patch("key_manager.providers.PROVIDERS", {"openai": mock_provider}):
             resp = client.post("/api/models/check", json={"provider": "openai", "key": "sk-test-12345"})
         # SSE endpoint returns 200 with text/event-stream
         assert resp.status_code == 200
