@@ -1,21 +1,19 @@
 import argparse
 import asyncio
 import json
-import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from rich.console import Console
 from rich.table import Table
 
-from key_manager.config import load_config
-from key_manager.parser import import_keys
-from key_manager.validator import validate_keys
 from key_manager.checker import run_check
-from key_manager.tester import run_test
+from key_manager.config import load_config
+from key_manager.errors import KeyManagerError
+from key_manager.parser import import_keys
 from key_manager.proxy import get_proxy
 from key_manager.storage import KeyStore
-from key_manager.errors import KeyManagerError, ErrorCode
+from key_manager.tester import run_test
 
 console = Console()
 
@@ -28,7 +26,7 @@ def _load_keys(config: dict) -> dict:
         keys_path = Path(config["storage"]["keys_file"])
         if not keys_path.exists():
             return {"keys": {}}
-        with open(keys_path, "r", encoding="utf-8") as f:
+        with open(keys_path, encoding="utf-8") as f:
             return json.load(f)
 
 
@@ -58,7 +56,7 @@ def cmd_check(args, config):
         retry_failed=config["check"]["retry_failed"],
         retry_count=config["check"]["retry_count"]
     ))
-    console.print(f"\n[bold]Check Results[/bold]")
+    console.print("\n[bold]Check Results[/bold]")
     console.print(f"Total: {results['total']}")
     console.print(f"Valid: {results['summary']['valid']['count']}")
     console.print(f"Invalid: {results['summary']['invalid']['count']}")
@@ -82,7 +80,7 @@ def cmd_test(args, config):
         provider_filter=args.provider,
         single_key=args.key
     ))
-    console.print(f"\n[bold]Test Results[/bold]")
+    console.print("\n[bold]Test Results[/bold]")
     console.print(f"Total tested: {results['total_tested']}")
 
 
@@ -107,7 +105,7 @@ def cmd_list(args, config):
     table.add_column("Concurrency")
     table.add_column("Sources", justify="right")
 
-    for key, info in data["keys"].items():
+    for _key, info in data["keys"].items():
         if args.provider and info["provider"].lower() != args.provider.lower():
             continue
         if args.status and info["status"] != args.status:
@@ -153,10 +151,10 @@ def cmd_report(args, config):
         return
 
     days = args.days or 7
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    datetime.now(timezone.utc) - timedelta(days=days)
 
     stats = {}
-    for key, info in data["keys"].items():
+    for _key, info in data["keys"].items():
         provider = info["provider"]
         if provider not in stats:
             stats[provider] = {"total": 0, "valid": 0, "invalid": 0, "error": 0, "max_tokens": [], "concurrency": []}

@@ -1,4 +1,4 @@
-from .base import ProviderBase, BalanceResult
+from .base import BalanceResult, ProviderBase
 
 
 class DashScopeProvider(ProviderBase):

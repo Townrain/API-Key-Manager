@@ -1,6 +1,6 @@
 import asyncio
-import time
-from .base import ProviderBase, CheckResult, TestResult
+
+from .base import ProviderBase, TestResult
 
 
 class ReplicateProvider(ProviderBase):

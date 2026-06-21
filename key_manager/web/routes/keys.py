@@ -4,24 +4,23 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import APIRouter, Request, Query
+from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
-
-from key_manager.parser import mask_key
-from key_manager.logger import project_logger
-from key_manager.i18n import t
-from key_manager.errors import ErrorCode, ErrorResponse, ValidationError
-from key_manager.api_models import (
-    KeyInfo,
-    KeyListResponse,
-    KeyExportItem,
-    KeyExportResponse,
-    ImportRequest,
-    ImportResponse,
-)
 
 # Import _app module for patchable names (tests patch key_manager.web._app.*)
 import key_manager.web._app as _app_mod
+from key_manager.api_models import (
+    ImportRequest,
+    ImportResponse,
+    KeyExportItem,
+    KeyExportResponse,
+    KeyInfo,
+    KeyListResponse,
+)
+from key_manager.errors import ErrorCode, ErrorResponse, ValidationError
+from key_manager.i18n import t
+from key_manager.logger import project_logger
+from key_manager.parser import mask_key
 
 router = APIRouter(tags=["Keys"])
 
@@ -114,11 +113,11 @@ async def api_import_upload(request: Request):
     content = await file.read()
     try:
         items = json.loads(content)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
         raise ValidationError(
             code=ErrorCode.VALIDATION_FILE_FORMAT,
             message="Uploaded file is not valid JSON",
-        )
+        ) from e
 
     if not isinstance(items, list):
         raise ValidationError(

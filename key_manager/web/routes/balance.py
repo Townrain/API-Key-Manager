@@ -3,17 +3,16 @@
 import httpx
 from fastapi import APIRouter
 
-from key_manager.parser import mask_key
-from key_manager.proxy import get_proxy
-from key_manager.logger import project_logger
-from key_manager.i18n import t
-from key_manager.ssrf import validate_custom_base_url, get_allowed_domains
-from key_manager.url_override import custom_base_url
-from key_manager.errors import ErrorCode, ValidationError
-from key_manager.api_models import BalanceRequest, BalanceResponse
-
 # Import _app module for patchable names (tests patch key_manager.web._app.*)
 import key_manager.web._app as _app_mod
+from key_manager.api_models import BalanceRequest, BalanceResponse
+from key_manager.errors import ErrorCode, ValidationError
+from key_manager.i18n import t
+from key_manager.logger import project_logger
+from key_manager.parser import mask_key
+from key_manager.proxy import get_proxy
+from key_manager.ssrf import get_allowed_domains, validate_custom_base_url
+from key_manager.url_override import custom_base_url
 
 router = APIRouter(tags=["Balance"])
 

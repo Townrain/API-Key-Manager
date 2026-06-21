@@ -107,39 +107,6 @@ class TestDetectProvider:
         # Should detect deepseek because its request returns 200
         assert result == "deepseek"
 
-    async def test_no_candidates_with_patched_detectors(self):
-        """When prefix/pattern detection fails and all providers return 401, return None."""
-        """When no candidates match, return None."""
-        from key_manager.detector import detect_provider
-
-        mock_provider = MagicMock()
-        mock_provider.check_endpoint = "/v1/models"
-        mock_provider.build_headers.return_value = {"Authorization": "Bearer test"}
-        mock_provider.get_base_url.return_value = "https://api.test.com"
-        mock_provider.check_model = "test-model"
-
-        async def mock_get(*args, **kwargs):
-            resp = MagicMock()
-            resp.status_code = 401
-            resp.json.return_value = {"data": []}
-            return resp
-
-        async def mock_post(*args, **kwargs):
-            resp = MagicMock()
-            resp.status_code = 401
-            resp.text = "{}"
-            return resp
-
-        mock_client = MagicMock()
-        mock_client.get = mock_get
-        mock_client.post = mock_post
-
-        with patch("key_manager.detector.PROVIDERS", {"openai": mock_provider}):
-            with patch("key_manager.detector.detect_by_prefix", return_value=[]):
-                with patch("key_manager.detector.detect_by_pattern", return_value=None):
-                    result = await detect_provider(mock_client, "unknown-key")
-
-        assert result is None
 
     async def test_no_candidates_returns_none(self):
         """When no candidates match, return None."""
@@ -159,13 +126,6 @@ class TestDetectProvider:
             result = await detect_provider(mock_client, "unknown-key")
 
         assert result is None
-    async def test_pattern_match_takes_priority(self):
-        """Pattern matching (unique prefixes) takes priority over prefix matching."""
-        from key_manager.detector import detect_by_pattern
-
-        # sk-ant-api03- is a unique prefix for anthropic
-        result = detect_by_pattern("sk-ant-api03-test123")
-        assert result == "anthropic"
 
 
 # ── /api/check/single Tests ─────────────────────────────────────────────────

@@ -1,7 +1,8 @@
 import copy
 import logging
-import yaml
 from pathlib import Path
+
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ def load_config(path: str = "config.yaml") -> dict:
     config_path = Path(path)
     if config_path.exists():
         try:
-            with open(config_path, "r", encoding="utf-8") as f:
+            with open(config_path, encoding="utf-8") as f:
                 user_config = yaml.safe_load(f) or {}
             if not isinstance(user_config, dict):
                 logger.warning(f"Config file {path} is not a dict, using defaults")

@@ -1,13 +1,12 @@
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
 
 
 def load_keys_file(path: str) -> dict:
     keys_path = Path(path)
     if keys_path.exists():
-        with open(keys_path, "r", encoding="utf-8") as f:
+        with open(keys_path, encoding="utf-8") as f:
             return json.load(f)
     return {
         "version": "1.0",
@@ -54,9 +53,9 @@ def validate_import_path(path: str, allowed_dirs: list[str]) -> Path:
     )
 
 
-def import_keys(file_path: Optional[str] = None,
-                directory: Optional[str] = None,
-                batch: Optional[str] = None,
+def import_keys(file_path: str | None = None,
+                directory: str | None = None,
+                batch: str | None = None,
                 keys_file: str = "./data/keys.json") -> tuple[int, int, list[str]]:
     errors = []
     new_keys = 0
@@ -85,7 +84,7 @@ def import_keys(file_path: Optional[str] = None,
 
     for fp in files_to_process:
         try:
-            with open(fp, "r", encoding="utf-8") as f:
+            with open(fp, encoding="utf-8") as f:
                 items = json.load(f)
 
             if not isinstance(items, list):
