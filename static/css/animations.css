@@ -1,0 +1,78 @@
+        /* Animations */
+
+        @keyframes scanline-move {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        @keyframes logo-rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+        @keyframes arrow-bounce {
+            0%, 100% { transform: translateY(-50%); }
+            50% { transform: translateY(calc(-50% - 4px)); }
+        }
+
+        @keyframes dropdown-in {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInRow { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes flash { 0%, 100% { background: var(--surface-1); } 50% { background: var(--glow-cyan); } }
+
+        @keyframes toast-in { from { opacity: 0; transform: translateX(40px) scale(0.95); } to { opacity: 1; transform: translateX(0) scale(1); } }
+        @keyframes toast-progress { from { width: 100%; } to { width: 0%; } }
+
+        @keyframes confirm-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-pulse 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes skeleton-pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        .skel-row td { padding: 14px 20px; }
+        .skel-bar { height: 14px; }
+        .skel-chip { height: 24px; width: 60px; border-radius: 6px; }
+
+        /* Page Load Animations */
+        .stats-grid { animation: fadeInUp 0.6s ease both; }
+        .quick-actions { animation: fadeInUp 0.6s ease 0.1s both; }
+        .nav-bar { animation: fadeInUp 0.6s ease 0.15s both; }
+        .card { animation: fadeInUp 0.6s ease 0.2s both; }
+
+        /* Animation utility class */
+        .spin { animation: spin 1s linear infinite; }
+
+        /* Smooth transitions for all interactive elements */
+        button, select, input, .toggle, .nav-tab, .stat-card, .action-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }

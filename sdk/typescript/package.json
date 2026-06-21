@@ -1,0 +1,20 @@
+{
+  "name": "@api-key-manager/sdk",
+  "version": "4.0.0",
+  "description": "TypeScript SDK for API Key Manager",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["api-key", "key-manager", "sdk"],
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

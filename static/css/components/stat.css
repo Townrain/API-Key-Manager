@@ -1,0 +1,106 @@
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, var(--surface-1), var(--surface-2));
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--neon-cyan), transparent);
+    opacity: 0.8;
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, var(--glow-cyan), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-glow);
+    box-shadow: 0 12px 40px rgba(0, 232, 255, 0.15);
+}
+
+.stat-card:hover::after { opacity: 1; }
+
+.stat-card:nth-child(2)::before { background: var(--neon-green); }
+.stat-card:nth-child(2)::after { background: linear-gradient(180deg, var(--glow-green), transparent); }
+.stat-card:nth-child(2):hover { border-color: rgba(0, 255, 136, 0.3); box-shadow: 0 8px 32px rgba(0, 255, 136, 0.1); }
+
+.stat-card:nth-child(3)::before { background: var(--neon-red); }
+.stat-card:nth-child(3)::after { background: linear-gradient(180deg, var(--glow-red), transparent); }
+.stat-card:nth-child(3):hover { border-color: rgba(255, 68, 119, 0.3); box-shadow: 0 8px 32px rgba(255, 68, 119, 0.1); }
+
+.stat-card:nth-child(4)::before { background: var(--neon-magenta); }
+.stat-card:nth-child(4)::after { background: linear-gradient(180deg, var(--glow-magenta), transparent); }
+.stat-card:nth-child(4):hover { border-color: rgba(255, 68, 187, 0.3); box-shadow: 0 8px 32px rgba(255, 68, 187, 0.1); }
+
+.stat-label {
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+}
+
+.stat-value.cyan { color: var(--neon-cyan); text-shadow: 0 0 20px rgba(0, 232, 255, 0.4), 0 0 40px rgba(0, 232, 255, 0.1); }
+.stat-value.green { color: var(--neon-green); text-shadow: 0 0 20px rgba(0, 255, 136, 0.4), 0 0 40px rgba(0, 255, 136, 0.1); }
+.stat-value.red { color: var(--neon-red); text-shadow: 0 0 20px rgba(255, 68, 119, 0.4), 0 0 40px rgba(255, 68, 119, 0.1); }
+.stat-value.magenta { color: var(--neon-magenta); text-shadow: 0 0 20px rgba(255, 68, 187, 0.4), 0 0 40px rgba(255, 68, 187, 0.1); }
+
+/* Stat Card Icon */
+.stat-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+}
+
+.stat-icon.cyan { background: var(--glow-cyan); color: var(--neon-cyan); }
+.stat-icon.green { background: var(--glow-green); color: var(--neon-green); }
+.stat-icon.red { background: var(--glow-red); color: var(--neon-red); }
+.stat-icon.magenta { background: var(--glow-magenta); color: var(--neon-magenta); }

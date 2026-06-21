@@ -1,0 +1,38 @@
+{
+    "VALIDATION_MISSING_KEY": "API key is required",
+    "VALIDATION_INVALID_FORMAT": "API key format is invalid",
+    "VALIDATION_PROVIDER_UNKNOWN": "Unable to detect provider, please select manually",
+    "VALIDATION_FILE_NOT_FOUND": "File not found",
+    "VALIDATION_FILE_FORMAT": "Unsupported file format",
+    "STORAGE_READ_ERROR": "Failed to read from storage",
+    "STORAGE_WRITE_ERROR": "Failed to write to storage",
+    "STORAGE_ENCRYPTION_ERROR": "Encryption/decryption operation failed",
+    "STORAGE_MIGRATION_ERROR": "Data migration failed",
+    "PROVIDER_CHECK_FAILED": "Provider key check failed",
+    "PROVIDER_NOT_SUPPORTED": "Provider is not supported",
+    "PROVIDER_RATE_LIMITED": "Provider rate limit exceeded",
+    "SYSTEM_INTERNAL_ERROR": "Internal server error",
+    "SYSTEM_PROGRESS_CONFLICT": "Another operation is already in progress",
+    "AUTH_REQUIRED": "Authentication required",
+
+    "SUCCESS_KEY_ADDED": "Key added successfully",
+    "SUCCESS_KEY_DELETED": "Key deleted successfully",
+    "SUCCESS_KEY_UPDATED": "Key updated successfully",
+    "SUCCESS_IMPORT_COMPLETE": "Import completed: {count} keys added",
+    "SUCCESS_EXPORT_COMPLETE": "Export completed: {count} keys exported",
+
+    "STATUS_ACTIVE": "Active",
+    "STATUS_INACTIVE": "Inactive",
+    "STATUS_CHECKING": "Checking",
+    "STATUS_VALID": "Valid",
+    "STATUS_INVALID": "Invalid",
+    "STATUS_UNKNOWN": "Unknown",
+
+    "LOG_KEY_CHECK_START": "Starting key check for provider {provider}",
+    "LOG_KEY_CHECK_COMPLETE": "Key check completed for provider {provider}: {status}",
+    "LOG_IMPORT_STARTED": "Importing keys from {filename}",
+    "LOG_IMPORT_COMPLETE": "Import complete: {new} new, {dupes} duplicates",
+    "LOG_EXPORT_STARTED": "Exporting {count} keys",
+    "LOG_SERVER_STARTED": "Server started on {host}:{port}",
+    "LOG_SERVER_STOPPED": "Server stopped"
+}

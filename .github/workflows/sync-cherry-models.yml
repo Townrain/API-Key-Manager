@@ -1,0 +1,69 @@
+name: Sync Cherry Studio Data
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每天 UTC 02:00 (北京时间 10:00)
+  workflow_dispatch:  # 手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout our repo
+        uses: actions/checkout@v4
+
+      - name: Checkout Cherry Studio (shallow)
+        uses: actions/checkout@v4
+        with:
+          repository: CherryHQ/cherry-studio
+          path: cherry-studio
+          sparse-checkout: |
+            packages/provider-registry/data
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check data files exist
+        id: check
+        run: |
+          if [ -f "cherry-studio/packages/provider-registry/data/models.json" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "Found models.json"
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "models.json not found!"
+          fi
+
+      - name: Extract model capabilities
+        if: steps.check.outputs.found == 'true'
+        run: |
+          export CHERRY_DATA_DIR="cherry-studio/packages/provider-registry/data"
+          python scripts/extract_model_caps.py
+
+      - name: Extract model lists
+        if: steps.check.outputs.found == 'true'
+        run: |
+          export CHERRY_DATA_DIR="cherry-studio/packages/provider-registry/data"
+          python scripts/extract_models.py
+
+      - name: Run validation tests
+        if: steps.check.outputs.found == 'true'
+        run: python scripts/validate_caps.py
+
+      - name: Check for changes
+        id: diff
+        if: steps.check.outputs.found == 'true'
+        run: |
+          git diff --quiet data/model_capabilities.json key_manager/providers/models_registry.py || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push
+        if: steps.check.outputs.found == 'true' && steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/model_capabilities.json key_manager/providers/models_registry.py
+          git commit -m "chore: sync from cherry-studio $(date +%Y-%m-%d)"
+          git push

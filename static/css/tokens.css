@@ -1,0 +1,22 @@
+        :root {
+            --void: #0b0d1a;
+            --surface-0: #111328;
+            --surface-1: #171a35;
+            --surface-2: #1e2242;
+            --surface-3: #262b50;
+            --neon-cyan: #00e8ff;
+            --neon-magenta: #ff44bb;
+            --neon-green: #00ff88;
+            --neon-amber: #ffbb33;
+            --neon-red: #ff4477;
+            --text-primary: #eceef8;
+            --text-dim: #a0a4c0;
+            --text-ghost: #6a6e8e;
+            --glow-cyan: rgba(0, 232, 255, 0.18);
+            --glow-magenta: rgba(255, 68, 187, 0.18);
+            --glow-green: rgba(0, 255, 136, 0.18);
+            --glow-red: rgba(255, 68, 119, 0.18);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(0, 232, 255, 0.3);
+            --glass: rgba(17, 19, 40, 0.88);
+        }
