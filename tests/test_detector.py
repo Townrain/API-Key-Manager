@@ -7,7 +7,7 @@ from key_manager.detector import (
     PROVIDER_ERROR_SIGNATURES,
     WEIGHT_RATE_LIMITED,
     WEIGHT_SELF,
-    detect_by_pattern,
+    detect_by_format,
     detect_by_prefix,
     score_provider,
 )
@@ -93,64 +93,6 @@ class TestDetectByPrefixUnknown:
     def test_unknown_prefix_returns_empty(self, key):
         result = detect_by_prefix(key)
         assert result == []
-
-
-# ---------------------------------------------------------------------------
-# 4. test_detect_by_pattern_unique
-# ---------------------------------------------------------------------------
-class TestDetectByPatternUnique:
-    """Patterns that uniquely identify a provider."""
-
-    @pytest.mark.parametrize(
-        "key, expected",
-        [
-            ("sk-ant-api03-abcdef", "anthropic"),
-            ("pplx-abc123456", "perplexity"),
-            ("sk-proj-abc123", "openai"),
-            ("AIzaSyExample", "google"),
-            ("gsk_abcdef", "groq"),
-            ("xai-abc123", "grok"),
-            ("hf_abc123", "huggingface"),
-            ("r8_abc123", "replicate"),
-            ("fw_abc123", "fireworks"),
-            ("poe-abc123", "poe"),
-        ],
-        ids=[
-            "sk-ant-api03 → anthropic",
-            "pplx- → perplexity",
-            "sk-proj- → openai",
-            "AIza → google",
-            "gsk_ → groq",
-            "xai- → grok",
-            "hf_ → huggingface",
-            "r8_ → replicate",
-            "fw_ → fireworks",
-            "poe- → poe",
-        ],
-    )
-    def test_pattern_matches_provider(self, key, expected):
-        result = detect_by_pattern(key)
-        assert result == expected
-
-
-# ---------------------------------------------------------------------------
-# 5. test_detect_by_pattern_unknown
-# ---------------------------------------------------------------------------
-class TestDetectByPatternUnknown:
-    """Unknown patterns return None."""
-
-    @pytest.mark.parametrize(
-        "key",
-        [
-            "totally-unknown-abc",
-            "zzz-no-match",
-            "12345",
-        ],
-        ids=["totally-unknown", "zzz-prefix", "numeric-only"],
-    )
-    def test_unknown_pattern_returns_none(self, key):
-        result = detect_by_pattern(key)
-        assert result is None
 
 
 # ---------------------------------------------------------------------------
