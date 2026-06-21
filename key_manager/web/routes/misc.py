@@ -1,24 +1,28 @@
 """Miscellaneous routes: proxy, logs, progress, webhooks, signature report."""
 
 import asyncio
+import json
+from pathlib import Path
 
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
-
-# Import _app module for patchable names (tests patch key_manager.web._app.*)
-import key_manager.web._app as _app_mod
+from key_manager.proxy import get_proxy
+from key_manager.logger import project_logger
+from key_manager.i18n import t
+from key_manager.webhook import webhook_manager
+from key_manager.errors import ErrorCode, ValidationError
 from key_manager.api_models import (
+    LogEntry,
     LogsResponse,
     OperationEntry,
     OperationsResponse,
     ProgressResponse,
     ProxyResponse,
 )
-from key_manager.errors import ErrorCode, ValidationError
-from key_manager.logger import project_logger
-from key_manager.proxy import get_proxy
 from key_manager.web.progress import _progress_tracker, _sse_progress_event_generator
-from key_manager.webhook import webhook_manager
+
+# Import _app module for patchable names (tests patch key_manager.web._app.*)
+import key_manager.web._app as _app_mod
 
 router = APIRouter(tags=["Proxy", "Logs", "Progress", "Webhooks"])
 
@@ -32,7 +36,7 @@ async def api_proxy():
     """Get proxy configuration status."""
     config_proxy = _app_mod.config.get("proxy")
     proxy = get_proxy(config_proxy)
-
+    
     if proxy:
         # Check if it's from config or auto-detected
         if config_proxy is not None and config_proxy != "":
@@ -42,7 +46,7 @@ async def api_proxy():
     else:
         proxy = None
         source = "none"
-
+    
     return ProxyResponse(proxy=proxy, source=source)
 
 
@@ -158,20 +162,18 @@ async def api_webhooks_log_deliveries_clear():
 @router.get("/api/signature-report")
 async def api_signature_report():
     """Generate signature verification report dynamically."""
-    import re
-
     import httpx
-
-    from key_manager.providers import PROVIDER_ERROR_SIGNATURES, PROVIDERS
-
+    import re
+    from key_manager.providers import PROVIDERS, PROVIDER_ERROR_SIGNATURES
+    
     INVALID_KEY = "sk-invalid-test-key-for-signature-verification-12345"
     TIMEOUT_SECONDS = 10.0
-
+    
     def extract_signatures(body: str) -> list[str]:
         body_lower = body.lower()
         words = re.findall(r'[a-z0-9][a-z0-9_-]{2,}', body_lower)
         return list(set(words))
-
+    
     results = []
     async with httpx.AsyncClient(timeout=TIMEOUT_SECONDS, follow_redirects=False) as client:
         for provider_name, provider in PROVIDERS.items():
@@ -194,18 +196,18 @@ async def api_signature_report():
                 response_body = ""
                 error = str(e)
                 valid = False
-
+            
             # Verify signatures
             body_lower = response_body.lower()
             current_sigs = PROVIDER_ERROR_SIGNATURES.get(provider_name, [])
             matched = [s for s in current_sigs if s.lower() in body_lower]
             missing = [s for s in current_sigs if s.lower() not in body_lower]
-
+            
             # Find new signatures
             extracted = extract_signatures(response_body)
-            known = {s.lower() for s in current_sigs}
+            known = set(s.lower() for s in current_sigs)
             new_sigs = [s for s in extracted if s not in known and len(s) > 3][:10]
-
+            
             # Find conflicts
             conflicts = []
             for other_name, other_sigs in PROVIDER_ERROR_SIGNATURES.items():
@@ -214,7 +216,7 @@ async def api_signature_report():
                 for sig in other_sigs:
                     if sig.lower() in body_lower:
                         conflicts.append({"signature": sig, "other_provider": other_name})
-
+            
             results.append({
                 "provider": provider_name,
                 "status_code": status_code,
@@ -230,7 +232,7 @@ async def api_signature_report():
                 "new_signatures": new_sigs,
                 "conflicts": conflicts,
             })
-
+    
     # Generate summary
     total = len(results)
     successful = sum(1 for r in results if r["status_code"] is not None)
@@ -239,7 +241,7 @@ async def api_signature_report():
     no_match = sum(1 for r in results if r["unique_signatures"]["match_rate"] == 0)
     has_conflicts = sum(1 for r in results if r["conflicts"])
     has_new_sigs = sum(1 for r in results if r["new_signatures"])
-
+    
     return {
         "summary": {
             "total_providers": total,

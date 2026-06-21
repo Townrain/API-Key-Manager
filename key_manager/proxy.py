@@ -34,7 +34,7 @@ def detect_system_proxy() -> str:
             return proxy
 
     # Check common proxy ports
-    for port, _name in COMMON_PORTS:
+    for port, name in COMMON_PORTS:
         if check_port("127.0.0.1", port):
             return f"http://127.0.0.1:{port}"
 
@@ -43,7 +43,7 @@ def detect_system_proxy() -> str:
 
 def get_proxy(config_proxy: str = None) -> str:
     """Get proxy from config or auto-detect.
-
+    
     Args:
         config_proxy: Proxy URL from config. None means auto-detect, empty string means disable.
     """

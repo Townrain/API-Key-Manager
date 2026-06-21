@@ -1,12 +1,12 @@
+import asyncio
 from datetime import datetime, timezone
 
 import httpx
 
-from .config import load_config
-from .logger import KeyLogger
 from .providers import PROVIDERS
+from .logger import KeyLogger
 from .storage import KeyStore
-
+from .config import load_config
 
 async def run_test(keys_file: str = "./data/keys.json",
                    results_file: str = "./data/test_results.json",

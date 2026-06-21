@@ -13,9 +13,11 @@ import hashlib
 import hmac
 import json
 import secrets
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
+from typing import Any, Callable, Optional
 
 import httpx
 
@@ -36,7 +38,7 @@ class WebhookConfig:
     """Webhook configuration."""
     url: str
     events: list[WebhookEvent] = field(default_factory=lambda: list(WebhookEvent))
-    secret: str | None = None
+    secret: Optional[str] = None
     active: bool = True
     max_retries: int = 3
     retry_delay: float = 1.0
@@ -49,17 +51,17 @@ class WebhookDelivery:
     webhook_url: str
     event: WebhookEvent
     payload: dict
-    status_code: int | None = None
+    status_code: Optional[int] = None
     success: bool = False
-    error: str | None = None
+    error: Optional[str] = None
     attempts: int = 0
-    delivered_at: str | None = None
+    delivered_at: Optional[str] = None
 
 
 class WebhookManager:
     """Manages webhook registrations and deliveries."""
 
-    def __init__(self, config: dict | None = None):
+    def __init__(self, config: Optional[dict] = None):
         self._webhooks: dict[str, WebhookConfig] = {}
         self._delivery_log: list[WebhookDelivery] = []
         self._max_log_size = 1000
@@ -82,8 +84,8 @@ class WebhookManager:
     def register(
         self,
         url: str,
-        events: list[str] | None = None,
-        secret: str | None = None,
+        events: Optional[list[str]] = None,
+        secret: Optional[str] = None,
         active: bool = True,
         max_retries: int = 3,
     ) -> str:
@@ -117,7 +119,7 @@ class WebhookManager:
             return True
         return False
 
-    def get(self, webhook_id: str) -> WebhookConfig | None:
+    def get(self, webhook_id: str) -> Optional[WebhookConfig]:
         """Get webhook configuration."""
         return self._webhooks.get(webhook_id)
 
@@ -167,7 +169,7 @@ class WebhookManager:
         }
 
         tasks = []
-        for _webhook_id, config in self._webhooks.items():
+        for webhook_id, config in self._webhooks.items():
             if not config.active:
                 continue
             if event not in config.events:

@@ -1,7 +1,6 @@
 import asyncio
 import time
-
-from .base import CheckResult, ProviderBase, TestResult
+from .base import ProviderBase, CheckResult, TestResult
 
 
 class GoogleProvider(ProviderBase):

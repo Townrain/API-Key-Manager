@@ -20,8 +20,9 @@ the provider is correctly identified.
 """
 import asyncio
 import re
+from .providers import PROVIDERS, KEY_PREFIX_MAP, PROVIDER_ERROR_SIGNATURES
+from .providers.models_registry import PROVIDER_MODELS
 
-from .providers import KEY_PREFIX_MAP, PROVIDER_ERROR_SIGNATURES, PROVIDERS
 
 # Scoring weights
 WEIGHT_SELF = 100      # Self-signature match = definitive
@@ -48,7 +49,7 @@ def detect_by_prefix(key: str) -> list[str]:
 
 def detect_by_format(key: str) -> list[str]:
     """Detect providers by key format (e.g., Zhipu's {id}.{secret} format).
-
+    
     Returns a list of candidate providers that use this format.
     The caller will probe all candidates and return the first one that responds 200.
     """
@@ -62,53 +63,54 @@ def detect_by_format(key: str) -> list[str]:
 def score_provider(provider_name: str, error_body: str, status_code: int = None) -> int:
     """
     Score how likely the error body belongs to this provider.
-
+    
     Uses UNIQUE_SIGNATURES (verified by actual API testing).
     Each unique signature match adds WEIGHT_SELF points.
     429 (rate limited) gets much lower weight since it doesn't confirm key ownership.
     """
     body = error_body.lower()
     score = 0
-
+    
     # 429 rate limited gets reduced weight - it only means "too many requests"
     # not "this key belongs to this provider"
     weight = WEIGHT_RATE_LIMITED if status_code == 429 else WEIGHT_SELF
-
+    
     # Check unique signatures (verified by actual API testing)
     sigs = PROVIDER_ERROR_SIGNATURES.get(provider_name, [])
     for sig in sigs:
         if sig.lower() in body:
             score += weight
-
+    
     return score
 
 
 async def detect_provider(client, key: str, suspected_provider: str = None) -> str:
     """Detect provider by concurrently probing ALL providers with multiple models.
-
+    
     IMPORTANT: This function uses /chat/completions to verify providers, NOT /v1/models!
-
+    
     - /v1/models: Only returns model list, CANNOT determine if key is valid
     - /chat/completions: Actually tests the key, CAN determine if key is valid
-
+    
     Strategy:
     1. If suspected_provider given, try it first
     2. If key matches unique pattern, try that provider
     3. If key matches prefix, try candidates
     4. Otherwise, concurrently probe ALL providers with their models
     5. First provider returning 200 from /chat/completions wins
-
+    
     Free models are important! Some providers (like OpenCode Zen) offer free models.
     Detection tests ALL models including free models. If any model returns 200,
     the provider is correctly identified.
     """
-
+    import time
+    
     # Step 1: If suspected provider, try it first
     if suspected_provider:
         provider_name = suspected_provider.lower()
         if provider_name in PROVIDERS:
             return provider_name
-
+    
     # Step 2: Try format matching (e.g., Zhipu's {id}.{secret})
     format_candidates = detect_by_format(key)
     if format_candidates:
@@ -116,7 +118,7 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
         for name in format_candidates:
             if name in PROVIDERS:
                 return name
-
+    
     # Step 3: Try prefix matching - collect candidates, don't return on /v1/models 200
     prefix_candidates = detect_by_prefix(key)
     if prefix_candidates:
@@ -126,16 +128,16 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
         # If multiple candidates, don't return on /v1/models 200
         # because /v1/models 200 only means we can get models, not that the key is valid for this provider
         # Continue to Step 4 to verify with /chat/completions
-
+    
     # Step 4: Concurrently probe ALL providers
     # IMPORTANT: /v1/models is only for getting model list, NOT for verifying key validity!
     # We use /chat/completions to verify if the key is valid for a provider.
-
+    
     # Step 4.1: Get models from all providers using /v1/models
     # This step ONLY gets model list, does NOT verify key validity
     async def get_provider_models(name, provider):
         """Get models from /v1/models endpoint.
-
+        
         IMPORTANT: /v1/models 200 only means we can get model list.
         It does NOT mean the key is valid for this provider!
         """
@@ -156,11 +158,11 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
         except Exception:
             pass  # Request failed, continue with other providers
         return name, [], False
-
+    
     # Get models from all providers concurrently
     model_tasks = [get_provider_models(name, provider) for name, provider in PROVIDERS.items()]
     model_results = await asyncio.gather(*model_tasks)
-
+    
     # Build tasks: (provider_name, model) pairs
     # These will be tested with /chat/completions to verify key validity
     tasks = []
@@ -172,21 +174,22 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
             for model in models:
                 tasks.append((name, model))
         else:
-            PROVIDERS[name]
-
+            provider = PROVIDERS[name]
+    
     # Step 4.2: Concurrently check all (provider, model) pairs using /chat/completions
     # This is the ACTUAL verification step!
     # First provider returning 200 from /chat/completions wins
     import re
     # Concurrently check all (provider, model) pairs
-
+    import re
+    
     async def try_model(name, model):
         """Try to call /chat/completions for a specific provider and model.
-
+        
         IMPORTANT: This is the ACTUAL verification step!
         - /v1/models 200 only means we can get model list (NOT verification)
         - /chat/completions 200 means the key is valid for this provider (VERIFICATION)
-
+        
         Returns:
             (provider_name, is_valid, response_body, status_code)
         """
@@ -216,18 +219,19 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
             return name, False, "", 0
     # Fire all tasks concurrently
     all_tasks = [try_model(name, model) for name, model in tasks]
-
+    
     # Collect results for signature matching
+    valid_provider = None
     error_bodies = {}  # name -> list of (body, status_code) tuples
     provider_status = {}  # name -> {'has_200': bool, 'has_402': bool, 'models_402': list}
-
+    
     for coro in asyncio.as_completed(all_tasks):
         name, valid, body, status_code = await coro
-
+        
         # Initialize provider status if not exists
         if name not in provider_status:
             provider_status[name] = {'has_200': False, 'has_402': False, 'models_402': []}
-
+        
         if valid:
             # Found valid provider (200 response)
             provider_status[name]['has_200'] = True
@@ -241,7 +245,7 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
             if name not in error_bodies:
                 error_bodies[name] = []
             error_bodies[name].append((body, status_code))
-
+    
     # Check if any provider has /v1/models returning 200 but all models return 402 (balance insufficient)
     # This means the key is valid but has no balance
     for name, status in provider_status.items():
@@ -249,9 +253,8 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
             # Provider's /v1/models returned 200, but all models returned 402
             # This means the key is valid but has no balance
             try:
-                import asyncio as _asyncio
-
                 from webdebug import debug_logger
+                import asyncio as _asyncio
                 _asyncio.create_task(debug_logger.log(
                     category="DETECT",
                     action="balance_insufficient",
@@ -262,15 +265,15 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
             except ImportError:
                 pass
             return name
-
+    
     # No valid provider found - try signature matching on error bodies
     # Only return if we have a VERY HIGH confidence match (multiple signatures matched)
     best_score = -1
     best_name = None
-
+    
     # Providers whose /v1/models doesn't validate keys (returns 200 even with invalid keys)
     UNRELIABLE_MODELS_ENDPOINT = {"ppio", "nvidia", "modelscope"}
-
+    
     for name, entries in error_bodies.items():
         for body, status_code in entries:
             score = score_provider(name, body, status_code)
@@ -282,9 +285,8 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
                 best_score = score
                 best_name = name
     try:
-        import asyncio as _asyncio
-
         from webdebug import debug_logger
+        import asyncio as _asyncio
         _asyncio.create_task(debug_logger.log(
             category="DETECT",
             action="signature_matching",
@@ -294,12 +296,12 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
         ))
     except ImportError:
         pass
-
+    
     # Only return if we have a VERY HIGH confidence match
     # Require at least 2 signature matches (200 points) to avoid false positives
     if best_score >= 200:  # At least 2 signatures matched
         return best_name
-
+    
     # No provider found with high confidence
     # This is better than returning a wrong provider
     return None
@@ -311,7 +313,7 @@ async def _try_provider(client, provider, key: str) -> dict:
         # Use a short timeout for detection
         result = await asyncio.wait_for(provider.probe(client, key), timeout=8.0)
         error_body = result.response_body or ""
-
+        
         return {
             'valid': result.valid,
             'status_code': result.status_code,
@@ -330,24 +332,24 @@ async def _try_unknown_provider() -> dict:
 # =============================================================================
 # DETECTION LOGIC SUMMARY
 # =============================================================================
-#
+# 
 # IMPORTANT: Detection uses /chat/completions to verify providers, NOT /v1/models!
-#
+# 
 # - /v1/models: Only returns model list, CANNOT determine if key is valid
 # - /chat/completions: Actually tests the key, CAN determine if key is valid
-#
+# 
 # Detection flow:
 # 1. Prefix matching - Check unique prefixes (e.g., sk-proj- → OpenAI)
 # 2. Format matching - Check special formats (e.g., {id}.{secret} → Zhipu)
 # 3. Concurrent probing - Test all providers with /chat/completions
 # 4. Signature matching - Match error response body signatures
-#
+# 
 # Free models are important! Some providers (like OpenCode Zen) offer free models.
 # Detection tests ALL models including free models. If any model returns 200,
 # the provider is correctly identified.
-#
+# 
 # Common mistakes:
 # - ❌ Using /v1/models 200 to determine provider → WRONG!
 # - ✅ Using /chat/completions 200 to determine provider → CORRECT!
-#
+# 
 # =============================================================================

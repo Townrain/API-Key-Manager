@@ -1,4 +1,4 @@
-from .base import BalanceResult, ProviderBase
+from .base import ProviderBase, BalanceResult
 
 
 class ZhipuProvider(ProviderBase):

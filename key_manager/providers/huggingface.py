@@ -1,6 +1,6 @@
 import asyncio
-
-from .base import ProviderBase, TestResult
+import time
+from .base import ProviderBase, CheckResult, TestResult
 
 
 class HuggingFaceProvider(ProviderBase):

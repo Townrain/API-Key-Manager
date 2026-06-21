@@ -1,7 +1,8 @@
-import json
 import logging
+import json
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 
 class KeyLogger:
@@ -95,7 +96,7 @@ class ProjectLogger:
         })
 
     def log_check(self, provider: str, key_masked: str, status: str,
-                  status_code: int | None = None, latency_ms: float = 0, error: str = None):
+                  status_code: Optional[int] = None, latency_ms: float = 0, error: str = None):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         provider_padded = provider.ljust(10)
         line = f"[{timestamp}] [CHECK  ] [{provider_padded}] {key_masked} -> {status}"
@@ -113,8 +114,8 @@ class ProjectLogger:
             "error": error
         })
 
-    def log_test(self, provider: str, key_masked: str, max_tokens: int | None,
-                 max_concurrency: int | None, models_count: int = 0):
+    def log_test(self, provider: str, key_masked: str, max_tokens: Optional[int],
+                 max_concurrency: Optional[int], models_count: int = 0):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         provider_padded = provider.ljust(10)
         line = f"[{timestamp}] [TEST   ] [{provider_padded}] {key_masked} -> tokens={max_tokens}, conc={max_concurrency}, models={models_count}"
@@ -163,7 +164,7 @@ class ProjectLogger:
         if not log_file.exists():
             return []
 
-        with open(log_file, encoding="utf-8") as f:
+        with open(log_file, "r", encoding="utf-8") as f:
             all_lines = f.readlines()
             return [line.strip() for line in all_lines[-lines:]]
 
@@ -176,7 +177,7 @@ class ProjectLogger:
             return []
 
         entries = []
-        with open(json_file, encoding="utf-8") as f:
+        with open(json_file, "r", encoding="utf-8") as f:
             for line in f:
                 try:
                     entries.append(json.loads(line.strip()))

@@ -2,16 +2,17 @@
 
 from fastapi import APIRouter
 
-# Import _app module for patchable names (tests patch key_manager.web._app.*)
-import key_manager.web._app as _app_mod
+from key_manager.providers import get_display_name
 from key_manager.api_models import (
-    StatsChartProviderEntry,
-    StatsChartResponse,
-    StatsChartStatuses,
     StatsProviderEntry,
     StatsResponse,
+    StatsChartProviderEntry,
+    StatsChartStatuses,
+    StatsChartResponse,
 )
-from key_manager.providers import get_display_name
+
+# Import _app module for patchable names (tests patch key_manager.web._app.*)
+import key_manager.web._app as _app_mod
 
 router = APIRouter(tags=["Stats"])
 
@@ -25,7 +26,7 @@ async def api_stats():
     stats: dict[str, StatsProviderEntry] = {}
     total = 0
 
-    for _key, info in keys_dict.items():
+    for key, info in keys_dict.items():
         total += 1
         provider = info.get("provider", "unknown")
         status = info.get("status", "unknown")
@@ -59,7 +60,7 @@ async def api_stats_chart():
     providers: dict[str, StatsChartProviderEntry] = {}
     global_statuses = StatsChartStatuses()
 
-    for _key, info in keys_dict.items():
+    for key, info in keys_dict.items():
         provider = info.get("provider", "unknown")
         status = info.get("status", "unknown")
 

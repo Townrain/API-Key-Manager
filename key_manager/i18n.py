@@ -4,7 +4,7 @@ import json
 import threading
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 _I18N_DIR = Path(__file__).parent / "i18n"
 _DEFAULT_LANG = "en"
@@ -56,7 +56,7 @@ def language_context(lang: str):
             _context.lang = prev
 
 
-def get_lang_from_header(accept_language: str | None) -> str:
+def get_lang_from_header(accept_language: Optional[str]) -> str:
     """Parse Accept-Language header and return the best matching language.
 
     Supports formats like:
@@ -101,7 +101,7 @@ def get_lang_from_header(accept_language: str | None) -> str:
     return _DEFAULT_LANG
 
 
-def t(code: str, lang: str | None = None, **kwargs: Any) -> str:
+def t(code: str, lang: Optional[str] = None, **kwargs: Any) -> str:
     """Translate a message code to the current or specified language.
 
     Falls back to English if the code is not found in the requested language.

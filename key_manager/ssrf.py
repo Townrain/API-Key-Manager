@@ -2,9 +2,10 @@
 
 import socket
 import urllib.parse
-from ipaddress import ip_address, ip_network
+from ipaddress import ip_address, ip_network, IPv6Address
 
 from key_manager.errors import ErrorCode, ValidationError
+
 
 BLOCKED_NETWORKS = [
     # IPv4 private ranges
@@ -61,7 +62,7 @@ def validate_custom_base_url(url: str, allowed_domains: set[str]) -> str:
         # Not an IP, resolve domain to check for DNS rebinding
         try:
             resolved_ips = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
-            for _family, _, _, _, sockaddr in resolved_ips:
+            for family, _, _, _, sockaddr in resolved_ips:
                 ip = ip_address(sockaddr[0])
                 for net in BLOCKED_NETWORKS:
                     if ip in net:

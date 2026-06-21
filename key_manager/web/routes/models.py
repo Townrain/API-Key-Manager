@@ -1,19 +1,19 @@
 """Model management routes."""
 
 import asyncio
-
 import httpx
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import StreamingResponse
 
+from key_manager.proxy import get_proxy
+from key_manager.providers.models_registry import PROVIDER_MODELS
+from key_manager.detector import detect_by_prefix
+from key_manager.i18n import t
+from key_manager.errors import ErrorCode, ValidationError
+from key_manager.api_models import ModelsResponse
+
 # Import _app module for patchable names (tests patch key_manager.web._app.*)
 import key_manager.web._app as _app_mod
-from key_manager.api_models import ModelsResponse
-from key_manager.detector import detect_by_prefix
-from key_manager.errors import ErrorCode, ValidationError
-from key_manager.i18n import t
-from key_manager.providers.models_registry import PROVIDER_MODELS
-from key_manager.proxy import get_proxy
 
 router = APIRouter(tags=["Models"])
 
@@ -90,7 +90,7 @@ async def api_models(
 
     if not models and hasattr(provider_obj, "models"):
         models = getattr(provider_obj, "models", [])
-
+    
     # Fallback to static models from PROVIDER_MODELS (Cherry Studio sync)
     if not models:
         models = PROVIDER_MODELS.get(provider_name, [])
@@ -133,15 +133,15 @@ async def api_models_capabilities(
     model_list = [m.strip() for m in models.split(",") if m.strip()]
     if not model_list:
         return {"capabilities": {}}
-
+    
     try:
         from key_manager.model_capabilities import detector
         await detector.load()
-
+        
         result = {}
         for model_id in model_list:
             result[model_id] = detector.get_model_capabilities(model_id)
-
+        
         return {"capabilities": result}
     except Exception as e:
         return {"capabilities": {}, "error": str(e)}
@@ -255,7 +255,7 @@ async def api_models_check(request: Request):
                 i += len(batch)
             # Step 2: Serial retry failed models
             if failed_models:
-                yield 'data: {"type":"serial_mode","reason":"retry_failed"}\n\n'
+                yield f'data: {{"type":"serial_mode","reason":"retry_failed"}}\n\n'
                 await asyncio.sleep(0.5)
 
                 for model in failed_models[:]:

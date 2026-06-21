@@ -3,11 +3,10 @@ from datetime import datetime, timezone
 
 import httpx
 
-from .config import load_config
-from .logger import KeyLogger
 from .providers import PROVIDERS
+from .logger import KeyLogger
 from .storage import KeyStore
-
+from .config import load_config
 
 async def validate_keys(keys_file: str = "./data/keys.json",
                         results_file: str = "./data/check_results.json",
