@@ -7,7 +7,6 @@ for backward compatibility.
 from key_manager.web._app import *  # noqa: F401, F403
 from key_manager.web._app import (  # noqa: F401
     app,
-    auth_middleware,
     config,
 )
 from key_manager.web.middleware import (  # noqa: F401
