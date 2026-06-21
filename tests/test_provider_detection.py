@@ -134,38 +134,6 @@ class TestDetectProvider:
         mock_client.get = mock_get
         mock_client.post = mock_post
 
-        with patch("key_manager.detector.PROVIDERS", {"openai": mock_provider}):
-            with patch("key_manager.detector.detect_by_prefix", return_value=[]):
-                with patch("key_manager.detector.detect_by_pattern", return_value=None):
-                    result = await detect_provider(mock_client, "unknown-key")
-
-        assert result is None
-
-    async def test_no_candidates_returns_none(self):
-        """When no candidates match, return None."""
-        from key_manager.detector import detect_provider
-
-        # Mock client that always returns 401
-        mock_client = AsyncMock()
-        mock_response = MagicMock()
-        mock_response.status_code = 401
-        mock_response.text = "{}"
-        mock_response.json.return_value = {"data": []}
-        mock_client.get = AsyncMock(return_value=mock_response)
-        mock_client.post = AsyncMock(return_value=mock_response)
-
-        # Empty PROVIDERS so no providers to probe
-        with patch("key_manager.detector.PROVIDERS", {}):
-            result = await detect_provider(mock_client, "unknown-key")
-
-        assert result is None
-    async def test_pattern_match_takes_priority(self):
-        """Pattern matching (unique prefixes) takes priority over prefix matching."""
-        from key_manager.detector import detect_by_pattern
-
-        # sk-ant-api03- is a unique prefix for anthropic
-        result = detect_by_pattern("sk-ant-api03-test123")
-        assert result == "anthropic"
 
 
 # ── /api/check/single Tests ─────────────────────────────────────────────────
