@@ -31,6 +31,7 @@ class TestErrorCode:
             "SYSTEM_INTERNAL_ERROR",
             "SYSTEM_PROGRESS_CONFLICT",
             "AUTH_REQUIRED",
+            "VALIDATION_KEY_NOT_FOUND",
         }
         actual = {code.value for code in ErrorCode}
         assert actual == expected

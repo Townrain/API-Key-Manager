@@ -1,5 +1,6 @@
 // Mutable state object — properties can be modified by any module
 export const State = {
+  apiToken: window.__API_TOKEN__ || '',
   showFullKeys: true,
   currentTab: 'all',
   allKeys: [],

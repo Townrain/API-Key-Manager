@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="/static/css/components.css">
     <link rel="stylesheet" href="/static/css/modals.css">
     <link rel="stylesheet" href="/static/css/animations.css">
+    <script>
+        window.__API_TOKEN__ = {{ api_token|default('')|tojson }};
+    </script>
 </head>
 <body>
     <div class="bg-matrix"></div>

@@ -58,7 +58,7 @@ app = FastAPI(
     description="Manage and validate API keys for 45+ AI providers. "
     "Import, check validity, test token limits and concurrency, "
     "query balances, and export working keys.",
-    version="4.0.0",
+    version="4.2.0",
     openapi_tags=[
         {"name": "Keys", "description": "Key management operations"},
         {"name": "Check", "description": "Key validity checking"},
@@ -143,11 +143,19 @@ if _STATIC_DIR.is_dir():
 
 @app.get("/", include_in_schema=False)
 async def web_ui(request: Request):
-    """Serve the web UI."""
+    """Serve the web UI with API token injected."""
+    # Derive API token for frontend injection
+    api_token = ""
+    try:
+        from key_manager.storage import derive_api_token
+        api_token = derive_api_token(config)
+    except Exception:
+        pass
+    
     if templates and (_TEMPLATES_DIR / "index.html").exists():
-        return templates.TemplateResponse("index.html", {"request": request})
+        return templates.TemplateResponse("index.html", {"request": request, "api_token": api_token})
     if templates and (_TEMPLATES_DIR_ALT / "index.html").exists():
-        return templates.TemplateResponse("index.html", {"request": request})
+        return templates.TemplateResponse("index.html", {"request": request, "api_token": api_token})
     return HTMLResponse("<html><body><h1>API Key Manager</h1><p>Web UI not found.</p></body></html>")
 
 

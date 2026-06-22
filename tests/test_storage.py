@@ -5,6 +5,7 @@ import os
 import pytest
 
 from key_manager.storage import KeyStore, StorageError, _derive_key, _get_passphrase
+from key_manager.storage import derive_api_token
 
 
 PASSPHRASE = "test-passphrase-for-unit-tests"
@@ -293,3 +294,50 @@ def test_save_creates_parent_dirs(tmp_path):
     store = KeyStore(nested)
     store.save(SAMPLE_DATA)
     assert store.load() == SAMPLE_DATA
+
+
+# --- API Token Derivation ---
+
+def test_derive_api_token_deterministic():
+    """derive_api_token returns the same token for the same config."""
+    t1 = derive_api_token()
+    t2 = derive_api_token()
+    assert t1 == t2
+    assert len(t1) == 64  # 32 bytes as hex
+
+
+def test_derive_api_token_different_from_storage_key():
+    """API token uses different salt than storage encryption key."""
+    token = derive_api_token()
+    storage_key = _derive_key(PASSPHRASE).hex()
+    assert token != storage_key
+
+
+def test_derive_api_token_from_env(monkeypatch):
+    """derive_api_token uses KEY_MANAGER_SECRET env var."""
+    monkeypatch.setenv("KEY_MANAGER_SECRET", "test-secret-123")
+    token = derive_api_token()
+    assert len(token) == 64
+
+
+def test_derive_api_token_from_config():
+    """derive_api_token uses config encryption.passphrase."""
+    config = {"encryption": {"passphrase": "config-passphrase"}}
+    token = derive_api_token(config)
+    assert len(token) == 64
+
+
+def test_derive_api_token_caching():
+    """derive_api_token caches the result for performance."""
+    # Clear cache first
+    from key_manager.storage import _key_cache
+    _key_cache.clear()
+    
+    t1 = derive_api_token()
+    # Check cache is populated
+    from key_manager.storage import _API_TOKEN_SALT
+    cache_key = (PASSPHRASE, _API_TOKEN_SALT)
+    assert cache_key in _key_cache
+    
+    t2 = derive_api_token()
+    assert t1 == t2

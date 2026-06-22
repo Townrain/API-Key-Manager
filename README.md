@@ -915,6 +915,39 @@ const result = await client.checkSingle({ key: 'sk-xxx', provider: 'openai' });
 ## 更新日志
 
 
+### v4.2.0 (2026-06-23)
+
+- **统一认证系统**: 复用加密密钥作为API认证token
+  - 新增 `derive_api_token()` 函数，从加密密钥派生API token
+  - 使用独立的 salt（`key-manager-api-auth-token-v1`）避免与存储加密交叉
+  - PBKDF2HMAC 600K迭代，32字节token，缓存机制
+  - 修改 `auth_middleware()` 自动fallback到派生token
+  - 扩展认证白名单，静态文件不需要认证
+
+- **前端自动携带token**: 无需手动配置
+  - 在 `templates/index.html` 的 `<head>` 中注入 `window.__API_TOKEN__`
+  - 修改 `safeFetch()` 自动添加 `Authorization: Bearer <token>` 头
+  - 修改 `models.js` 的SSE请求也携带token
+  - 在 `state.js` 中添加 `apiToken` 字段
+
+- **单个密钥删除功能**:
+  - 新增 `POST /api/keys/delete` API端点
+  - 前端添加删除按钮（垃圾桶图标）
+  - 使用项目标准的 `showConfirm` 确认框
+
+- **自动保存检测密钥**:
+  - 检测密钥后自动保存到注册表
+  - 更新密钥状态和检测记录
+
+- **复制完整密钥功能**:
+  - 新增 `POST /api/keys/get-full-key` API端点
+  - 前端点击密钥可复制完整密钥
+
+- **测试验证**:
+  - 全量测试通过：687 passed, 1 skipped
+  - 覆盖率：75.72%（超过 60% 要求）
+  - 新增 5 个 `derive_api_token()` 单元测试
+
 ### v4.1.0 (2026-06-22)
 
 - **Web 模块技术债务优化**:

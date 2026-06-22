@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 _ITERATIONS = 600_000  # OWASP 2023 recommendation for PBKDF2-HMAC-SHA256
 _LEGACY_SALT = b"key-manager-aes256gcm-salt-v1"  # For backward compatibility
+_API_TOKEN_SALT = b"key-manager-api-auth-token-v1"  # Domain-specific salt for API token
 _SALT_LEN = 16
 _NONCE_LEN = 12
 
@@ -39,6 +40,29 @@ def _derive_key(passphrase: str, salt: bytes = None) -> bytes:
     _key_cache[cache_key] = key
     return key
 
+
+def derive_api_token(config: dict | None = None) -> str:
+    """Derive an API authentication token from the encryption passphrase.
+    
+    Uses a different salt than storage encryption to avoid cross-contamination.
+    The derived token is cached for performance.
+    """
+    passphrase = _get_passphrase(config)
+    cache_key = (passphrase, _API_TOKEN_SALT)
+    if cache_key in _key_cache:
+        # Return cached token as hex string
+        return _key_cache[cache_key].hex()
+    
+    # Derive a 32-byte token using PBKDF2
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=_API_TOKEN_SALT,
+        iterations=_ITERATIONS,
+    )
+    token_bytes = kdf.derive(passphrase.encode("utf-8"))
+    _key_cache[cache_key] = token_bytes
+    return token_bytes.hex()
 
 def _get_passphrase(config: dict | None = None) -> str:
     """Get encryption passphrase from config, env var, or auto-generate."""

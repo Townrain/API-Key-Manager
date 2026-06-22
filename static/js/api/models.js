@@ -2,6 +2,7 @@
  * Models API — /api/models
  */
 import { getTypeLabel } from '../utils.js';
+import { State } from '../state.js';
 import { safeFetch } from './client.js';
 
 let _toast;
@@ -95,9 +96,13 @@ export async function checkAvailableModels() {
     </div>`;
 
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (State.apiToken) {
+      headers['Authorization'] = `Bearer ${State.apiToken}`;
+    }
     const response = await fetch('/api/models/check', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ key, provider: provider || '', type: typeFilter }),
       signal: currentCheckController.signal
     });

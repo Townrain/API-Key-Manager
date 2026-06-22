@@ -5,6 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.0] - 2026-06-23
+
+### Added
+
+- **Unified Authentication System** — Reuse encryption key as API authentication token:
+  - New `derive_api_token()` function derives API token from encryption passphrase
+  - Uses independent salt (`key-manager-api-auth-token-v1`) to avoid cross-contamination
+  - PBKDF2HMAC with 600K iterations, 32-byte token, caching mechanism
+  - Modified `auth_middleware()` to fallback to derived token
+  - Extended auth whitelist, static files don't require authentication
+
+- **Frontend Auto-Token Injection** — No manual configuration needed:
+  - Inject `window.__API_TOKEN__` in `templates/index.html` `<head>`
+  - Modified `safeFetch()` to auto-add `Authorization: Bearer <token>` header
+  - Modified `models.js` SSE requests to carry token
+  - Added `apiToken` field to `state.js`
+
+- **Single Key Deletion**:
+  - New `POST /api/keys/delete` API endpoint
+  - Frontend delete button (trash icon) with confirmation dialog
+
+- **Auto-Save Detected Keys**:
+  - Keys are automatically saved to registry after detection
+  - Updates key status and check records
+
+- **Copy Full Key Feature**:
+  - New `POST /api/keys/get-full-key` API endpoint
+  - Click key in frontend to copy full key to clipboard
+
+### Changed
+
+- **Test Infrastructure** — Updated test fixtures to use derived token:
+  - Modified `conftest.py` client fixture to derive token from passphrase
+  - Added `VALIDATION_KEY_NOT_FOUND` error code
+  - Updated `test_errors.py` to include new error code
+
+### Security
+
+- **Token Derivation** — Cryptographically secure token generation:
+  - Different salt than storage encryption (domain separation)
+  - PBKDF2HMAC with 600K iterations (OWASP 2023 recommendation)
+  - `hmac.compare_digest()` for timing-attack resistance
+  - Token cached for performance
+
+### Testing
+
+- Full test suite passed: 687 passed, 1 skipped
+- Coverage: 75.72% (exceeds 60% requirement)
+- Added 5 new `derive_api_token()` unit tests
+
 ## [4.1.0] - 2026-06-22
 
 ### Added
