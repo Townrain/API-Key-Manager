@@ -3,7 +3,6 @@
 import asyncio
 
 import httpx
-from key_manager.web.utils import build_chat_url, resolve_provider
 from fastapi import APIRouter, Form, Request
 
 # Import _app module for patchable names (tests patch key_manager.web._app.*)
@@ -43,21 +42,25 @@ async def _check_model_specific(
 
     Extracted to eliminate duplication in api_check_single.
     """
-    import time
+    import re as _re
+    import time as _time
 
     from key_manager.providers.base import CheckResult
 
     headers = provider_obj.build_headers(key)
     headers["Content-Type"] = "application/json"
-    chat_url = build_chat_url(provider_obj)
-    start = time.monotonic()
+    # Extract version path from check_endpoint
+    version_match = _re.match(r'(/v\d+)', provider_obj.check_endpoint or '')
+    version_prefix = version_match.group(1) if version_match else ''
+    chat_url = f"{provider_obj.get_base_url()}{version_prefix}/chat/completions"
+    start = _time.monotonic()
     try:
         resp = await client.post(
             chat_url,
             headers=headers,
             json={"model": model_name, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
         )
-        latency = (time.monotonic() - start) * 1000
+        latency = (_time.monotonic() - start) * 1000
         if resp.status_code == 200:
             return CheckResult(valid=True, status_code=200, latency_ms=latency, error=None)
         else:
@@ -132,17 +135,20 @@ async def api_check_single(body: CheckSingleRequest):
             message=t("VALIDATION_MISSING_KEY"),
         )
 
-    # Resolve provider (detect if needed, validate, get provider object)
-    provider_name, provider_obj = await resolve_provider(
-        key=key,
-        provider_name=provider_name,
-        timeout=_app_mod.config.get("check", {}).get("timeout_seconds", 30),
-        proxy=get_proxy(_app_mod.config.get("proxy")),
-        providers=_app_mod.PROVIDERS,
-        detect_provider_fn=_app_mod.detect_provider,
-    )
-
+    # Detect provider if not given - use smart detection with probe+check verification
     proxy = get_proxy(_app_mod.config.get("proxy")) or None
+
+    # Debug logging for proxy config
+    if _app_mod.DEBUG_ENABLED and _app_mod.debug_logger:
+        import asyncio as _asyncio
+        task = _asyncio.create_task(_app_mod.debug_logger.log(
+            category="DETECT",
+            action="config",
+            detail=f"proxy={proxy}, timeout={_app_mod.config['check']['timeout_seconds']}s",
+            data={"proxy": proxy, "timeout": _app_mod.config['check']['timeout_seconds']},
+            level="INFO"
+        ))
+        task.add_done_callback(lambda t: t.exception() if not t.cancelled() else None)  # Suppress unhandled exception warning
 
     try:
         async with httpx.AsyncClient(
@@ -150,6 +156,21 @@ async def api_check_single(body: CheckSingleRequest):
             proxy=proxy,
             follow_redirects=False,
         ) as client:
+            if not provider_name:
+                provider_name = await _app_mod.detect_provider(client, key)
+                if not provider_name or provider_name == 'unknown':
+                    raise ValidationError(
+                        code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
+                        message=t("VALIDATION_PROVIDER_UNKNOWN"),
+                    )
+
+            provider_name_lower = provider_name.lower()
+            provider_obj = _app_mod.PROVIDERS.get(provider_name_lower)
+            if not provider_obj:
+                raise ValidationError(
+                    code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
+                    message=t("VALIDATION_PROVIDER_UNKNOWN"),
+                )
 
             # If provider was auto-detected, the detection already validated the key
             # Only call check() if provider was manually specified

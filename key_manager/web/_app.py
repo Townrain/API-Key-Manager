@@ -156,6 +156,7 @@ async def web_ui(request: Request):
 # Route modules (extracted to key_manager/web/routes/)
 # ---
 
+# Route modules (extracted to key_manager/web/routes/)
 
 app.include_router(keys.router)
 app.include_router(check.router)

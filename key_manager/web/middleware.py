@@ -44,7 +44,7 @@ def _cleanup_rate_limit_store():
         return
     _RATE_LIMIT_LAST_CLEANUP = now
     # Remove IPs with no recent activity (older than 5 minutes)
-    cutoff = now - 300.0
+    now - 300.0
     ips_to_remove = []
     for ip, timestamps in _RATE_LIMIT_STORE.items():
         # Remove old timestamps

@@ -13,7 +13,6 @@ from key_manager.parser import mask_key
 from key_manager.proxy import get_proxy
 from key_manager.ssrf import get_allowed_domains, validate_custom_base_url
 from key_manager.url_override import custom_base_url
-from key_manager.web.utils import resolve_provider
 
 router = APIRouter(tags=["Balance"])
 
@@ -36,14 +35,23 @@ async def api_balance(body: BalanceRequest):
         )
 
     try:
-        provider_name, provider_obj = await resolve_provider(
-            key=key,
-            provider_name=provider_name or None,
-            timeout=_app_mod.config.get("check", {}).get("timeout_seconds", 30),
-            proxy=get_proxy(_app_mod.config.get("proxy")),
-            providers=_app_mod.PROVIDERS,
-            detect_provider_fn=_app_mod.detect_provider,
-        )
+        if not provider_name:
+            proxy = get_proxy(_app_mod.config.get("proxy")) or None
+            async with httpx.AsyncClient(timeout=_app_mod.config["check"]["timeout_seconds"], proxy=proxy) as client:
+                provider_name = await _app_mod.detect_provider(client, key)
+            if not provider_name or provider_name == 'unknown':
+                raise ValidationError(
+                    code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
+                    message=t("VALIDATION_PROVIDER_UNKNOWN"),
+                )
+
+        provider_name_lower = provider_name.lower()
+        provider_obj = _app_mod.PROVIDERS.get(provider_name_lower)
+        if not provider_obj:
+            raise ValidationError(
+                code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
+                message=t("VALIDATION_PROVIDER_UNKNOWN"),
+            )
 
         proxy = get_proxy(_app_mod.config.get("proxy")) or None
         error = None

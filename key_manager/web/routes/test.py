@@ -3,7 +3,6 @@
 import asyncio
 
 import httpx
-from key_manager.web.utils import build_chat_url, resolve_provider
 from fastapi import APIRouter, Request
 
 # Import _app module for patchable names (tests patch key_manager.web._app.*)
@@ -71,14 +70,23 @@ async def api_test_single(body: TestSingleRequest):
             message=t("VALIDATION_MISSING_KEY"),
         )
 
-    provider_name, provider_obj = await resolve_provider(
-        key=key,
-        provider_name=provider_name,
-        timeout=_app_mod.config.get("check", {}).get("timeout_seconds", 30),
-        proxy=get_proxy(_app_mod.config.get("proxy")),
-        providers=_app_mod.PROVIDERS,
-        detect_provider_fn=_app_mod.detect_provider,
-    )
+    if not provider_name:
+        proxy = get_proxy(_app_mod.config.get("proxy")) or None
+        async with httpx.AsyncClient(timeout=_app_mod.config["check"]["timeout_seconds"], proxy=proxy) as client:
+            provider_name = await _app_mod.detect_provider(client, key)
+        if not provider_name or provider_name == 'unknown':
+            raise ValidationError(
+                code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
+                message=t("VALIDATION_PROVIDER_UNKNOWN"),
+            )
+
+    provider_name_lower = provider_name.lower()
+    provider_obj = _app_mod.PROVIDERS.get(provider_name_lower)
+    if not provider_obj:
+        raise ValidationError(
+            code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
+            message=t("VALIDATION_PROVIDER_UNKNOWN"),
+        )
 
     proxy = get_proxy(_app_mod.config.get("proxy")) or None
     token_steps = _app_mod.config["test"]["token_steps"]
@@ -220,14 +228,20 @@ async def api_test_concurrency_model(request: Request):
         raise ValidationError(code=ErrorCode.VALIDATION_MISSING_KEY, message="Missing key")
 
     proxy = get_proxy(_app_mod.config.get("proxy")) or None
-    provider_name, provider_obj = await resolve_provider(
-        key=key,
-        provider_name=provider_name or None,
-        timeout=_app_mod.config.get("check", {}).get("timeout_seconds", 30),
-        proxy=proxy,
-        providers=_app_mod.PROVIDERS,
-        detect_provider_fn=_app_mod.detect_provider,
-    )
+    provider_obj = None
+
+    # Find provider
+    if provider_name:
+        provider_obj = _app_mod.PROVIDERS.get(provider_name)
+    else:
+        async with httpx.AsyncClient(timeout=_app_mod.config["check"]["timeout_seconds"], proxy=proxy) as client:
+            detected = await _app_mod.detect_provider(client, key)
+            if detected and detected != 'unknown':
+                provider_name = detected
+                provider_obj = _app_mod.PROVIDERS.get(provider_name)
+
+    if not provider_obj:
+        raise ValidationError(code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN, message="Unknown provider")
 
     # If no model specified, get models and find a free one
     if not model:
@@ -249,7 +263,11 @@ async def api_test_concurrency_model(request: Request):
             headers = provider_obj.build_headers(key)
             headers["Content-Type"] = "application/json"
 
-            chat_url = build_chat_url(provider_obj)
+            # Extract version path from check_endpoint
+            import re
+            version_match = re.match(r'(/v\d+)', provider_obj.check_endpoint or '')
+            version_prefix = version_match.group(1) if version_match else ''
+            chat_url = f"{provider_obj.get_base_url()}{version_prefix}/chat/completions"
 
             # Test concurrency
             async def probe_model(m):
@@ -329,14 +347,20 @@ async def api_test_token_model(request: Request):
         raise ValidationError(code=ErrorCode.VALIDATION_MISSING_KEY, message="Missing model")
 
     proxy = get_proxy(_app_mod.config.get("proxy")) or None
-    provider_name, provider_obj = await resolve_provider(
-        key=key,
-        provider_name=provider_name or None,
-        timeout=_app_mod.config.get("check", {}).get("timeout_seconds", 30),
-        proxy=proxy,
-        providers=_app_mod.PROVIDERS,
-        detect_provider_fn=_app_mod.detect_provider,
-    )
+    provider_obj = None
+
+    # Find provider
+    if provider_name:
+        provider_obj = _app_mod.PROVIDERS.get(provider_name)
+    else:
+        async with httpx.AsyncClient(timeout=_app_mod.config["check"]["timeout_seconds"], proxy=proxy) as client:
+            detected = await _app_mod.detect_provider(client, key)
+            if detected and detected != 'unknown':
+                provider_name = detected
+                provider_obj = _app_mod.PROVIDERS.get(provider_name)
+
+    if not provider_obj:
+        raise ValidationError(code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN, message="Unknown provider")
 
     # Run test
     try:
@@ -344,7 +368,11 @@ async def api_test_token_model(request: Request):
             headers = provider_obj.build_headers(key)
             headers["Content-Type"] = "application/json"
 
-            chat_url = build_chat_url(provider_obj)
+            # Extract version path from check_endpoint
+            import re
+            version_match = re.match(r'(/v\d+)', provider_obj.check_endpoint or '')
+            version_prefix = version_match.group(1) if version_match else ''
+            chat_url = f"{provider_obj.get_base_url()}{version_prefix}/chat/completions"
 
             # Send a large token value to get the actual limit from error
             large_tokens = 1000000
