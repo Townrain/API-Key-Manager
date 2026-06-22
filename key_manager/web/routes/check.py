@@ -220,6 +220,41 @@ async def api_check_single(body: CheckSingleRequest):
             # Simplify error message for readability
             simplified_error = simplify_error(result.error, result.status_code) if result.error else None
 
+            # Auto-save checked key to registry
+            try:
+                from datetime import datetime, timezone
+                data = _app_mod._load_keys_data()
+                keys_dict = data.get("keys", {})
+                timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+                
+                if key not in keys_dict:
+                    keys_dict[key] = {
+                        "key_masked": mask_key(key),
+                        "provider": provider_name,
+                        "provider_detected": provider_name,
+                        "status": status_str,
+                        "sources": [{"file": "check", "batch": "manual", "imported_at": timestamp}],
+                        "checks": [{"status": status_str, "provider": provider_name, "timestamp": timestamp}],
+                        "tests": {},
+                        "first_seen": timestamp,
+                        "last_checked": timestamp,
+                        "last_tested": None,
+                        "created_at": timestamp,
+                    }
+                    _app_mod._save_keys_data(data)
+                    project_logger.log_web_action("auto_import", f"{mask_key(key)} from check")
+                else:
+                    # Update existing key status
+                    keys_dict[key]["status"] = status_str
+                    keys_dict[key]["last_checked"] = timestamp
+                    keys_dict[key]["provider"] = provider_name
+                    if "checks" not in keys_dict[key]:
+                        keys_dict[key]["checks"] = []
+                    keys_dict[key]["checks"].append({"status": status_str, "provider": provider_name, "timestamp": timestamp})
+                    _app_mod._save_keys_data(data)
+            except Exception as e:
+                project_logger.main_logger.warning(f"Failed to auto-save checked key: {e}")
+
             return CheckSingleResponse(
                 key_masked=mask_key(key),
                 provider=provider_name,

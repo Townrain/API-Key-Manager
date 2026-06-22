@@ -154,6 +154,7 @@ async def api_list_keys(
     batch: str = Query(None, description="Filter by batch label"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(50, ge=1, le=200, description="Items per page"),
+    include_full_keys: bool = Query(False, description="Include full keys in response"),
 ):
     """List keys with optional filters and pagination."""
     data = _app_mod._load_keys_data()
@@ -180,6 +181,7 @@ async def api_list_keys(
     key_infos: list[KeyInfo] = []
     for key, info in paged:
         key_infos.append(KeyInfo(
+            key=key if include_full_keys else None,
             key_masked=info.get("key_masked", mask_key(key)),
             provider=info.get("provider", "unknown"),
             status=info.get("status", "unknown"),
@@ -240,3 +242,76 @@ async def api_clear_keys():
         _app_mod._save_keys_data(data)
     project_logger.log_web_action("clear", f"{cleared} keys removed")
     return {"cleared": cleared}
+
+
+@router.post("/api/keys/get-full-key")
+async def api_get_full_key(request: Request):
+    """Get the full key for copying. Expects JSON body with key_masked field."""
+    try:
+        body = await request.json()
+        key_masked = body.get("key_masked", "").strip()
+    except Exception:
+        raise ValidationError(
+            code=ErrorCode.VALIDATION_MISSING_KEY,
+            message="key_masked is required",
+        )
+
+    if not key_masked:
+        raise ValidationError(
+            code=ErrorCode.VALIDATION_MISSING_KEY,
+            message="key_masked is required",
+        )
+
+    data = _app_mod._load_keys_data()
+    keys_dict = data.get("keys", {})
+
+    # Find the full key by matching key_masked
+    for full_key, info in keys_dict.items():
+        if info.get("key_masked") == key_masked:
+            project_logger.log_web_action("get_full_key", key_masked)
+            return {"key": full_key}
+
+    raise ValidationError(
+        code=ErrorCode.VALIDATION_KEY_NOT_FOUND,
+        message="Key not found",
+    )
+
+
+@router.post("/api/keys/delete")
+async def api_delete_key(request: Request):
+    """Delete a single key by key_masked."""
+    try:
+        body = await request.json()
+        key_masked = body.get("key_masked", "").strip()
+    except Exception:
+        raise ValidationError(
+            code=ErrorCode.VALIDATION_MISSING_KEY,
+            message="key_masked is required",
+        )
+
+    if not key_masked:
+        raise ValidationError(
+            code=ErrorCode.VALIDATION_MISSING_KEY,
+            message="key_masked is required",
+        )
+
+    data = _app_mod._load_keys_data()
+    keys_dict = data.get("keys", {})
+
+    # Find and delete the key by matching key_masked
+    key_to_delete = None
+    for full_key, info in keys_dict.items():
+        if info.get("key_masked") == key_masked:
+            key_to_delete = full_key
+            break
+
+    if key_to_delete:
+        del keys_dict[key_to_delete]
+        _app_mod._save_keys_data(data)
+        project_logger.log_web_action("delete", key_masked)
+        return {"deleted": 1, "key_masked": key_masked}
+
+    raise ValidationError(
+        code=ErrorCode.VALIDATION_KEY_NOT_FOUND,
+        message="Key not found",
+    )

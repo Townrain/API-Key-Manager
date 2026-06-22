@@ -9,7 +9,7 @@
 import { showToast } from './toast.js';
 import { showProgress, updateProgress, hideProgress } from './progress.js';
 import { showConfirm, confirmOk, confirmCancel } from './confirm.js';
-import { renderKeys, filterKeys, updatePagination, changePageSize, goToPage, switchTab, toggleKeyDisplay, copyKey } from './keys-table.js';
+import { renderKeys, filterKeys, updatePagination, changePageSize, goToPage, switchTab, toggleKeyDisplay, copyKey, deleteKey } from './keys-table.js';
 import { toggleProviders, showProviderDetail, closeProviderDetailModal, populateProviderDropdown } from './providers.js';
 import { showBatchResults } from './batch.js';
 import { closeModal, copyExport, downloadExport, showModelsModal, closeModelsModal, showShortcutsModal, closeShortcutsModal, showSignatureReport, closeSignatureReportModal, renderSignatureReport, showAddProviderModal, closeAddProviderModal, submitAddProvider } from './modals.js';
@@ -40,6 +40,7 @@ window.goToPage = goToPage;
 window.switchTab = switchTab;
 window.toggleKeyDisplay = toggleKeyDisplay;
 window.copyKey = copyKey;
+window.deleteKey = deleteKey;
 window.toggleProviders = toggleProviders;
 window.showProviderDetail = showProviderDetail;
 window.closeProviderDetailModal = closeProviderDetailModal;

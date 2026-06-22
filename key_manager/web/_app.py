@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from key_manager.logger import project_logger
 from key_manager.config import load_config
 from key_manager.detector import detect_provider  # noqa: F401
 from key_manager.parser import (
@@ -103,12 +104,10 @@ def _load_keys_data(config_override: dict | None = None) -> dict:
     cfg = config_override or config
     try:
         return _load_keys_store(cfg).load()
-    except Exception:
-        keys_path = Path(cfg["storage"]["keys_file"])
-        if not keys_path.exists():
-            return {"keys": {}}
-        with open(keys_path, encoding="utf-8") as f:
-            return json.load(f)
+    except Exception as e:
+        project_logger.main_logger.warning(f"Failed to load/decrypt keys data: {e}")
+        # Return empty data structure if decryption fails
+        return {"keys": {}}
 
 
 def _save_keys_data(data: dict, config_override: dict | None = None):

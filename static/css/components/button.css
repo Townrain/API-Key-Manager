@@ -99,3 +99,23 @@ button:active { transform: scale(0.97); }
     border-color: var(--neon-red);
     background: rgba(255, 68, 119, 0.1);
 }
+
+.btn-delete {
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-ghost);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: -6px;
+}
+
+.btn-delete:hover {
+    color: var(--neon-red);
+    border-color: rgba(255, 68, 119, 0.3);
+    background: rgba(255, 68, 119, 0.1);
+}

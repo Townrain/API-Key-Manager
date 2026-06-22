@@ -23,19 +23,19 @@ export function filterKeys() {
 
 export function renderKeys() {
     let fk = State.allKeys;
-    if (State.searchQuery) fk = fk.filter(k => k.key.toLowerCase().includes(State.searchQuery) || k.key_masked.toLowerCase().includes(State.searchQuery) || k.provider.toLowerCase().includes(State.searchQuery));
+    if (State.searchQuery) fk = fk.filter(k => (k.key || k.key_masked).toLowerCase().includes(State.searchQuery) || k.key_masked.toLowerCase().includes(State.searchQuery) || k.provider.toLowerCase().includes(State.searchQuery));
 
     const tbody = document.getElementById('keys-table');
     document.getElementById('table-title').textContent = `${State.TAB_TITLES[State.currentTab]} (第${State.currentPage}页, 共${State.totalCount}条)`;
 
     if (fk.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 7a2 2 0 0 1 2 2m4 0a6 6 0 0 1-7.743 5.743L11 17H9v2H7v2H4a1 1 0 0 1-1-1v-2.586a1 1 0 0 1 .293-.707l5.964-5.964A6 6 0 1 1 21 9z"/></svg><h3>暂无数据</h3><p>当前筛选条件下没有 Key</p></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 7a2 2 0 0 1 2 2m4 0a6 6 0 0 1-7.743 5.743L11 17H9v2H7v2H4a1 1 0 0 1-1-1v-2.586a1 1 0 0 1 .293-.707l5.964-5.964A6 6 0 1 1 21 9z"/></svg><h3>暂无数据</h3><p>当前筛选条件下没有 Key</p></div></td></tr>';
         updatePagination();
         return;
     }
 
     tbody.innerHTML = fk.map((k, idx) => {
-        const dk = State.showFullKeys ? k.key : k.key_masked;
+        const dk = State.showFullKeys ? (k.key || k.key_masked) : k.key_masked;
         const models = k.models || [];
         let md = '';
         if (models.length > 0) {
@@ -55,7 +55,7 @@ export function renderKeys() {
                     </div>`;
 
         return `<tr style="animation: fadeInRow 0.3s ease ${idx * 0.02}s both;">
-                    <td><div class="key-cell" onclick="copyKey('${escAttr(k.key)}')" title="点击复制">${dk}</div></td>
+                    <td><div class="key-cell" onclick="copyKey('${escAttr(k.key_masked)}')" title="点击复制">${dk}</div></td>
                     <td><span class="provider-chip" onclick="showProviderDetail('${escAttr(k.provider)}')" style="cursor: pointer;" title="点击查看服务商详情">${State.DISPLAY_NAMES[k.provider] || k.provider}</span></td>
                     <td>${sd}</td>
                     <td>${md}</td>
@@ -63,6 +63,7 @@ export function renderKeys() {
                     <td style="font-family: 'Fira Code', monospace; font-size: 12px;">${k.tests.max_tokens ? (k.tests.max_tokens >= 1000000 ? (k.tests.max_tokens/1000000).toFixed(1)+'M' : k.tests.max_tokens >= 1000 ? (k.tests.max_tokens/1000)+'K' : k.tests.max_tokens) : '-'}</td>
                     <td style="font-family: 'Fira Code', monospace; font-size: 12px;">${k.tests.max_concurrency || '-'}</td>
                     <td style="font-family: 'Fira Code', monospace; font-size: 12px; color: var(--text-dim);">${k.balance && k.balance.balance != null ? k.balance.balance + ' ' + (k.balance.currency || '') : '-'}</td>
+                    <td><button class="btn-delete" onclick="deleteKey('${escAttr(k.key_masked)}')" title="删除"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></td>
                 </tr>`;
     }).join('');
     updatePagination();
@@ -101,9 +102,58 @@ export function switchTab(tab) {
 export function toggleKeyDisplay() {
     State.showFullKeys = !State.showFullKeys;
     document.getElementById('show-key-toggle').classList.toggle('active');
-    renderKeys();
+    // Reload keys with full key data when showing full keys
+    import('./api/keys.js').then(api => api.loadKeys());
 }
 
-export function copyKey(key) {
-    navigator.clipboard.writeText(key).then(() => showToast('已复制到剪贴板', 'success'));
+export function copyKey(key_masked) {
+    // First try to get the full key from API
+    fetch('/api/keys/get-full-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key_masked: key_masked })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.key) {
+            navigator.clipboard.writeText(data.key).then(() => showToast('已复制到剪贴板', 'success'));
+        } else {
+            // Fallback to copying the masked key
+            navigator.clipboard.writeText(key_masked).then(() => showToast('已复制到剪贴板（脱敏版本）', 'success'));
+        }
+    })
+    .catch(() => {
+        // Fallback to copying the masked key
+        navigator.clipboard.writeText(key_masked).then(() => showToast('已复制到剪贴板（脱敏版本）', 'success'));
+    });
+}
+
+export function deleteKey(key_masked) {
+    import('./confirm.js').then(({ showConfirm }) => {
+        showConfirm({
+            title: '删除密钥',
+            message: `确定要删除密钥 ${key_masked} 吗？此操作不可恢复。`,
+            icon: 'danger',
+            okText: '删除',
+            onConfirm: async () => {
+                try {
+                    const response = await fetch('/api/keys/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ key_masked: key_masked })
+                    });
+                    const data = await response.json();
+                    if (data.deleted) {
+                        showToast(`已删除密钥 ${key_masked}`, 'success');
+                        import('./api/keys.js').then(api => api.loadKeys());
+                        import('./api/stats.js').then(api => api.loadStats());
+                    } else {
+                        showToast('删除失败: ' + (data.error?.message || '未知错误'), 'error');
+                    }
+                } catch (e) {
+                    showToast('删除失败: ' + e.message, 'error');
+                }
+            }
+        });
+    });
 }

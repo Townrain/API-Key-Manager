@@ -19,6 +19,7 @@ export async function loadKeys(page = State.currentPage) {
   let params = new URLSearchParams({page, page_size: State.pageSize});
   if (provider) params.set('provider', provider);
   if (State.currentTab !== 'all') params.set('status', State.currentTab);
+  if (State.showFullKeys) params.set('include_full_keys', 'true');
   const tbody = document.getElementById('keys-table');
   tbody.innerHTML = Array(5).fill('').map(() => `<tr class="skel-row"><td><div class="skeleton skel-bar" style="width: 180px;"></div></td><td><div class="skeleton skel-chip"></div></td><td><div class="skeleton skel-chip"></div></td><td><div class="skeleton skel-bar" style="width: 100px;"></div></td><td><div class="skeleton skel-bar" style="width: 80px;"></div></td><td><div class="skeleton skel-bar" style="width: 50px;"></div></td><td><div class="skeleton skel-chip" style="width: 30px;"></div></td><td><div class="skeleton skel-bar" style="width: 60px;"></div></td></tr>`).join('');
   try {

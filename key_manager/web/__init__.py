@@ -4,6 +4,18 @@ This package provides the FastAPI application for the API Key Manager.
 All public names from the original web module are re-exported here
 for backward compatibility.
 """
+
+# Explicit exports for IDE type checking
+__all__ = [
+    "app",
+    "config",
+    "auth_middleware",
+    "i18n_middleware",
+    "rate_limit_middleware",
+    "setup_middleware",
+    "setup_error_handlers",
+    "ProgressTracker",
+]
 from key_manager.web._app import (  # noqa: F401
     app,
     config,

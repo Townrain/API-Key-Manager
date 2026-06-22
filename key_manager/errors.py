@@ -13,6 +13,7 @@ class ErrorCode(str, Enum):
     VALIDATION_PROVIDER_UNKNOWN = "VALIDATION_PROVIDER_UNKNOWN"
     VALIDATION_FILE_NOT_FOUND = "VALIDATION_FILE_NOT_FOUND"
     VALIDATION_FILE_FORMAT = "VALIDATION_FILE_FORMAT"
+    VALIDATION_KEY_NOT_FOUND = "VALIDATION_KEY_NOT_FOUND"
 
     # Storage errors (2xxx)
     STORAGE_READ_ERROR = "STORAGE_READ_ERROR"
@@ -40,6 +41,7 @@ ERROR_STATUS_CODES: dict[ErrorCode, int] = {
     ErrorCode.VALIDATION_PROVIDER_UNKNOWN: 400,
     ErrorCode.VALIDATION_FILE_NOT_FOUND: 404,
     ErrorCode.VALIDATION_FILE_FORMAT: 400,
+    ErrorCode.VALIDATION_KEY_NOT_FOUND: 404,
     ErrorCode.STORAGE_READ_ERROR: 500,
     ErrorCode.STORAGE_WRITE_ERROR: 500,
     ErrorCode.STORAGE_ENCRYPTION_ERROR: 500,
@@ -59,6 +61,7 @@ DEFAULT_MESSAGES: dict[ErrorCode, str] = {
     ErrorCode.VALIDATION_PROVIDER_UNKNOWN: "Unable to detect provider, please select manually",
     ErrorCode.VALIDATION_FILE_NOT_FOUND: "File not found",
     ErrorCode.VALIDATION_FILE_FORMAT: "Unsupported file format",
+    ErrorCode.VALIDATION_KEY_NOT_FOUND: "Key not found",
     ErrorCode.STORAGE_READ_ERROR: "Failed to read from storage",
     ErrorCode.STORAGE_WRITE_ERROR: "Failed to write to storage",
     ErrorCode.STORAGE_ENCRYPTION_ERROR: "Encryption/decryption operation failed",

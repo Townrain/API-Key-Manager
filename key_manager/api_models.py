@@ -50,6 +50,7 @@ __all__ = [
 
 class KeyInfo(BaseModel):
     key_masked: str = Field(..., description="Masked key for display")
+    key: str | None = Field(None, description="Full key (only when requested)")
     provider: str = Field(..., description="Provider identifier")
     status: str = Field(..., description="Key status: valid / invalid / error / unknown")
     last_checked: str | None = Field(None, description="ISO-8601 timestamp of last check")
