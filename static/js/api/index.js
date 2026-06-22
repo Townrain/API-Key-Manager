@@ -11,4 +11,4 @@ export { runTokenTest, runConcurrencyTest, runTokenTestBatch, runConcurrencyTest
 export { checkBalance } from './balance.js';
 export { getModels, checkAvailableModels } from './models.js';
 export { loadProviders } from './providers.js';
-export { loadProxy, loadLogs } from './misc.js';
+export { loadProxy, loadLogs, clearLogs } from './misc.js';

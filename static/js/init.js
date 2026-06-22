@@ -15,12 +15,13 @@ import { showBatchResults } from './batch.js';
 import { closeModal, copyExport, downloadExport, showModelsModal, closeModelsModal, showShortcutsModal, closeShortcutsModal, showSignatureReport, closeSignatureReportModal, renderSignatureReport, showAddProviderModal, closeAddProviderModal, submitAddProvider } from './modals.js';
 import { openModelDetectModal, closeModelDetectModal, fetchModelsForModal, filterModelsByType, renderModelList, toggleModelSelection, selectAllModels, updateSelectAllButton, filterModels, detectSelectedModels, runTokenTestForSelectedModels } from './model-detect.js';
 import {
-    safeFetch, loadStats, loadKeys, loadProxy, loadLogs, loadProviders,
+    safeFetch, loadStats, loadKeys, loadProxy, loadLogs, loadProviders, clearLogs,
     exportValidKeys, checkManualKey, getModels, checkAvailableModels,
     checkBalance, runCheck, runTokenTestBatch, runConcurrencyTestBatch,
     runTokenTest, runConcurrencyTest, runBatchCheck, clearAllKeys,
     uploadFile, handleFileUpload
 } from './api/index.js';
+import { selectCustomOption, toggleCustomSelect, toggleLogs } from './ui-helpers.js';
 
 // ─── Expose to window for inline onclick handlers ────────────────────────────
 
@@ -75,6 +76,7 @@ window.loadKeys = loadKeys;
 window.loadProxy = loadProxy;
 window.loadLogs = loadLogs;
 window.loadProviders = loadProviders;
+window.clearLogs = clearLogs;
 window.exportValidKeys = exportValidKeys;
 window.checkManualKey = checkManualKey;
 window.getModels = getModels;
@@ -90,42 +92,9 @@ window.clearAllKeys = clearAllKeys;
 window.uploadFile = uploadFile;
 window.handleFileUpload = handleFileUpload;
 
-// Additional UI functions (custom select + toggle)
-window.selectCustomOption = function selectCustomOption(selectId, value, label) {
-    const select = document.getElementById(selectId);
-
-    // Update hidden input
-    const hiddenInput = select.querySelector('input[type=hidden]');
-    if (hiddenInput) hiddenInput.value = value;
-
-    // Update label
-    const labelEl = select.querySelector('#' + selectId.replace('-select', '-label'));
-    if (labelEl) labelEl.textContent = label;
-
-    // Update selected state
-    select.querySelectorAll('.custom-select-option').forEach(opt => {
-        opt.classList.toggle('selected', opt.dataset.value === value);
-    });
-
-    // Close dropdown
-    select.classList.remove('open');
-};
-
-window.toggleCustomSelect = function toggleCustomSelect(selectId) {
-    const select = document.getElementById(selectId);
-    // Close all other selects
-    document.querySelectorAll('.custom-select.open').forEach(el => {
-        if (el.id !== selectId) {
-            el.classList.remove('open');
-        }
-    });
-    // Toggle current
-    select.classList.toggle('open');
-};
-
-window.toggleLogs = function toggleLogs() {
-    document.getElementById('logs-container').classList.toggle('collapsed');
-};
+window.selectCustomOption = selectCustomOption;
+window.toggleCustomSelect = toggleCustomSelect;
+window.toggleLogs = toggleLogs;
 
 window.populateProviderDropdown = populateProviderDropdown;
 

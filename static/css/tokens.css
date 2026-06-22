@@ -9,6 +9,7 @@
             --neon-green: #00ff88;
             --neon-amber: #ffbb33;
             --neon-red: #ff4477;
+            --neon-cyan-dim: rgba(0, 232, 255, 0.15);
             --text-primary: #eceef8;
             --text-dim: #a0a4c0;
             --text-ghost: #6a6e8e;

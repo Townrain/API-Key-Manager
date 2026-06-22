@@ -41,3 +41,28 @@ export async function loadLogs() {
     content.innerHTML = `<div style="color: var(--neon-red); padding: 20px;">加载失败: ${e.message}</div>`;
   }
 }
+
+export async function clearLogs(date) {
+  let _toast, _confirm;
+  try { _toast = await import('../toast.js'); _confirm = await import('../confirm.js'); } catch {}
+  const url = date ? `/api/logs?date=${date}` : '/api/logs';
+  _confirm.showConfirm({
+    title: '清除日志',
+    message: date ? `确定要清除 ${date} 的日志吗？此操作不可恢复。` : '确定要清除今天的日志吗？此操作不可恢复。',
+    icon: 'danger',
+    okText: '清除',
+    onConfirm: async () => {
+      try {
+        const data = await safeFetch(url, { method: 'DELETE' });
+        if (data.success) {
+          _toast.showToast(`已清除 ${data.date} 的日志 (${data.deleted_lines} 行)`, 'success');
+          loadLogs();
+        } else {
+          _toast.showToast(data.error || '清除失败', 'error');
+        }
+      } catch (e) {
+        _toast.showToast(`清除失败: ${e.message}`, 'error');
+      }
+    }
+  });
+}

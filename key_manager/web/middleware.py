@@ -9,8 +9,8 @@ import os
 import time
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
 from key_manager.errors import (
     ErrorCode,
@@ -48,7 +48,7 @@ def _cleanup_rate_limit_store():
     ips_to_remove = []
     for ip, timestamps in _RATE_LIMIT_STORE.items():
         # Remove old timestamps
-        _RATE_LIMIT_STORE[ip] = [t for t in timestamps if now - t < 60.0]
+        _RATE_LIMIT_STORE[ip] = [t for t in timestamps if now - t < 300.0]
         # If no recent timestamps, mark for removal
         if not _RATE_LIMIT_STORE[ip]:
             ips_to_remove.append(ip)
@@ -60,7 +60,7 @@ async def rate_limit_middleware(request: Request, call_next):
     """Rate limit requests by client IP."""
     # Cleanup old entries periodically
     _cleanup_rate_limit_store()
-    
+
     # Skip for static/docs and auth whitelist
     if request.url.path in _AUTH_WHITELIST or request.url.path.startswith("/static"):
         return await call_next(request)

@@ -1,6 +1,7 @@
 import asyncio
 import time
-from .base import ProviderBase, CheckResult, TestResult
+
+from .base import CheckResult, ProviderBase, TestResult
 
 
 class AnthropicProvider(ProviderBase):

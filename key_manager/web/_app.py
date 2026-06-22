@@ -3,86 +3,37 @@
 Serves the web UI and REST API for managing API keys across 37+ providers.
 """
 
-import asyncio
-import os
 import json
-from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Optional
 
-import httpx
-from fastapi import FastAPI, Request, Query, UploadFile, File, Form, Body
-from fastapi.responses import JSONResponse, StreamingResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from key_manager.config import load_config
-from key_manager.parser import import_keys, mask_key, validate_import_path
-from key_manager.validator import validate_keys
-from key_manager.checker import run_check
-from key_manager.tester import run_test
-from key_manager.proxy import get_proxy, detect_system_proxy
+from key_manager.detector import detect_provider  # noqa: F401
+from key_manager.parser import (
+    import_keys,  # noqa: F401
+    validate_import_path,  # noqa: F401
+)
+from key_manager.providers import PROVIDERS  # noqa: F401
 from key_manager.storage import KeyStore
-from key_manager.providers import (
-    PROVIDERS,
-    get_display_name,
-    DISPLAY_NAMES,
-    PROVIDER_WEBSITES,
-    KEY_PREFIX_MAP,
+from key_manager.validator import validate_keys  # noqa: F401
+from key_manager.web.middleware import (
+    setup_error_handlers,
+    setup_middleware,
 )
-from key_manager.providers.models_registry import PROVIDER_MODELS
-from key_manager.providers.base import simplify_error, CheckResult
-from key_manager.detector import detect_by_prefix, detect_provider
-from key_manager.logger import project_logger
-from key_manager.i18n import t
-from key_manager.webhook import webhook_manager, WebhookEvent
-from key_manager.ssrf import validate_custom_base_url, get_allowed_domains
-from key_manager.url_override import custom_base_url
-from key_manager.errors import (
-    ErrorCode,
-    ErrorResponse,
-    KeyManagerError,
-    ValidationError,
-    StorageError,
-    ProviderError,
-    SystemError,
-)
-
-from key_manager.api_models import (
-    KeyInfo,
-    KeyListResponse,
-    KeyExportItem,
-    KeyExportResponse,
-    ImportRequest,
-    ImportResponse,
-    CheckSingleRequest,
-    CheckSingleResponse,
-    CheckBatchItem,
-    CheckBatchRequest,
-    CheckBatchResult,
-    CheckBatchSummary,
-    CheckBatchResponse,
-    TestSingleRequest,
-    TestSingleResponse,
-    BalanceRequest,
-    BalanceResponse,
-    ModelInfo,
-    ModelsResponse,
-    ProviderInfo as ProviderInfoModel,
-    ProvidersResponse,
-    ProviderDetail,
-    ProviderDetailResponse,
-    StatsProviderEntry,
-    StatsResponse,
-    StatsChartProviderEntry,
-    StatsChartStatuses,
-    StatsChartResponse,
-    LogEntry,
-    LogsResponse,
-    OperationEntry,
-    OperationsResponse,
-    ProgressResponse,
-    ProxyResponse,
+from key_manager.web.routes import (
+    balance,
+    check,
+    keys,
+    misc,
+    models,
+    providers,
+    stats,
+    test,
 )
 
 # Module-level config
@@ -95,7 +46,7 @@ debug_logger = None
 FunctionTracer = None
 
 try:
-    from webdebug import init_debug, debug_logger, FunctionTracer
+    from webdebug import FunctionTracer, debug_logger, init_debug
     DEBUG_ENABLED = True
 except ImportError:
     pass
@@ -121,7 +72,7 @@ app = FastAPI(
 )
 
 # CORS middleware
-from fastapi.middleware.cors import CORSMiddleware
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:18001", "http://127.0.0.1:18001", "http://localhost:3000", "http://127.0.0.1:3000"],
@@ -140,12 +91,6 @@ else:
     tracer = None
 
 # Progress tracking (extracted to progress.py)
-from key_manager.web.progress import (
-    ProgressTracker,
-    _progress_tracker,
-    _make_progress_callback,
-    _sse_progress_event_generator,
-)
 
 # Helper: load keys store
 
@@ -162,7 +107,7 @@ def _load_keys_data(config_override: dict | None = None) -> dict:
         keys_path = Path(cfg["storage"]["keys_file"])
         if not keys_path.exists():
             return {"keys": {}}
-        with open(keys_path, "r", encoding="utf-8") as f:
+        with open(keys_path, encoding="utf-8") as f:
             return json.load(f)
 
 
@@ -172,18 +117,6 @@ def _save_keys_data(data: dict, config_override: dict | None = None):
 
 
 # Middleware and error handlers (extracted to middleware.py)
-from key_manager.web.middleware import (
-    _RATE_LIMIT_STORE,
-    rate_limit_middleware,
-    _AUTH_WHITELIST,
-    auth_middleware,
-    i18n_middleware,
-    pydantic_validation_error_handler,
-    key_manager_error_handler,
-    validation_error_handler,
-    setup_middleware,
-    setup_error_handlers,
-)
 
 # Register middleware and error handlers
 setup_middleware(app, config)
@@ -223,16 +156,6 @@ async def web_ui(request: Request):
 # Route modules (extracted to key_manager/web/routes/)
 # ---
 
-from key_manager.web.routes import (
-    keys,
-    check,
-    test,
-    balance,
-    models,
-    providers,
-    stats,
-    misc,
-)
 
 app.include_router(keys.router)
 app.include_router(check.router)

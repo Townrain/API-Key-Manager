@@ -5,10 +5,10 @@ import os
 import secrets
 from pathlib import Path
 
-import yaml
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
+
 from key_manager.errors import ErrorCode, StorageError
 
 logger = logging.getLogger(__name__)
@@ -46,11 +46,11 @@ def _get_passphrase(config: dict | None = None) -> str:
     secret = os.environ.get("KEY_MANAGER_SECRET")
     if secret:
         return secret
-    
+
     # 2. Check config file
     if config and config.get("encryption", {}).get("passphrase"):
         return config["encryption"]["passphrase"]
-    
+
     # 3. Auto-generate and save
     passphrase = secrets.token_urlsafe(32)
     _save_passphrase_to_config(passphrase)
@@ -61,7 +61,7 @@ def _get_passphrase(config: dict | None = None) -> str:
 def _save_passphrase_to_config(passphrase: str) -> None:
     """Append encryption passphrase to config.yaml without rewriting existing content."""
     config_path = Path("config.yaml")
-    
+
     try:
         existing = ""
         if config_path.exists():
@@ -70,7 +70,7 @@ def _save_passphrase_to_config(passphrase: str) -> None:
             if "encryption:" in existing and "passphrase:" in existing:
                 logger.debug("Encryption passphrase already in config.yaml, skipping")
                 return
-        
+
         # Append encryption section
         encryption_block = (
             "\n# ---- Encryption ----\n"

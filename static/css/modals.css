@@ -421,215 +421,64 @@
             font-family: 'Fira Code', monospace;
         }
 
-        /* Signature Report Styles */
-        .sig-report-container { padding: 20px 24px; }
-        .sig-summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 24px;
+        /* Confirm Modal */
+        .confirm-modal-content {
+            max-width: 420px;
         }
-        .sig-summary-card {
-            background: var(--surface-2);
-            border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            padding: 16px;
+        .confirm-modal-body {
+            padding: 32px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
         }
-        .sig-summary-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
+        .confirm-icon-wrap {
+            margin-bottom: 20px;
         }
-        .sig-summary-card.cyan::before { background: var(--neon-cyan); }
-        .sig-summary-card.green::before { background: var(--neon-green); }
-        .sig-summary-card.blue::before { background: #5b8def; }
-        .sig-summary-card.amber::before { background: var(--neon-amber); }
-        .sig-summary-card.red::before { background: var(--neon-red); }
-        .sig-summary-card.magenta::before { background: var(--neon-magenta); }
-        .sig-summary-card.purple::before { background: #a78bfa; }
-        .sig-summary-card .sig-val {
+        .confirm-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 28px;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .sig-summary-card.cyan .sig-val { color: var(--neon-cyan); }
-        .sig-summary-card.green .sig-val { color: var(--neon-green); }
-        .sig-summary-card.blue .sig-val { color: #5b8def; }
-        .sig-summary-card.amber .sig-val { color: var(--neon-amber); }
-        .sig-summary-card.red .sig-val { color: var(--neon-red); }
-        .sig-summary-card.magenta .sig-val { color: var(--neon-magenta); }
-        .sig-summary-card.purple .sig-val { color: #a78bfa; }
-        .sig-summary-card .sig-label {
-            font-family: 'Fira Code', monospace;
-            font-size: 11px;
-            color: var(--text-ghost);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .sig-section-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--neon-cyan);
-            letter-spacing: 1px;
-            text-transform: uppercase;
             margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
-        .sig-section-title .count-badge {
-            font-family: 'Fira Code', monospace;
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 6px;
-            background: var(--glow-cyan);
-            color: var(--neon-cyan);
-        }
-        .sig-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 24px;
-        }
-        .sig-table th {
-            font-family: 'Fira Code', monospace;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-ghost);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            padding: 10px 14px;
-            text-align: left;
-            background: var(--surface-0);
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .sig-table td {
-            padding: 10px 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            font-size: 12px;
-            vertical-align: middle;
-        }
-        .sig-table tr:hover { background: var(--surface-2); }
-        .sig-match-rate {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .sig-match-bar {
-            width: 60px;
-            height: 4px;
-            background: var(--surface-3);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .sig-match-bar-fill {
-            height: 100%;
-            border-radius: 2px;
-            transition: width 0.3s;
-        }
-        .sig-match-bar-fill.high { background: var(--neon-green); }
-        .sig-match-bar-fill.mid { background: var(--neon-amber); }
-        .sig-match-bar-fill.low { background: var(--neon-red); }
-        .sig-tag {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-family: 'Fira Code', monospace;
-            font-size: 11px;
-            margin: 2px;
-            border: 1px solid;
-        }
-        .sig-tag.matched {
-            background: var(--glow-green);
-            color: var(--neon-green);
-            border-color: rgba(0, 255, 136, 0.2);
-        }
-        .sig-tag.missing {
-            background: var(--glow-red);
-            color: var(--neon-red);
-            border-color: rgba(255, 68, 119, 0.2);
-        }
-        .sig-tag.new-sig {
-            background: var(--glow-cyan);
-            color: var(--neon-cyan);
-            border-color: rgba(0, 232, 255, 0.2);
-        }
-        .sig-tag.conflict {
-            background: rgba(255, 187, 51, 0.1);
-            color: var(--neon-amber);
-            border-color: rgba(255, 187, 51, 0.2);
-        }
-        .sig-status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-family: 'Fira Code', monospace;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .sig-status-badge::before {
-            content: '';
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: currentColor;
-        }
-        .sig-status-badge.timeout {
-            background: rgba(255, 187, 51, 0.1);
-            color: var(--neon-amber);
-            border: 1px solid rgba(255, 187, 51, 0.2);
-        }
-        .sig-status-badge.error {
-            background: var(--glow-red);
-            color: var(--neon-red);
-            border: 1px solid rgba(255, 68, 119, 0.2);
-        }
-        .sig-status-badge.ok {
-            background: var(--glow-green);
-            color: var(--neon-green);
-            border: 1px solid rgba(0, 255, 136, 0.2);
-        }
-        .sig-detail-section {
-            margin-bottom: 24px;
-        }
-        .sig-detail-content {
-            background: var(--surface-0);
-            border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .sig-response-body {
-            font-family: 'Fira Code', monospace;
-            font-size: 11px;
-            padding: 14px;
-            background: var(--surface-2);
-            border-radius: 8px;
+        .confirm-message {
+            font-size: 13px;
             color: var(--text-dim);
-            word-break: break-all;
-            max-height: 120px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            margin-top: 8px;
+            line-height: 1.6;
+            margin-bottom: 28px;
         }
-        .sig-conflict-item {
-            padding: 12px 14px;
-            border-bottom: 1px solid var(--border-subtle);
+        .confirm-actions {
             display: flex;
-            align-items: center;
-            gap: 10px;
+            gap: 12px;
+            justify-content: center;
         }
-        .sig-conflict-item:last-child { border-bottom: none; }
-        .sig-no-data {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-ghost);
+
+        /* Add Provider Form */
+        .provider-form-group {
+            margin-top: 14px;
+        }
+        .provider-form-label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-dim);
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .provider-form-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--surface-2);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .provider-form-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 232, 255, 0.3);
+        }
+        .provider-form-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
         }

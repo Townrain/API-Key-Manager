@@ -1,7 +1,7 @@
 """OpenCode Go provider - low-cost subscription service for open-source models."""
 import asyncio
-import time
-from .base import ProviderBase, CheckResult, TestResult
+
+from .base import ProviderBase, TestResult
 
 
 class OpenCodeGoProvider(ProviderBase):
@@ -34,7 +34,7 @@ class OpenCodeGoProvider(ProviderBase):
         models = await self.get_models(client, key)
         if not models:
             return TestResult(error="no available models found")
-        
+
         # Find first working model
         for model_id in models:
             try:
@@ -46,7 +46,7 @@ class OpenCodeGoProvider(ProviderBase):
                 )
                 if resp.status_code != 200:
                     continue
-                
+
                 # Model works, test token limit
                 last_success = None
                 for step in token_steps:
@@ -67,12 +67,12 @@ class OpenCodeGoProvider(ProviderBase):
                             break
                     except Exception:
                         break
-                
+
                 if last_success:
                     return TestResult(max_tokens=last_success)
             except Exception:
                 continue
-        
+
         return TestResult(error="all models failed")
 
     async def test_concurrency(self, client, key: str,
@@ -87,7 +87,7 @@ class OpenCodeGoProvider(ProviderBase):
                 tasks.append(self._concurrency_probe(client, headers))
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
-            success = sum(1 for r in results if not isinstance(r, Exception) and r)
+            sum(1 for r in results if not isinstance(r, Exception) and r)
             rate_limited = sum(1 for r in results if not isinstance(r, Exception) and not r)
 
             if rate_limited / step >= 0.3:

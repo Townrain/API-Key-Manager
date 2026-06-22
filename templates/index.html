@@ -86,16 +86,16 @@
                             </div>
                             <input type="hidden" id="model-type-filter" value="all">
                         </div>
-                        <button onclick="getModels()" class="btn" style="padding: 8px 14px; border-radius: 8px; font-size: 12px;" title="获取当前 Key 的模型列表">
+                        <button onclick="getModels()" class="btn btn-sm" title="获取当前 Key 的模型列表">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                             获取模型
                         </button>
-                        <button onclick="openModelDetectModal()" class="btn" style="padding: 8px 14px; border-radius: 8px; font-size: 12px;" title="模型检测">
+                        <button onclick="openModelDetectModal()" class="btn btn-sm" title="模型检测">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                             模型检测
                         </button>
 
-                        <button onclick="checkBalance()" class="btn" style="padding: 8px 14px; border-radius: 8px; font-size: 12px;" title="查询当前 Key 的账户余额">
+                        <button onclick="checkBalance()" class="btn btn-sm" title="查询当前 Key 的账户余额">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                             查询余额
                         </button>
@@ -113,10 +113,10 @@
                             </div>
                             <input type="hidden" id="manual-provider" value="">
                         </div>
-                        <button onclick="checkManualKey()" class="btn-primary" style="padding: 10px 16px; border-radius: 8px; font-size: 12px;">检测</button>
+                        <button onclick="checkManualKey()" class="btn-primary btn-sm">检测</button>
                     </div>
                     <div style="margin-top: 8px;">
-                        <input type="text" id="custom-base-url" placeholder="自定义 Base URL（可选，如 http://your-proxy:8080）" style="width: 100%; padding: 8px 12px; border-radius: 8px; font-size: 12px; background: var(--surface-2); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: 'Fira Code', monospace;">
+                        <input type="text" id="custom-base-url" placeholder="自定义 Base URL（可选，如 http://your-proxy:8080）" class="url-input">
                     </div>
                     <div class="check-hint">实际调用 API 验证 Key 可用性 · 填写自定义 URL 可覆盖默认服务商地址</div>
                     <div id="manual-result" class="manual-result"></div>
@@ -152,10 +152,10 @@
                 <div class="action-body">
                     <textarea id="batch-keys-input" class="batch-textarea" placeholder="每行一个 API Key，支持直接粘贴完整 Key..."></textarea>
                     <div style="margin-top: 8px;">
-                        <input type="text" id="batch-custom-url" placeholder="自定义 Base URL（可选）" style="width: 100%; padding: 8px 12px; border-radius: 8px; font-size: 12px; background: var(--surface-2); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: 'Fira Code', monospace;">
+                        <input type="text" id="batch-custom-url" placeholder="自定义 Base URL（可选）" class="url-input">
                     </div>
                     <div class="batch-actions" style="margin-top: 30px;">
-                        <button onclick="runBatchCheck()" class="btn-success" style="padding: 10px 20px; border-radius: 8px; font-size: 12px;">
+                        <button onclick="runBatchCheck()" class="btn-success btn-sm">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                             开始批量检测
                         </button>
@@ -222,7 +222,7 @@
                     <span class="toggle-label">完整KEY</span>
                     <div class="toggle active" id="show-key-toggle" onclick="toggleKeyDisplay()"></div>
                 </div>
-                <div style="width: 1px; height: 28px; background: var(--border-subtle);"></div>
+                <div class="toolbar-divider"></div>
                 <button class="btn" onclick="loadKeys()" title="刷新 (Ctrl+R)">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
                     刷新
@@ -239,7 +239,7 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                     并发测试
                 </button>
-                <button class="btn" onclick="clearAllKeys()" style="color: var(--neon-red); border-color: rgba(255, 68, 119, 0.3);">
+                <button class="btn btn-danger" onclick="clearAllKeys()">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     清除全部
                 </button>
@@ -303,6 +303,10 @@
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
                         展开
                     </button>
+                    <button class="btn-ghost" onclick="clearLogs()" style="color: var(--neon-red);">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        清除
+                    </button>
                 </div>
             </div>
             <div class="logs-container" id="logs-container">
@@ -334,14 +338,14 @@
 
     <!-- Confirm Modal -->
     <div class="modal" id="confirm-modal">
-        <div class="modal-content" style="max-width: 420px;">
-            <div class="modal-body" style="padding: 32px; text-align: center;">
-                <div id="confirm-icon" style="margin-bottom: 20px;"></div>
-                <h3 id="confirm-title" style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 12px;"></h3>
-                <p id="confirm-message" style="font-size: 13px; color: var(--text-dim); line-height: 1.6; margin-bottom: 28px;"></p>
-                <div style="display: flex; gap: 12px; justify-content: center;">
-                    <button class="btn" onclick="confirmCancel()" style="min-width: 100px;">取消</button>
-                    <button id="confirm-ok-btn" class="btn-primary" onclick="confirmOk()" style="padding: 10px 24px; border-radius: 8px; min-width: 100px;">确定</button>
+        <div class="modal-content confirm-modal-content">
+            <div class="modal-body confirm-modal-body">
+                <div id="confirm-icon" class="confirm-icon-wrap"></div>
+                <h3 id="confirm-title" class="confirm-title"></h3>
+                <p id="confirm-message" class="confirm-message"></p>
+                <div class="confirm-actions">
+                    <button class="btn" onclick="confirmCancel()">取消</button>
+                    <button id="confirm-ok-btn" class="btn-primary" onclick="confirmOk()">确定</button>
                 </div>
             </div>
         </div>
@@ -400,26 +404,26 @@
             </div>
             <div class="modal-body" style="padding: 20px;">
                 <div class="form-group">
-                    <label style="display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px; font-weight: 500;">服务商名称 *</label>
-                    <input type="text" id="add-provider-name" placeholder="my-llm" style="width: 100%; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--neon-cyan); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; transition: all 0.2s;" onfocus="this.style.boxShadow='0 0 10px rgba(0,232,255,0.3)'" onblur="this.style.boxShadow='none'">
+                    <label class="provider-form-label">服务商名称 *</label>
+                    <input type="text" id="add-provider-name" placeholder="my-llm" class="provider-form-input">
                 </div>
-                <div class="form-group" style="margin-top: 14px;">
-                    <label style="display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px; font-weight: 500;">显示名称</label>
-                    <input type="text" id="add-provider-display" placeholder="My LLM" style="width: 100%; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; transition: all 0.2s;" onfocus="this.style.borderColor='var(--neon-cyan)'; this.style.boxShadow='0 0 10px rgba(0,232,255,0.3)'" onblur="this.style.borderColor='var(--border-subtle)'; this.style.boxShadow='none'">
+                <div class="form-group provider-form-group">
+                    <label class="provider-form-label">显示名称</label>
+                    <input type="text" id="add-provider-display" placeholder="My LLM" class="provider-form-input">
                 </div>
-                <div class="form-group" style="margin-top: 14px;">
-                    <label style="display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px; font-weight: 500;">Base URL *</label>
-                    <input type="text" id="add-provider-url" placeholder="https://api.my-llm.com/v1" style="width: 100%; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--neon-cyan); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; transition: all 0.2s;" onfocus="this.style.boxShadow='0 0 10px rgba(0,232,255,0.3)'" onblur="this.style.boxShadow='none'">
+                <div class="form-group provider-form-group">
+                    <label class="provider-form-label">Base URL *</label>
+                    <input type="text" id="add-provider-url" placeholder="https://api.my-llm.com/v1" class="provider-form-input">
                 </div>
-                <div class="form-group" style="margin-top: 14px;">
-                    <label style="display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px; font-weight: 500;">Check Endpoint *</label>
-                    <input type="text" id="add-provider-endpoint" placeholder="/models" style="width: 100%; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--neon-cyan); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; transition: all 0.2s;" onfocus="this.style.boxShadow='0 0 10px rgba(0,232,255,0.3)'" onblur="this.style.boxShadow='none'">
+                <div class="form-group provider-form-group">
+                    <label class="provider-form-label">Check Endpoint *</label>
+                    <input type="text" id="add-provider-endpoint" placeholder="/models" class="provider-form-input">
                 </div>
-                <div class="form-group" style="margin-top: 14px;">
-                    <label style="display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px; font-weight: 500;">Key 前缀</label>
-                    <input type="text" id="add-provider-prefix" placeholder="myllm-" style="width: 100%; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; transition: all 0.2s;" onfocus="this.style.borderColor='var(--neon-cyan)'; this.style.boxShadow='0 0 10px rgba(0,232,255,0.3)'" onblur="this.style.borderColor='var(--border-subtle)'; this.style.boxShadow='none'">
+                <div class="form-group provider-form-group">
+                    <label class="provider-form-label">Key 前缀</label>
+                    <input type="text" id="add-provider-prefix" placeholder="myllm-" class="provider-form-input">
                 </div>
-                <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                <div class="provider-form-actions">
                     <button class="btn-ghost" onclick="closeAddProviderModal()">取消</button>
                     <button class="btn-primary" onclick="submitAddProvider()" style="background: var(--neon-green); color: #000;">添加</button>
                 </div>

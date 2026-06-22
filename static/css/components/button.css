@@ -84,3 +84,18 @@ button:active { transform: scale(0.97); }
 .btn:active { transform: scale(0.97); }
 .btn-primary:active { transform: scale(0.97); }
 .btn-success:active { transform: scale(0.97); }
+.btn-sm {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.btn-danger {
+    color: var(--neon-red);
+    border-color: rgba(255, 68, 119, 0.3);
+}
+
+.btn-danger:hover {
+    border-color: var(--neon-red);
+    background: rgba(255, 68, 119, 0.1);
+}

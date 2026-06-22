@@ -1,33 +1,34 @@
 """Key validation check routes."""
 
 import asyncio
-import httpx
-from fastapi import APIRouter, Form, Body
 
-from key_manager.parser import mask_key
-from key_manager.proxy import get_proxy
-from key_manager.providers import get_display_name
-from key_manager.providers.base import simplify_error, CheckResult
-from key_manager.detector import detect_by_prefix
-from key_manager.logger import project_logger
-from key_manager.i18n import t
-from key_manager.webhook import webhook_manager, WebhookEvent
-from key_manager.ssrf import validate_custom_base_url, get_allowed_domains
-from key_manager.url_override import custom_base_url
-from key_manager.errors import ErrorCode, ValidationError
-from key_manager.api_models import (
-    CheckSingleRequest,
-    CheckSingleResponse,
-    CheckBatchItem,
-    CheckBatchRequest,
-    CheckBatchResult,
-    CheckBatchSummary,
-    CheckBatchResponse,
-)
-from key_manager.web.progress import _make_progress_callback
+import httpx
+from key_manager.web.utils import build_chat_url, resolve_provider
+from fastapi import APIRouter, Form, Request
 
 # Import _app module for patchable names (tests patch key_manager.web._app.*)
 import key_manager.web._app as _app_mod
+from key_manager.api_models import (
+    CheckBatchItem,
+    CheckBatchRequest,
+    CheckBatchResponse,
+    CheckBatchResult,
+    CheckBatchSummary,
+    CheckSingleRequest,
+    CheckSingleResponse,
+)
+from key_manager.detector import detect_by_prefix
+from key_manager.errors import ErrorCode, ValidationError
+from key_manager.i18n import t
+from key_manager.logger import project_logger
+from key_manager.parser import mask_key
+from key_manager.providers import get_display_name
+from key_manager.providers.base import CheckResult, simplify_error
+from key_manager.proxy import get_proxy
+from key_manager.ssrf import get_allowed_domains, validate_custom_base_url
+from key_manager.url_override import custom_base_url
+from key_manager.web.progress import _make_progress_callback
+from key_manager.webhook import WebhookEvent, webhook_manager
 
 router = APIRouter(tags=["Check"])
 
@@ -39,27 +40,24 @@ async def _check_model_specific(
     model_name: str,
 ) -> 'CheckResult':
     """Check a specific model against a provider.
-    
+
     Extracted to eliminate duplication in api_check_single.
     """
+    import time
+
     from key_manager.providers.base import CheckResult
-    import time as _time
-    import re as _re
-    
+
     headers = provider_obj.build_headers(key)
     headers["Content-Type"] = "application/json"
-    # Extract version path from check_endpoint
-    version_match = _re.match(r'(/v\d+)', provider_obj.check_endpoint or '')
-    version_prefix = version_match.group(1) if version_match else ''
-    chat_url = f"{provider_obj.get_base_url()}{version_prefix}/chat/completions"
-    start = _time.monotonic()
+    chat_url = build_chat_url(provider_obj)
+    start = time.monotonic()
     try:
         resp = await client.post(
             chat_url,
             headers=headers,
             json={"model": model_name, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
         )
-        latency = (_time.monotonic() - start) * 1000
+        latency = (time.monotonic() - start) * 1000
         if resp.status_code == 200:
             return CheckResult(valid=True, status_code=200, latency_ms=latency, error=None)
         else:
@@ -77,9 +75,16 @@ async def _check_model_specific(
 async def api_check(
     provider: str = Form(None),
     status: str = Form(None),
-    body_json: dict = Body(None),
+    request: Request = None,
 ):
     """Run a validation check against all keys (synchronous - returns results directly)."""
+    # Support both form data and JSON body
+    body_json = None
+    if request and request.method == "POST":
+        try:
+            body_json = await request.json()
+        except Exception:
+            pass
     # Support both form data and JSON body
     p = provider or (body_json or {}).get("provider")
     s = status or (body_json or {}).get("status")
@@ -127,47 +132,28 @@ async def api_check_single(body: CheckSingleRequest):
             message=t("VALIDATION_MISSING_KEY"),
         )
 
-    # Detect provider if not given - use smart detection with probe+check verification
+    # Resolve provider (detect if needed, validate, get provider object)
+    provider_name, provider_obj = await resolve_provider(
+        key=key,
+        provider_name=provider_name,
+        timeout=_app_mod.config.get("check", {}).get("timeout_seconds", 30),
+        proxy=get_proxy(_app_mod.config.get("proxy")),
+        providers=_app_mod.PROVIDERS,
+        detect_provider_fn=_app_mod.detect_provider,
+    )
+
     proxy = get_proxy(_app_mod.config.get("proxy")) or None
-    
-    # Debug logging for proxy config
-    if _app_mod.DEBUG_ENABLED and _app_mod.debug_logger:
-        import asyncio as _asyncio
-        task = _asyncio.create_task(_app_mod.debug_logger.log(
-            category="DETECT",
-            action="config",
-            detail=f"proxy={proxy}, timeout={_app_mod.config['check']['timeout_seconds']}s",
-            data={"proxy": proxy, "timeout": _app_mod.config['check']['timeout_seconds']},
-            level="INFO"
-        ))
-        task.add_done_callback(lambda t: t.exception() if not t.cancelled() else None)  # Suppress unhandled exception warning
-    
+
     try:
         async with httpx.AsyncClient(
             timeout=_app_mod.config["check"]["timeout_seconds"],
             proxy=proxy,
             follow_redirects=False,
         ) as client:
-            if not provider_name:
-                provider_name = await _app_mod.detect_provider(client, key)
-                if not provider_name or provider_name == 'unknown':
-                    raise ValidationError(
-                        code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
-                        message=t("VALIDATION_PROVIDER_UNKNOWN"),
-                    )
-
-            provider_name_lower = provider_name.lower()
-            provider_obj = _app_mod.PROVIDERS.get(provider_name_lower)
-            if not provider_obj:
-                raise ValidationError(
-                    code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
-                    message=t("VALIDATION_PROVIDER_UNKNOWN"),
-                )
 
             # If provider was auto-detected, the detection already validated the key
             # Only call check() if provider was manually specified
             model_name = body.model
-            from key_manager.providers.base import CheckResult
             if body.provider:
                 if model_name:
                     result = await _check_model_specific(client, provider_obj, key, model_name)

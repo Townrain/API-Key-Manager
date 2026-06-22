@@ -203,6 +203,13 @@
             pointer-events: auto;
         }
 
+        /* Utility Classes */
+        .toolbar-divider {
+            width: 1px;
+            height: 28px;
+            background: var(--border-subtle);
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }

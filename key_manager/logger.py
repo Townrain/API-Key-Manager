@@ -1,8 +1,7 @@
-import logging
 import json
+import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 
 class KeyLogger:
@@ -96,7 +95,7 @@ class ProjectLogger:
         })
 
     def log_check(self, provider: str, key_masked: str, status: str,
-                  status_code: Optional[int] = None, latency_ms: float = 0, error: str = None):
+                  status_code: int | None = None, latency_ms: float = 0, error: str = None):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         provider_padded = provider.ljust(10)
         line = f"[{timestamp}] [CHECK  ] [{provider_padded}] {key_masked} -> {status}"
@@ -114,8 +113,8 @@ class ProjectLogger:
             "error": error
         })
 
-    def log_test(self, provider: str, key_masked: str, max_tokens: Optional[int],
-                 max_concurrency: Optional[int], models_count: int = 0):
+    def log_test(self, provider: str, key_masked: str, max_tokens: int | None,
+                 max_concurrency: int | None, models_count: int = 0):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         provider_padded = provider.ljust(10)
         line = f"[{timestamp}] [TEST   ] [{provider_padded}] {key_masked} -> tokens={max_tokens}, conc={max_concurrency}, models={models_count}"
@@ -164,7 +163,7 @@ class ProjectLogger:
         if not log_file.exists():
             return []
 
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             all_lines = f.readlines()
             return [line.strip() for line in all_lines[-lines:]]
 
@@ -177,7 +176,7 @@ class ProjectLogger:
             return []
 
         entries = []
-        with open(json_file, "r", encoding="utf-8") as f:
+        with open(json_file, encoding="utf-8") as f:
             for line in f:
                 try:
                     entries.append(json.loads(line.strip()))
@@ -201,6 +200,32 @@ class ProjectLogger:
                 "modified": datetime.fromtimestamp(f.stat().st_mtime).isoformat()
             })
         return files
+
+
+    def clear_main_log(self, date: str = None) -> dict:
+        """Clear main log file for specified date (default: today).
+        
+        Args:
+            date: Date string in YYYY-MM-DD format (default: today)
+            
+        Returns:
+            dict with 'success', 'date', 'deleted_lines' keys
+        """
+        if date is None:
+            date = datetime.now().strftime("%Y-%m-%d")
+        
+        log_file = self.logs_dir / f"main_{date}.log"
+        if not log_file.exists():
+            return {"success": False, "date": date, "deleted_lines": 0, "error": "Log file not found"}
+        
+        # Count lines before clearing
+        with open(log_file, encoding="utf-8") as f:
+            lines_count = sum(1 for _ in f)
+        
+        # Clear the file
+        log_file.write_text("", encoding="utf-8")
+        
+        return {"success": True, "date": date, "deleted_lines": lines_count}
 
 
 # Global logger instance

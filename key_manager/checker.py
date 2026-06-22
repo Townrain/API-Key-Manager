@@ -1,10 +1,7 @@
-import asyncio
-from datetime import datetime
 
-import httpx
 
-from .providers import PROVIDERS
 from .validator import validate_keys
+
 
 async def run_check(keys_file: str = "./data/keys.json",
                     results_file: str = "./data/check_results.json",
@@ -27,7 +24,7 @@ async def run_check(keys_file: str = "./data/keys.json",
 
     # Retry failed keys
     if retry_failed and results["summary"]["error"]["count"] > 0:
-        for i in range(retry_count):
+        for _i in range(retry_count):
             error_keys = results["summary"]["error"]["keys"]
             if not error_keys:
                 break

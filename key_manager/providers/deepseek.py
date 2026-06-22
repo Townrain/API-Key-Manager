@@ -1,6 +1,6 @@
 import asyncio
-import time
-from .base import ProviderBase, CheckResult, TestResult, BalanceResult
+
+from .base import BalanceResult, CheckResult, ProviderBase, TestResult
 
 
 class DeepSeekProvider(ProviderBase):
@@ -28,15 +28,15 @@ class DeepSeekProvider(ProviderBase):
 
     async def test_token_limit(self, client, key: str, token_steps: list[int]) -> TestResult:
         """Test max token output by sending a large value and parsing error response.
-        
+
         Strategy: Send 1000000 tokens, parse error to get actual limit.
         """
         import re
         headers = self.build_headers(key)
         headers["Content-Type"] = "application/json"
-        
+
         large_tokens = 1000000
-        
+
         try:
             resp = await client.post(
                 f"{self.get_base_url()}/chat/completions",
@@ -47,26 +47,26 @@ class DeepSeekProvider(ProviderBase):
                     "max_tokens": large_tokens
                 }
             )
-            
+
             if resp.status_code == 200:
                 return TestResult(max_tokens=large_tokens)
-            
+
             # Parse error to extract limit
             try:
                 error_data = resp.json()
                 error_msg = error_data.get("error", {}).get("message", "")
-                
+
                 # Try to find limit after 'maximum' or 'max' keyword
                 max_match = re.search(r'(?:maximum|max)\s+(?:is\s+)?(\d+)', error_msg, re.IGNORECASE)
                 if max_match:
                     limit = int(max_match.group(1))
                     if limit >= 100:
                         return TestResult(max_tokens=limit)
-                
+
                 # Fallback: find numbers and use the second largest
                 numbers = re.findall(r'\d+', error_msg)
                 if len(numbers) >= 2:
-                    sorted_nums = sorted(set(int(n) for n in numbers), reverse=True)
+                    sorted_nums = sorted({int(n) for n in numbers}, reverse=True)
                     for num in sorted_nums:
                         if num >= 100:
                             return TestResult(max_tokens=num)
@@ -76,7 +76,7 @@ class DeepSeekProvider(ProviderBase):
                         return TestResult(max_tokens=num)
             except Exception:
                 pass
-            
+
             return TestResult(max_tokens=None, error="Could not parse token limit")
         except Exception as e:
             return TestResult(max_tokens=None, error=str(e))

@@ -137,6 +137,26 @@ select:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 0 
     transition: background-color 5000s ease-in-out 0s;
 }
 
+.url-input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    transition: all 0.2s;
+}
+
+.url-input:focus {
+    outline: none;
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 0 3px var(--glow-cyan);
+}
+
+.url-input::placeholder { color: var(--text-ghost); }
+
 .manual-select,
 .model-type-select,
 .concurrency-input {

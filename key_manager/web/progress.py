@@ -10,7 +10,6 @@ from typing import Any
 
 from key_manager.api_models import ProgressResponse
 
-
 # Global progress tracker
 
 class ProgressTracker:
