@@ -49,12 +49,12 @@ async def resolve_provider(
     detect_provider_fn,
 ) -> tuple[str, object]:
     """Resolve provider name and object from key.
-    
+
     Handles the common pattern of:
     1. If provider_name not given, detect it from the key
     2. Validate the provider name is known
     3. Get the provider object
-    
+
     Args:
         key: The API key to check
         provider_name: Explicit provider name, or None to auto-detect
@@ -62,18 +62,18 @@ async def resolve_provider(
         proxy: Optional proxy URL
         providers: Dict of provider_name -> provider_object
         detect_provider_fn: Async function to detect provider from key
-        
+
     Returns:
         tuple: (provider_name, provider_obj)
-        
+
     Raises:
         ValidationError: If provider cannot be determined or is unknown
     """
+    import httpx
+
     from key_manager.errors import ErrorCode, ValidationError
     from key_manager.i18n import t
-    
-    import httpx
-    
+
     if not provider_name:
         async with httpx.AsyncClient(timeout=timeout, proxy=proxy or None) as client:
             provider_name = await detect_provider_fn(client, key)
@@ -82,7 +82,7 @@ async def resolve_provider(
                 code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
                 message=t("VALIDATION_PROVIDER_UNKNOWN"),
             )
-    
+
     provider_name_lower = provider_name.lower()
     provider_obj = providers.get(provider_name_lower)
     if not provider_obj:
@@ -90,5 +90,5 @@ async def resolve_provider(
             code=ErrorCode.VALIDATION_PROVIDER_UNKNOWN,
             message=t("VALIDATION_PROVIDER_UNKNOWN"),
         )
-    
+
     return provider_name, provider_obj

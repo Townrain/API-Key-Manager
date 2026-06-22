@@ -67,10 +67,10 @@ async def api_logs_operations():
 @router.delete("/api/logs", tags=["Logs"])
 async def api_logs_clear(date: str = None):
     """Clear main log file for specified date (default: today).
-    
+
     Args:
         date: Date string in YYYY-MM-DD format (optional, default: today)
-        
+
     Returns:
         dict with success status and details
     """

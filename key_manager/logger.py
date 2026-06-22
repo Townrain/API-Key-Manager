@@ -204,27 +204,27 @@ class ProjectLogger:
 
     def clear_main_log(self, date: str = None) -> dict:
         """Clear main log file for specified date (default: today).
-        
+
         Args:
             date: Date string in YYYY-MM-DD format (default: today)
-            
+
         Returns:
             dict with 'success', 'date', 'deleted_lines' keys
         """
         if date is None:
             date = datetime.now().strftime("%Y-%m-%d")
-        
+
         log_file = self.logs_dir / f"main_{date}.log"
         if not log_file.exists():
             return {"success": False, "date": date, "deleted_lines": 0, "error": "Log file not found"}
-        
+
         # Count lines before clearing
         with open(log_file, encoding="utf-8") as f:
             lines_count = sum(1 for _ in f)
-        
+
         # Clear the file
         log_file.write_text("", encoding="utf-8")
-        
+
         return {"success": True, "date": date, "deleted_lines": lines_count}
 
 
