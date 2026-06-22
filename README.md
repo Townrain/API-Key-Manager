@@ -915,6 +915,36 @@ const result = await client.checkSingle({ key: 'sk-xxx', provider: 'openai' });
 ## 更新日志
 
 
+### v4.1.0 (2026-06-22)
+
+- **Web 模块技术债务优化**:
+  - 修复 `middleware.py` 中的死代码（`now - 300.0` 表达式未使用）
+  - 提取 `build_chat_url()` 工具函数，消除 3 处重复的 Chat URL 构造逻辑
+  - 提取 `resolve_provider()` 工具函数，消除 5 处重复的提供商检测+验证模式
+  - 修复 `keys.py` 中弃用的 `datetime.utcnow()`，改用 `datetime.now(timezone.utc)`
+  - 为所有静默异常块添加 `logger.debug()` 日志记录
+  - 将内联导入（`import re as _re`、`import time as _time`）移至模块顶部
+  - 统一 `test.py` 模型端点的错误响应格式，使用 `ErrorResponse` 替代原始 dict
+  - 删除 `_app.py` 中的重复注释
+  - 代码行数减少 ~110 行，新增 `web/utils.py` 共享工具模块
+
+- **操作日志清理功能**:
+  - 新增 `DELETE /api/logs` API 端点，支持清理当天或指定日期的主日志
+  - 新增 `ProjectLogger.clear_main_log()` 方法
+
+- **测试验证**:
+  - 全量测试通过：682 passed, 1 skipped
+  - 覆盖率：78.40%（超过 60% 要求）
+
+- **前端清理优化**:
+  - CSS: 添加缺失的 `--neon-cyan-dim` 变量，新增 `.btn-sm` `.btn-danger` `.url-input` `.toolbar-divider` 工具类
+  - CSS: Confirm 模态框和添加服务商表单的内联样式提取为 CSS 类
+  - CSS: 签名报告样式拆分到 `components/signature-report.css`
+  - CSS: 内联 `style=` 从 71 减少到 39，`onfocus`/`onblur` 从 10 减少到 0
+  - JS: 提取 `selectCustomOption`、`toggleCustomSelect`、`toggleLogs` 到 `ui-helpers.js`
+  - JS: 新增 `clearLogs()` 函数，带确认对话框
+  - HTML: `index.html` 从 531 行精简到 508 行
+
 ### v4.0.0 (2026-06-21)
 
 - **前端模块化重构**: 将单体 `index.html` (4725行) 重构为模块化结构:

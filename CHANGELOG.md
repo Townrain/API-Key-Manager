@@ -5,6 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] - 2026-06-22
+
+### Added
+
+- **Operation Log Cleanup API** — New `DELETE /api/logs` endpoint for clearing log files:
+  - Support clearing today's log (default) or specified date via query parameter
+  - Returns success status, date, and number of deleted lines
+  - Added `ProjectLogger.clear_main_log()` method in `logger.py`
+
+### Changed
+
+- **Web Module Tech Debt Cleanup** — Major code quality improvements:
+  - Fixed dead code in `middleware.py` (`now - 300.0` expression result was unused)
+  - Extracted `build_chat_url()` utility to `web/utils.py`, eliminating 3x duplicated URL construction
+  - Extracted `resolve_provider()` utility to `web/utils.py`, eliminating 5x duplicated provider detection pattern
+  - Fixed deprecated `datetime.utcnow()` in `keys.py`, replaced with `datetime.now(timezone.utc)`
+  - Added `logger.debug()` to all silent exception blocks for better debugging
+  - Moved inline imports (`import re as _re`, `import time as _time`) to module top-level
+  - Unified error response format in `test.py` model endpoints using `ErrorResponse`
+  - Removed duplicate comment in `_app.py`
+  - Total code reduction: ~110 lines, new shared utility module `web/utils.py`
+
+### Testing
+
+- Full test suite passes: 682 passed, 1 skipped
+- Coverage: 78.40% (exceeds 60% requirement)
+
+### Frontend Cleanup
+
+- **CSS Architecture Improvements**:
+  - Added missing `--neon-cyan-dim` CSS variable to `tokens.css`
+  - Created `.btn-sm`, `.btn-danger` utility classes in `button.css`
+  - Created `.url-input` form class in `form.css`
+  - Created `.toolbar-divider` utility class in `base.css`
+  - Extracted Confirm modal inline styles to CSS classes (`.confirm-modal-content`, `.confirm-modal-body`, `.confirm-title`, `.confirm-message`, `.confirm-actions`)
+  - Extracted Add Provider form inline styles to CSS classes (`.provider-form-group`, `.provider-form-label`, `.provider-form-input`, `.provider-form-actions`)
+  - Extracted signature report styles to `components/signature-report.css`
+  - Reduced inline `style=` attributes from 71 to 39
+  - Removed all `onfocus`/`onblur` inline handlers (10 → 0), replaced with CSS `:focus`
+
+- **JS Module Improvements**:
+  - Extracted `selectCustomOption`, `toggleCustomSelect`, `toggleLogs` to `ui-helpers.js`
+  - Added `clearLogs()` function to `api/misc.js` with confirm dialog
+  - All 63 onclick handlers verified with matching `window.*` exposures
+  - Zero broken import paths across 22 JS modules
+
+- **HTML Template**:
+  - `index.html` reduced from 531 to 508 lines
+  - Added "清除" button for log cleanup in the logs section
+
 ## [4.0.0] - 2026-06-21
 
 ### Added
