@@ -183,15 +183,12 @@ def make_keys_data(*, keys=None):
 @pytest.fixture
 def client(tmp_path):
     """FastAPI TestClient with standard test config and auth."""
-    os.environ.setdefault("KEY_MANAGER_SECRET", "test-secret")
     cfg = make_config(tmp_path)
-    # Derive API token from encryption passphrase for testing
-    from key_manager.storage import derive_api_token
-    api_token = derive_api_token(cfg)
-    with patch("key_manager.web._app.config", cfg):
+    api_key = cfg.get("auth", {}).get("api_key", "")
+    with patch("key_manager.web.middleware._config", cfg):
         from key_manager.web import app
         from fastapi.testclient import TestClient
-        yield TestClient(app, headers={"Authorization": f"Bearer {api_token}"})
+        yield TestClient(app, headers={"Authorization": f"Bearer {api_key}"})
 
 
 @pytest.fixture
