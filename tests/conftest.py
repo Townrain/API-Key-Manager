@@ -185,7 +185,7 @@ def client(tmp_path):
     """FastAPI TestClient with standard test config and auth."""
     cfg = make_config(tmp_path)
     api_key = cfg.get("auth", {}).get("api_key", "")
-    with patch("key_manager.web.middleware._config", cfg):
+    with patch("key_manager.web._app.config", cfg), patch("key_manager.web.middleware._config", cfg):
         from key_manager.web import app
         from fastapi.testclient import TestClient
         yield TestClient(app, headers={"Authorization": f"Bearer {api_key}"})
