@@ -3,7 +3,6 @@
 Serves the web UI and REST API for managing API keys across 37+ providers.
 """
 
-import json
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -12,10 +11,10 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from key_manager.logger import project_logger
-from key_manager.errors import StorageError
 from key_manager.config import load_config
 from key_manager.detector import detect_provider  # noqa: F401
+from key_manager.errors import StorageError
+from key_manager.logger import project_logger
 from key_manager.parser import (
     import_keys,  # noqa: F401
     validate_import_path,  # noqa: F401
@@ -157,7 +156,7 @@ async def web_ui(request: Request):
         api_token = derive_api_token(config)
     except Exception:
         pass
-    
+
     if templates and (_TEMPLATES_DIR / "index.html").exists():
         return templates.TemplateResponse("index.html", {"request": request, "api_token": api_token})
     if templates and (_TEMPLATES_DIR_ALT / "index.html").exists():

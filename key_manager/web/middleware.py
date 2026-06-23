@@ -99,12 +99,12 @@ _AUTH_WHITELIST = {"/", "/docs", "/redoc", "/openapi.json", "/static/"}
 
 async def auth_middleware(request: Request, call_next):
     """Authenticate requests via Bearer token.
-    
+
     Priority: explicit api_key > env var > derived token from encryption passphrase.
     """
     cfg = _config or {}
     api_key = cfg.get("auth", {}).get("api_key", "") or os.environ.get("KEY_MANAGER_API_KEY", "")
-    
+
     # Fallback to derived token from encryption passphrase
     if not api_key:
         try:
@@ -112,7 +112,7 @@ async def auth_middleware(request: Request, call_next):
             api_key = derive_api_token(cfg)
         except Exception:
             pass
-    
+
     if not api_key:
         # Log warning once at startup (not on every request)
         app = request.app
@@ -123,16 +123,16 @@ async def auth_middleware(request: Request, call_next):
             )
             app._auth_warning_logged = True
         return await call_next(request)
-    
+
     # Check whitelist (including static files)
     path = request.url.path
     if path in _AUTH_WHITELIST or path.startswith("/static/"):
         return await call_next(request)
-    
+
     auth_header = request.headers.get("authorization", "")
     if hmac.compare_digest(auth_header, f"Bearer {api_key}"):
         return await call_next(request)
-    
+
     response = ErrorResponse.error_factory(
         code=ErrorCode.AUTH_REQUIRED,
         message=t(ErrorCode.AUTH_REQUIRED.value),

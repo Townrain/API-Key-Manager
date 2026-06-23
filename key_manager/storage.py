@@ -44,7 +44,7 @@ def _derive_key(passphrase: str, salt: bytes = None, cache: bool = True) -> byte
 
 def clear_key_cache() -> None:
     """Clear the derived-key cache.
-    
+
     Call this after changing the encryption passphrase to avoid
     returning stale cached keys.
     """
@@ -53,10 +53,10 @@ def clear_key_cache() -> None:
 
 def derive_api_token(config: dict | None = None, salt: bytes = None) -> str:
     """Derive an API authentication token from the encryption passphrase.
-    
+
     Uses a different salt than storage encryption to avoid cross-contamination.
     The derived token is cached for performance.
-    
+
     Args:
         config: Optional config dict with encryption.passphrase.
         salt: Optional custom salt bytes. Defaults to built-in API token salt.
@@ -68,7 +68,7 @@ def derive_api_token(config: dict | None = None, salt: bytes = None) -> str:
     if cache_key in _key_cache:
         # Return cached token as hex string
         return _key_cache[cache_key].hex()
-    
+
     # Derive a 32-byte token using PBKDF2
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),

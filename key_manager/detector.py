@@ -270,8 +270,6 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
     best_score = -1
     best_name = None
 
-    # Providers whose /v1/models doesn't validate keys (returns 200 even with invalid keys)
-    UNRELIABLE_MODELS_ENDPOINT = {"ppio", "nvidia", "modelscope"}
 
     for name, entries in error_bodies.items():
         for body, status_code in entries:

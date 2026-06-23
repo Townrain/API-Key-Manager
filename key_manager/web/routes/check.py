@@ -226,7 +226,7 @@ async def api_check_single(body: CheckSingleRequest):
                 data = _app_mod._load_keys_data()
                 keys_dict = data.get("keys", {})
                 timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-                
+
                 if key not in keys_dict:
                     keys_dict[key] = {
                         "key_masked": mask_key(key),

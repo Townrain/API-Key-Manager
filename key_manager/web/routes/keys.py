@@ -254,7 +254,7 @@ async def api_get_full_key(request: Request):
         raise ValidationError(
             code=ErrorCode.VALIDATION_MISSING_KEY,
             message="key_masked is required",
-        )
+        ) from None
 
     if not key_masked:
         raise ValidationError(
@@ -287,7 +287,7 @@ async def api_delete_key(request: Request):
         raise ValidationError(
             code=ErrorCode.VALIDATION_MISSING_KEY,
             message="key_masked is required",
-        )
+        ) from None
 
     if not key_masked:
         raise ValidationError(
