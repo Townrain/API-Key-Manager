@@ -32,6 +32,7 @@ DEFAULT_CONFIG = {
         "check_results_file": "./data/check_results.json",
         "test_results_file": "./data/test_results.json",
         "logs_dir": "./data/logs",
+        "encrypted": True,
     },
     "auth": {
         "api_key": "",

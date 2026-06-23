@@ -112,10 +112,12 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
     # Step 2: Try format matching (e.g., Zhipu's {id}.{secret})
     format_candidates = detect_by_format(key)
     if format_candidates:
-        # Return first candidate that exists in PROVIDERS
-        for name in format_candidates:
-            if name in PROVIDERS:
-                return name
+        # 如果只有一个候选者，直接返回
+        if len(format_candidates) == 1:
+            if format_candidates[0] in PROVIDERS:
+                return format_candidates[0]
+        # 如果有多个候选者，继续到 Step 4 进行验证
+        # 不在这里返回，让后续的并发探测来验证
 
     # Step 3: Try prefix matching - collect candidates, don't return on /v1/models 200
     prefix_candidates = detect_by_prefix(key)
@@ -152,7 +154,7 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
                 if isinstance(data, dict) and "data" in data:
                     models = [m.get("id", "") for m in data["data"] if m.get("id")]
                     if models:
-                        return name, models, True  # name, models, is_valid
+                        return name, models, True  # name, models, got_models
         except Exception:
             pass  # Request failed, continue with other providers
         return name, [], False
@@ -165,8 +167,8 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
     # These will be tested with /chat/completions to verify key validity
     tasks = []
     valid_providers = []  # Providers that returned 200 from /v1/models (NOT verified yet!)
-    for name, models, is_valid in model_results:
-        if is_valid:
+    for name, models, got_models in model_results:
+        if got_models:
             valid_providers.append(name)
         if models:
             for model in models:
@@ -274,10 +276,6 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
     for name, entries in error_bodies.items():
         for body, status_code in entries:
             score = score_provider(name, body, status_code)
-            # Bonus for providers that returned 200 from /v1/models (but only reliable ones)
-            # Only give bonus if /v1/chat/completions also succeeded (no error body)
-            if name in valid_providers and name not in UNRELIABLE_MODELS_ENDPOINT and name not in error_bodies:
-                score += 500
             if score > best_score:
                 best_score = score
                 best_name = name

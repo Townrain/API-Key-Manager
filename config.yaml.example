@@ -57,6 +57,7 @@ storage:
   check_results_file: "./data/check_results.json"
   test_results_file: "./data/test_results.json"
   logs_dir: "./data/logs"
+  encrypted: true  # Set to false to store keys in plaintext (not recommended for production)
 
 # ---- Webhooks ----
 # Receive notifications when events occur

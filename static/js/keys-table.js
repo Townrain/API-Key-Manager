@@ -6,6 +6,7 @@
 import { State } from './state.js';
 import { esc, escAttr, translateError, translateErrorType } from './utils.js';
 import { showToast } from './toast.js';
+import { safeFetch } from './api/client.js';
 
 // Re-export loadKeys from api.js to avoid circular dependency
 // (api.js uses lazy import of this module, so we cannot import from api.js here)
@@ -108,12 +109,11 @@ export function toggleKeyDisplay() {
 
 export function copyKey(key_masked) {
     // First try to get the full key from API
-    fetch('/api/keys/get-full-key', {
+    safeFetch('/api/keys/get-full-key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key_masked: key_masked })
     })
-    .then(response => response.json())
     .then(data => {
         if (data.key) {
             navigator.clipboard.writeText(data.key).then(() => showToast('已复制到剪贴板', 'success'));
@@ -137,12 +137,11 @@ export function deleteKey(key_masked) {
             okText: '删除',
             onConfirm: async () => {
                 try {
-                    const response = await fetch('/api/keys/delete', {
+                    const data = await safeFetch('/api/keys/delete', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ key_masked: key_masked })
                     });
-                    const data = await response.json();
                     if (data.deleted) {
                         showToast(`已删除密钥 ${key_masked}`, 'success');
                         import('./api/keys.js').then(api => api.loadKeys());

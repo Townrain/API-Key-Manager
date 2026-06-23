@@ -24,12 +24,13 @@ _NONCE_LEN = 12
 _key_cache: dict[tuple[str, bytes], bytes] = {}
 
 
-def _derive_key(passphrase: str, salt: bytes = None) -> bytes:
+def _derive_key(passphrase: str, salt: bytes = None, cache: bool = True) -> bytes:
     if salt is None:
         salt = _LEGACY_SALT
-    cache_key = (passphrase, salt)
-    if cache_key in _key_cache:
-        return _key_cache[cache_key]
+    if cache:
+        cache_key = (passphrase, salt)
+        if cache_key in _key_cache:
+            return _key_cache[cache_key]
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
@@ -37,18 +38,33 @@ def _derive_key(passphrase: str, salt: bytes = None) -> bytes:
         iterations=_ITERATIONS,
     )
     key = kdf.derive(passphrase.encode("utf-8"))
-    _key_cache[cache_key] = key
+    if cache:
+        _key_cache[cache_key] = key
     return key
 
+def clear_key_cache() -> None:
+    """Clear the derived-key cache.
+    
+    Call this after changing the encryption passphrase to avoid
+    returning stale cached keys.
+    """
+    _key_cache.clear()
 
-def derive_api_token(config: dict | None = None) -> str:
+
+def derive_api_token(config: dict | None = None, salt: bytes = None) -> str:
     """Derive an API authentication token from the encryption passphrase.
     
     Uses a different salt than storage encryption to avoid cross-contamination.
     The derived token is cached for performance.
+    
+    Args:
+        config: Optional config dict with encryption.passphrase.
+        salt: Optional custom salt bytes. Defaults to built-in API token salt.
     """
+    if salt is None:
+        salt = _API_TOKEN_SALT
     passphrase = _get_passphrase(config)
-    cache_key = (passphrase, _API_TOKEN_SALT)
+    cache_key = (passphrase, salt)
     if cache_key in _key_cache:
         # Return cached token as hex string
         return _key_cache[cache_key].hex()
@@ -57,7 +73,7 @@ def derive_api_token(config: dict | None = None) -> str:
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
-        salt=_API_TOKEN_SALT,
+        salt=salt,
         iterations=_ITERATIONS,
     )
     token_bytes = kdf.derive(passphrase.encode("utf-8"))
@@ -139,16 +155,19 @@ class KeyStore:
 
     def save(self, data: dict) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        envelope = self._encrypt(data)
+        encrypted = self.config.get("storage", {}).get("encrypted", True) is True
+        if encrypted:
+            payload = self._encrypt(data)
+        else:
+            payload = data
         self.path.write_text(
-            json.dumps(envelope, indent=2, ensure_ascii=False),
+            json.dumps(payload, indent=2, ensure_ascii=False),
             encoding="utf-8",
         )
-        # Set restrictive file permissions (owner only)
         try:
             os.chmod(self.path, 0o600)
         except (OSError, AttributeError):
-            pass  # Windows doesn't support chmod the same way
+            pass
 
     def migrate(self) -> dict:
         data = self.load()
@@ -156,6 +175,10 @@ class KeyStore:
         return data
 
     def rotate_key(self, new_passphrase: str) -> dict:
+        encrypted = self.config.get("storage", {}).get("encrypted", True) is True
+        if not encrypted:
+            logger.warning("rotate_key called but storage.encrypted=false — passphrase not used")
+        clear_key_cache()  # Invalidate stale cached keys from old passphrase
         if not self.path.exists():
             raise StorageError(code=ErrorCode.STORAGE_READ_ERROR, message=f"File not found: {self.path}")
         raw = self.path.read_text(encoding="utf-8")
@@ -175,7 +198,7 @@ class KeyStore:
     def _encrypt(self, data: dict) -> dict:
         passphrase = _get_passphrase(self.config)
         salt = os.urandom(_SALT_LEN)  # Random salt per encryption
-        key = _derive_key(passphrase, salt)
+        key = _derive_key(passphrase, salt, cache=False)  # Don't cache random-salt keys
         nonce = os.urandom(_NONCE_LEN)
         plaintext = json.dumps(data, ensure_ascii=False).encode("utf-8")
         aes = AESGCM(key)

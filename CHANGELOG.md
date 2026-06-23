@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.1] - 2026-06-23
+
+### Fixed
+
+- **检测逻辑修复**: 修复格式匹配跳过验证的BUG，当有多个候选者时继续进行并发探测验证
+- **变量命名优化**: `is_valid` 重命名为 `got_models`，更准确地表达语义
+- **死代码清理**: 删除签名匹配中不可达的500分加分逻辑
+- **删除/复制API认证修复**: 修复 `deleteKey()` 和 `copyKey()` 使用原生 `fetch()` 导致认证失败的问题，改为使用 `safeFetch()`
+
 ## [4.2.0] - 2026-06-23
 
 ### Added

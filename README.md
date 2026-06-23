@@ -827,26 +827,28 @@ python -m pytest tests/ --cov=key_manager --cov-report=term-missing
 
 | 模块 | 测试文件 | 测试数 |
 |------|---------|--------|
-| 提供商检测 | `test_detector.py` | 44 |
-| 密钥解析 | `test_parser.py` | 24 |
-| 验证器 | `test_validator.py` | 13 |
-| 检查器 | `test_checker.py` | 4 |
+| 检测逻辑（单元） | `test_detector_unit.py` | 31 |
+| 检测逻辑（端点） | `test_provider_detection.py` | — |
+| 测试路由 | `test_routes_test.py` | 48 |
+| 提供商路由 | `test_routes_providers.py` | 32 |
+| 杂项路由 | `test_routes_misc.py` | 26 |
+| 模型路由 | `test_routes_models.py` | 34 |
+| 验证路由 | `test_routes_check.py` | 23 |
 | 提供商合约 | `test_providers.py` | 220 |
+| 密钥解析 | `test_parser.py` | 24 |
 | 安全回归 | `test_security.py` | 21 |
 | 加密存储 | `test_storage.py` | 26 |
 | 错误系统 | `test_errors.py` | 28 |
 | 国际化 | `test_i18n.py` | 37 |
-| 端到端 | `test_e2e.py` | 18 |
 | Webhook | `test_webhook.py` | 35 |
-| OpenAPI | `test_openapi.py` | 26 |
+| 端到端 | `test_e2e.py` | 18 |
 | 代理检测 | `test_proxy.py` | 19 |
 | 日志系统 | `test_logger.py` | 21 |
-| 能力测试 | `test_tester.py` | 11 |
 | 核心门面 | `test_core.py` | 22 |
 | Bug 修复 | `test_bug_fixes.py` | 15 |
 | 提供商重构 | `test_provider_refactoring.py` | 32 |
 
-**总测试数**: 728+ | **覆盖率**: 80%
+**总测试数**: 913 | **覆盖率**: 92.09%
 ## SDK 使用
 
 ### Python SDK
@@ -1013,6 +1015,44 @@ def _load_keys_data(config_override: dict | None = None) -> dict:
 
 ## 更新日志
 
+
+### v4.3.0 (2026-06-24)
+
+- **测试覆盖率大幅提升**: 覆盖率从 79.15% 提升至 92.09%，新增 167 个测试
+  - `detector.py`: 60% → 96% — 检测逻辑全覆盖，防止 v4.2.1 类 bug 回归
+  - `web/routes/test.py`: 41% → 99% — 测试路由全覆盖
+  - `web/routes/providers.py`: 37% → 100% — 提供商 CRUD 全覆盖
+  - `web/routes/misc.py`: 53% → 100% — Webhook/日志/签名报告全覆盖
+  - `web/routes/models.py`: 72% → 97% — 模型端点全覆盖
+  - `web/routes/check.py`: 74% → 97% — 验证端点全覆盖
+
+- **新增测试文件**:
+  - `test_detector_unit.py` (31 tests) — 检测逻辑单元测试，覆盖 7 条核心路径
+  - `test_routes_test.py` (48 tests) — 测试路由端点测试
+  - `test_routes_providers.py` (32 tests) — 提供商 CRUD 路由测试
+  - `test_routes_misc.py` (26 tests) — Webhook/日志/签名报告路由测试
+  - `test_routes_models.py` (34 tests) — 模型列表/能力/SSE 路由测试
+  - `test_routes_check.py` (23 tests) — 验证/SSRF/自动保存路由测试
+
+- **检测逻辑回归测试**:
+  - 锁定 `detect_provider()` 全部 7 条分支路径
+  - 覆盖 v4.2.1 修复的两个 bug（格式匹配跳过验证、多候选直接返回）
+  - 覆盖 402 余额不足识别、签名匹配阈值、超时处理等边界情况
+
+- **Bug 修复**:
+  - 修复 `test_tester.py` 中 `test_run_test_progress_callback` 缺失 `test_config` fixture 参数
+
+
+### v4.2.1 (2026-06-23)
+
+- **检测逻辑修复**: 
+  - 修复格式匹配跳过验证的BUG：当有多个候选者时，不再直接返回，而是继续进行并发探测验证
+  - 修复变量命名误导：`is_valid` 重命名为 `got_models`
+  - 清理死代码：删除不可达的500分加分逻辑
+
+- **删除/复制API认证修复**:
+  - 修复 `deleteKey()` 和 `copyKey()` 使用原生 `fetch()` 导致认证失败的问题
+  - 改为使用 `safeFetch()` 自动携带 Authorization header
 
 ### v4.2.0 (2026-06-23)
 

@@ -255,7 +255,7 @@ class TestRunTest:
         assert "run_at" in results
         assert results["total_tested"] == 1
 
-    async def test_run_test_progress_callback(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory):
+    async def test_run_test_progress_callback(self, tmp_data_dir, sample_keys_with_valid, mock_provider_factory, test_config):
         """Calls progress callback."""
         results_file = str(tmp_data_dir / "results.json")
         logs_dir = str(tmp_data_dir / "logs")

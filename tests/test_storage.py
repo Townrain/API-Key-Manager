@@ -4,8 +4,8 @@ import os
 
 import pytest
 
-from key_manager.storage import KeyStore, StorageError, _derive_key, _get_passphrase
-from key_manager.storage import derive_api_token
+from key_manager.storage import KeyStore, StorageError, _derive_key, _get_passphrase, _key_cache, _API_TOKEN_SALT, _LEGACY_SALT
+from key_manager.storage import derive_api_token, clear_key_cache
 
 
 PASSPHRASE = "test-passphrase-for-unit-tests"
@@ -330,14 +330,182 @@ def test_derive_api_token_from_config():
 def test_derive_api_token_caching():
     """derive_api_token caches the result for performance."""
     # Clear cache first
-    from key_manager.storage import _key_cache
+    _key_cache.clear()
     _key_cache.clear()
     
     t1 = derive_api_token()
     # Check cache is populated
-    from key_manager.storage import _API_TOKEN_SALT
+    cache_key = (PASSPHRASE, _API_TOKEN_SALT)
     cache_key = (PASSPHRASE, _API_TOKEN_SALT)
     assert cache_key in _key_cache
     
     t2 = derive_api_token()
     assert t1 == t2
+
+
+# --- derive_api_token salt support ---
+
+
+def test_derive_api_token_custom_salt():
+    """derive_api_token with custom salt returns different token than default."""
+    custom_salt = b"my-custom-salt-value"
+    t1 = derive_api_token(salt=custom_salt)
+    t2 = derive_api_token()  # default salt
+    assert t1 != t2
+    assert len(t1) == 64
+
+
+def test_derive_api_token_custom_salt_deterministic():
+    """derive_api_token with same custom salt is deterministic."""
+    custom_salt = b"deterministic-test-salt"
+    t1 = derive_api_token(salt=custom_salt)
+    t2 = derive_api_token(salt=custom_salt)
+    assert t1 == t2
+
+
+def test_derive_api_token_different_custom_salts():
+    """derive_api_token with different custom salts produce different tokens."""
+    t1 = derive_api_token(salt=b"salt-one")
+    t2 = derive_api_token(salt=b"salt-two")
+    assert t1 != t2
+
+
+# --- clear_key_cache ---
+
+
+def test_clear_key_cache_empties_cache():
+    """clear_key_cache removes all cached entries."""
+    _key_cache.clear()
+    _key_cache.clear()
+    derive_api_token()
+    assert len(_key_cache) > 0
+    clear_key_cache()
+    assert len(_key_cache) == 0
+
+
+def test_clear_key_cache_allows_re_derivation():
+    """After clearing cache, derive_api_token still returns same token."""
+    t1 = derive_api_token()
+    t1 = derive_api_token()
+    clear_key_cache()
+    t2 = derive_api_token()
+    assert t1 == t2
+
+
+# --- rotate_key cache invalidation ---
+
+
+def test_rotate_key_clears_cache(tmp_path):
+    """rotate_key invalidates cached keys from old passphrase."""
+    os.environ["KEY_MANAGER_SECRET"] = "old-passphrase-for-test"
+    t1 = derive_api_token()
+    # Cache should have entry for old passphrase
+    assert len(_key_cache) > 0
+    # Create a store and rotate
+    store_path = tmp_path / "test_keys.json"
+    store = KeyStore(str(store_path))
+    store.save({"test": "data"})
+    store.rotate_key("new-passphrase-for-test")
+    # After rotation, derive_api_token with new passphrase should differ
+    os.environ["KEY_MANAGER_SECRET"] = "new-passphrase-for-test"
+    t2 = derive_api_token()
+    assert t1 != t2  # Old token must not match new token
+
+
+# --- _encrypt cache pollution ---
+
+
+def test_encrypt_does_not_pollute_cache(tmp_path):
+    """_encrypt with random salt should not add entries to cache."""
+    _key_cache.clear()
+    store_path = tmp_path / "pollution_test.json"
+    store = KeyStore(str(store_path))
+    store.save({"key": "sk-test123"})
+    # Check that no random-salt entries were cached
+    # Only _LEGACY_SALT or _API_TOKEN_SALT entries should be cached
+    for (pp, salt) in _key_cache:
+        assert salt in (_LEGACY_SALT, _API_TOKEN_SALT), f"Unexpected salt in cache: {salt!r}"
+
+
+# --- Optional encryption ---
+
+
+def test_save_plaintext_when_encrypted_false(tmp_path):
+    """S2: Explicit encrypted=false → plaintext storage."""
+    config = {"storage": {"encrypted": False}}
+    store = KeyStore(tmp_path / "keys.json", config=config)
+    store.save(SAMPLE_DATA)
+    raw = json.loads(store.path.read_text(encoding="utf-8"))
+    assert raw.get("encrypted") is not True
+    assert raw == SAMPLE_DATA
+
+
+def test_save_encrypted_when_encrypted_true(tmp_path):
+    """S3: Explicit encrypted=true → encrypted storage."""
+    config = {"storage": {"encrypted": True}}
+    store = KeyStore(tmp_path / "keys.json", config=config)
+    store.save(SAMPLE_DATA)
+    raw = json.loads(store.path.read_text(encoding="utf-8"))
+    assert raw["encrypted"] is True
+
+
+def test_save_encrypted_by_default(tmp_path):
+    """S1: Default behavior (no encrypted config) → encrypted=True."""
+    store = KeyStore(tmp_path / "keys.json")
+    store.save(SAMPLE_DATA)
+    raw = json.loads(store.path.read_text(encoding="utf-8"))
+    assert raw["encrypted"] is True
+
+
+def test_plaintext_roundtrip(tmp_path):
+    """Plaintext save/load roundtrip preserves data."""
+    config = {"storage": {"encrypted": False}}
+    store = KeyStore(tmp_path / "keys.json", config=config)
+    store.save(SAMPLE_DATA)
+    loaded = store.load()
+    assert loaded == SAMPLE_DATA
+
+
+def test_plaintext_file_not_encrypted(tmp_path):
+    """S2: Plaintext file should not contain encrypted envelope keys."""
+    config = {"storage": {"encrypted": False}}
+    store = KeyStore(tmp_path / "keys.json", config=config)
+    store.save(SAMPLE_DATA)
+    content = store.path.read_text(encoding="utf-8")
+    assert '"encrypted"' not in content
+    assert '"nonce"' not in content
+    assert '"data"' not in content
+
+
+def test_existing_encrypted_file_with_encrypted_false_config(tmp_path):
+    """S5: Existing encrypted file + encrypted=false config → load still works (auto-detect)."""
+    store_enc = KeyStore(tmp_path / "keys.json")
+    store_enc.save(SAMPLE_DATA)
+    config = {"storage": {"encrypted": False}}
+    store_plain = KeyStore(tmp_path / "keys.json", config=config)
+    loaded = store_plain.load()
+    assert loaded == SAMPLE_DATA
+
+
+def test_existing_plaintext_file_with_encrypted_true_config(tmp_path):
+    """S6: Existing plaintext file + encrypted=true config → load works, next save encrypts."""
+    path = tmp_path / "keys.json"
+    path.write_text(json.dumps(SAMPLE_DATA, indent=2), encoding="utf-8")
+    config = {"storage": {"encrypted": True}}
+    store = KeyStore(path, config=config)
+    loaded = store.load()
+    assert loaded == SAMPLE_DATA
+    store.save(SAMPLE_DATA)
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    assert raw["encrypted"] is True
+
+
+def test_decrypt_failure_raises_storage_error(tmp_path):
+    """S4: Decryption failure → raises StorageError."""
+    path = tmp_path / "keys.json"
+    bad_envelope = {"encrypted": True, "salt": "AAAA", "nonce": "AAAA", "data": "AAAA"}
+    path.write_text(json.dumps(bad_envelope), encoding="utf-8")
+    store = KeyStore(path)
+    with pytest.raises(StorageError, match="Decryption failed"):
+        store.load()
+
