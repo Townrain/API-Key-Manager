@@ -627,3 +627,132 @@ class TestProgressStreamEndpoint:
         resp = client.get("/api/progress/stream")
         assert resp.status_code == 200
         assert "text/event-stream" in resp.headers.get("content-type", "")
+
+
+# =============================================================================
+# Key Management Endpoints
+# =============================================================================
+
+
+class TestGetFullKeyEndpoint:
+    """Tests for POST /api/keys/get-full-key endpoint."""
+
+    def test_get_full_key_success(self, client, keys_file):
+        """Valid key_masked returns the full key."""
+        resp = client.post("/api/keys/get-full-key", json={"key_masked": "sk-tes...2345"})
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["key"] == "sk-test-openai-12345"
+
+    def test_get_full_key_missing_key_masked(self, client):
+        """Missing key_masked field returns VALIDATION_MISSING_KEY (400)."""
+        resp = client.post("/api/keys/get-full-key", json={})
+        assert resp.status_code == 400
+        assert resp.json()["error"]["code"] == "VALIDATION_MISSING_KEY"
+
+    def test_get_full_key_empty_key_masked(self, client):
+        """Empty key_masked string returns VALIDATION_MISSING_KEY (400)."""
+        resp = client.post("/api/keys/get-full-key", json={"key_masked": ""})
+        assert resp.status_code == 400
+        assert resp.json()["error"]["code"] == "VALIDATION_MISSING_KEY"
+
+    def test_get_full_key_not_found(self, client, keys_file):
+        """Unknown key_masked returns VALIDATION_KEY_NOT_FOUND (404)."""
+        resp = client.post("/api/keys/get-full-key", json={"key_masked": "sk-non...xyz0"})
+        assert resp.status_code == 404
+        assert resp.json()["error"]["code"] == "VALIDATION_KEY_NOT_FOUND"
+
+
+class TestDeleteKeyEndpoint:
+    """Tests for POST /api/keys/delete endpoint."""
+
+    def test_delete_key_success(self, client, keys_file):
+        """Valid key_masked deletes key and returns result."""
+        resp = client.post("/api/keys/delete", json={"key_masked": "sk-tes...2345"})
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["deleted"] == 1
+        assert body["key_masked"] == "sk-tes...2345"
+
+    def test_delete_key_persistence(self, client, keys_file):
+        """Deleted key is no longer accessible via get-full-key."""
+        # Delete the key
+        resp = client.post("/api/keys/delete", json={"key_masked": "sk-tes...2345"})
+        assert resp.status_code == 200
+
+        # Verify it's gone
+        resp = client.post("/api/keys/get-full-key", json={"key_masked": "sk-tes...2345"})
+        assert resp.status_code == 404
+
+    def test_delete_key_missing_key_masked(self, client):
+        """Missing key_masked field returns VALIDATION_MISSING_KEY (400)."""
+        resp = client.post("/api/keys/delete", json={})
+        assert resp.status_code == 400
+        assert resp.json()["error"]["code"] == "VALIDATION_MISSING_KEY"
+
+    def test_delete_key_empty_key_masked(self, client):
+        """Empty key_masked string returns VALIDATION_MISSING_KEY (400)."""
+        resp = client.post("/api/keys/delete", json={"key_masked": ""})
+        assert resp.status_code == 400
+        assert resp.json()["error"]["code"] == "VALIDATION_MISSING_KEY"
+
+    def test_delete_key_not_found(self, client, keys_file):
+        """Unknown key_masked returns VALIDATION_KEY_NOT_FOUND (404)."""
+        resp = client.post("/api/keys/delete", json={"key_masked": "sk-non...xyz0"})
+        assert resp.status_code == 404
+        assert resp.json()["error"]["code"] == "VALIDATION_KEY_NOT_FOUND"
+
+
+class TestImportBatchEndpoint:
+    """Tests for POST /api/import batch path."""
+
+    def test_import_batch_success(self, client, keys_file):
+        """Batch of new keys imports them all."""
+        resp = client.post("/api/import", json={"batch": ["sk-new-key-11111", "sk-new-key-22222"]})
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["new"] == 2
+        assert body["duplicates"] == 0
+        assert body["errors"] == []
+
+    def test_import_batch_with_duplicates(self, client, keys_file):
+        """Duplicate keys are counted, not re-imported."""
+        resp = client.post("/api/import", json={"batch": ["sk-test-openai-12345"]})
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["new"] == 0
+        assert body["duplicates"] == 1
+        assert body["errors"] == []
+
+    def test_import_batch_with_invalid_values(self, client, keys_file):
+        """Non-string values are rejected by Pydantic validation."""
+        resp = client.post("/api/import", json={"batch": [None, 123, True]})
+        assert resp.status_code == 400
+        body = resp.json()
+        assert "error" in body
+
+    def test_import_batch_empty_strings(self, client, keys_file):
+        """Empty and whitespace-only strings produce errors; valid key still imports."""
+        resp = client.post("/api/import", json={"batch": ["", "  ", "sk-valid-key-33333"]})
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["new"] == 1
+        assert len(body["errors"]) == 2
+
+    def test_import_batch_empty_list(self, client, tmp_path):
+        """Empty batch list falls through to directory import (no batch processing)."""
+        # Create the input directory that the config references
+        input_dir = tmp_path / "input"
+        input_dir.mkdir(exist_ok=True)
+        
+        # Create empty keys file so _load_keys_data doesn't fail
+        keys_file = tmp_path / "keys.json"
+        keys_file.write_text('{"keys": {}}')
+        
+        with patch("key_manager.web._app.import_keys", return_value=(0, 0, [])):
+            resp = client.post("/api/import", json={"batch": []})
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["new"] == 0
+        assert body["duplicates"] == 0
+        assert body["errors"] == []
