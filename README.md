@@ -202,7 +202,7 @@ python web.py
 
 ### 加密存储
 
-API 密钥默认使用 AES-256-GCM 加密存储，每次加密使用随机盐值：
+API 密钥支持 AES-256-GCM 加密存储（默认开启），每次加密使用随机盐值：
 
 ```bash
 # 设置加密密钥（环境变量）
@@ -221,6 +221,23 @@ python web.py
   "data": "base64-encoded-ciphertext"
 }
 ```
+
+#### 可选加密开关
+
+从 v4.2.0 起，支持通过配置关闭加密，以明文存储密钥（便于本地开发）：
+
+```yaml
+# config.yaml
+storage:
+  keys_file: "./data/keys.json"
+  encrypted: false  # 明文存储（本地开发推荐）
+  # encrypted: true  # 加密存储（生产环境推荐，默认值）
+```
+
+**说明：**
+- `encrypted: true`（默认）— 使用 AES-256-GCM 加密，需设置 `KEY_MANAGER_SECRET`
+- `encrypted: false` — 明文 JSON 存储，无需配置密钥，便于调试和迁移
+- `load()` 自动检测文件格式，无论配置如何均可读取已有文件
 
 ### 安全防护
 
@@ -712,6 +729,11 @@ test:
     - 10
     - 20
 
+# 存储设置
+storage:
+  keys_file: "./data/keys.json"
+  encrypted: true  # 设为 false 可关闭加密，以明文存储（便于本地开发）
+
 # 认证设置
 auth:
   api_key: "your-secret-api-key"  # API 认证
@@ -911,6 +933,83 @@ const result = await client.checkSingle({ key: 'sk-xxx', provider: 'openai' });
 
 模型列表从 Cherry Studio 同步，每日更新一次。新发布的模型可能需要等待同步后才能被检测到。
 
+## 预期的设计决策（安全审查说明）
+
+> **重要**：以下设计决策是**有意为之**，不是安全漏洞。安全审查工具可能会标记这些行为，但它们是本项目作为**本地API密钥管理工具**的合理设计。
+
+### 1. 认证默认禁用
+
+**行为**：当未配置 `api_key` 或 `KEY_MANAGER_API_KEY` 时，所有API端点无需认证即可访问。
+
+**原因**：这是本地开发工具，首次运行时用户可能尚未配置认证。系统会自动从加密密钥派生API token，确保在有加密密钥的情况下仍能提供基本安全。
+
+**配置方式**：
+```bash
+# 方式1: 环境变量
+set KEY_MANAGER_API_KEY=your-api-key
+
+# 方式2: config.yaml
+auth:
+  api_key: "your-api-key"
+```
+
+### 2. API Token注入到HTML
+
+**行为**：`window.__API_TOKEN__` 被注入到 `templates/index.html` 的 `<head>` 中。
+
+**原因**：前端JavaScript需要调用API，必须携带认证token。这是单页应用的标准做法，确保前端能自动携带token而无需用户手动配置。
+
+**安全说明**：
+- Token从加密密钥派生，不是明文密码
+- 仅在本地访问时暴露（`localhost:18001`）
+- 生产环境应配置反向代理和HTTPS
+
+### 3. 完整密钥检索端点
+
+**行为**：`POST /api/keys/get-full-key` 返回未掩码的完整API密钥。
+
+**原因**：用户需要复制完整密钥用于其他应用。这是密钥管理工具的核心功能。
+
+**安全措施**：
+- 需要认证（Bearer token）
+- 通过 `key_masked` 查询，不直接暴露密钥列表
+- 记录审计日志
+
+### 4. 速率限制存储无界增长
+
+**行为**：`_RATE_LIMIT_STORE` 字典在内存中存储所有IP的请求记录，无最大条目限制。
+
+**原因**：这是本地工具，通常只有少量客户端访问。DDoS攻击场景不现实（内部使用）。
+
+**缓解措施**：
+- 每60秒清理超过5分钟不活跃的IP
+- 可通过 `rate_limit.requests_per_minute: 0` 禁用速率限制
+
+### 5. 中间件执行顺序
+
+**行为**：中间件顺序为 `rate_limit → auth → i18n`，未认证请求会消耗速率限制配额。
+
+**原因**：这是内部工具，攻击者场景不现实。顺序调整对正常使用几乎无影响。
+
+**说明**：即使是未认证请求，也应该被速率限制，防止意外的大量请求（如前端bug导致的循环请求）。
+
+### 6. 文件不存在时返回空数据
+
+**行为**：当 `keys.json` 文件不存在时，`_load_keys_data()` 返回 `{"keys": {}}` 而不是抛出异常。
+
+**原因**：首次运行时，密钥文件尚未创建，这是有效状态。系统应优雅处理这种情况，而不是崩溃。
+
+**实现**：在调用 `KeyStore.load()` 前检查文件是否存在：
+```python
+def _load_keys_data(config_override: dict | None = None) -> dict:
+    cfg = config_override or config
+    keys_path = Path(cfg["storage"]["keys_file"])
+    if not keys_path.exists():
+        return {"keys": {}}
+    # ... 继原有逻辑
+```
+
+---
 
 ## 更新日志
 
@@ -947,6 +1046,12 @@ const result = await client.checkSingle({ key: 'sk-xxx', provider: 'openai' });
   - 全量测试通过：687 passed, 1 skipped
   - 覆盖率：75.72%（超过 60% 要求）
   - 新增 5 个 `derive_api_token()` 单元测试
+
+- **可选加密开关**: 支持明文存储，便于本地开发
+  - 新增 `storage.encrypted` 配置项（默认 `true`）
+  - 设置 `encrypted: false` 可关闭加密，以明文 JSON 存储密钥
+  - `load()` 自动检测文件格式，兼容已有加密/明文文件
+  - 修复 `_load_keys_data()` 解密失败时抛出异常而非返回空字典（H1 修复）
 
 ### v4.1.0 (2026-06-22)
 

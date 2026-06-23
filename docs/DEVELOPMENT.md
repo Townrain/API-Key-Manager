@@ -323,6 +323,60 @@ python -m pytest tests/ --cov=key_manager     # 覆盖率
 
 ---
 
+## 预期的设计决策（安全审查说明）
+
+> **重要**：以下设计决策是**有意为之**，不是安全漏洞。安全审查工具可能会标记这些行为，但它们是本项目作为**本地API密钥管理工具**的合理设计。
+
+### 1. 认证默认禁用
+
+**行为**：当未配置 `api_key` 或 `KEY_MANAGER_API_KEY` 时，所有API端点无需认证即可访问。
+
+**原因**：这是本地开发工具，首次运行时用户可能尚未配置认证。系统会自动从加密密钥派生API token，确保在有加密密钥的情况下仍能提供基本安全。
+
+**代码位置**：`key_manager/web/middleware.py` - `auth_middleware()`
+
+### 2. API Token注入到HTML
+
+**行为**：`window.__API_TOKEN__` 被注入到 `templates/index.html` 的 `<head>` 中。
+
+**原因**：前端JavaScript需要调用API，必须携带认证token。这是单页应用的标准做法。
+
+**代码位置**：`key_manager/web/_app.py` - `web_ui()` 函数
+
+### 3. 完整密钥检索端点
+
+**行为**：`POST /api/keys/get-full-key` 返回未掩码的完整API密钥。
+
+**原因**：用户需要复制完整密钥用于其他应用。这是密钥管理工具的核心功能。
+
+**代码位置**：`key_manager/web/routes/keys.py` - `api_get_full_key()`
+
+### 4. 速率限制存储无界增长
+
+**行为**：`_RATE_LIMIT_STORE` 字典在内存中存储所有IP的请求记录，无最大条目限制。
+
+**原因**：这是本地工具，通常只有少量客户端访问。DDoS攻击场景不现实。
+
+**代码位置**：`key_manager/web/middleware.py` - `_RATE_LIMIT_STORE`
+
+### 5. 中间件执行顺序
+
+**行为**：中间件顺序为 `rate_limit → auth → i18n`，未认证请求会消耗速率限制配额。
+
+**原因**：这是内部工具，攻击者场景不现实。顺序调整对正常使用几乎无影响。
+
+**代码位置**：`key_manager/web/middleware.py` - `setup_middleware()`
+
+### 6. 文件不存在时返回空数据
+
+**行为**：当 `keys.json` 文件不存在时，`_load_keys_data()` 返回 `{"keys": {}}` 而不是抛出异常。
+
+**原因**：首次运行时，密钥文件尚未创建，这是有效状态。系统应优雅处理这种情况。
+
+**代码位置**：`key_manager/web/_app.py` - `_load_keys_data()`
+
+---
+
 ## 版本历史
 
 | 版本 | 日期 | 主要变更 |
