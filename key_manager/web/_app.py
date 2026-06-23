@@ -13,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from key_manager.logger import project_logger
+from key_manager.errors import StorageError
 from key_manager.config import load_config
 from key_manager.detector import detect_provider  # noqa: F401
 from key_manager.parser import (
@@ -102,11 +103,16 @@ def _load_keys_store(config_override: dict | None = None) -> KeyStore:
 
 def _load_keys_data(config_override: dict | None = None) -> dict:
     cfg = config_override or config
+    keys_path = Path(cfg["storage"]["keys_file"])
+    if not keys_path.exists():
+        return {"keys": {}}
     try:
         return _load_keys_store(cfg).load()
+    except StorageError:
+        raise
     except Exception as e:
         project_logger.main_logger.warning(f"Failed to load/decrypt keys data: {e}")
-        # Return empty data structure if decryption fails
+        # Return empty data structure for unexpected errors (e.g., corrupt JSON)
         return {"keys": {}}
 
 
