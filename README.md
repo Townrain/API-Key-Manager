@@ -1,3 +1,7 @@
+[![PyPI version](https://img.shields.io/pypi/v/api-key-manager)](https://pypi.org/project/api-key-manager/)
+
+[English](README_EN.md) | 中文
+
 # API Key Manager
 
 批量管理 45+ AI 服务商 API 密钥的 Python 工具，支持 CLI 和 Web 两种界面。
@@ -150,7 +154,12 @@ curl -X DELETE http://localhost:18001/api/providers/my-llm
 ### 安装
 
 ```bash
-# 克隆项目
+# 从 PyPI 安装（推荐）
+pip install api-key-manager
+```
+
+```bash
+# 或从源码安装（开发模式）
 git clone https://github.com/Townrain/API-Key-Manager.git
 cd key
 
