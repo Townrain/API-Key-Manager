@@ -2,9 +2,9 @@
 
 [English](README_EN.md) | 中文
 
-# API Key Manager
+# KeyHub Desktop
 
-批量管理 45+ AI 服务商 API 密钥的 Python 工具，支持 CLI 和 Web 两种界面。
+桌面应用 + Web + CLI，批量管理 45+ AI 服务商 API 密钥。
 
 ## 功能特性
 
@@ -22,7 +22,23 @@
 - **API 文档** - Swagger UI 和 Redoc 自动文档
 - **国际化** - 支持中英文错误信息
 - **SDK 支持** - Python 和 TypeScript 客户端库
+- **桌面应用** - Tauri v2.5 原生桌面应用（v5.0.0 新增），Windows / macOS / Linux
 - **Webhook 通知** - 事件驱动的 Webhook 通知系统
+
+## 快速开始
+
+### 桌面应用（v5.0.0）
+
+从 [Releases](https://github.com/Townrain/API-Key-Manager/releases) 下载对应平台的安装包，解压后运行 `keyhub-desktop.exe`。
+
+### CLI / Web
+
+```bash
+pip install api-key-manager
+python web.py
+```
+
+详细文档见下方。
 
 ## 系统架构
 
@@ -1024,6 +1040,16 @@ def _load_keys_data(config_override: dict | None = None) -> dict:
 
 ## 更新日志
 
+### v5.0.0 (2026-06-26)
+
+- **桌面应用**: 基于 Tauri v2.5 的原生桌面应用（React 19 + TypeScript）
+  - 仪表盘：密钥统计 + SSE 实时进度流
+  - 服务商管理：CRUD + 真实连接测试
+  - 工具面板：批量验证 / 模型测试 / 签名验证报告
+  - 操作日志：查看和清理日志
+  - 导入历史：查看导入记录
+- **自动构建**: GitHub Actions CI/CD（PyInstaller + cargo tauri build）
+- **后端适配**: 服务商详情端点修复、真实连接测试支持
 
 ### v4.3.0 (2026-06-24)
 
