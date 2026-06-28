@@ -52,3 +52,6 @@ __pycache__/
 tauri-compare/node_modules/
 tauri-compare/dist/
 tauri-compare/src-tauri/target/
+
+# Claude temp files
+*claude-notify*
