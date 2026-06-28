@@ -3,6 +3,8 @@ name: Tests
 on:
   push:
     branches: [master]
+    tags:
+      - 'v*'
     paths:
       - 'key_manager/**'
       - 'tests/**'
