@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Project Branding** — README title updated from "API Key Manager" to "KeyHub Desktop"
+
 - **Model Registry Sync** — Synchronized provider models and capabilities from Cherry Studio (2026-06-27)
   - Updated `key_manager/providers/models_registry.py`
   - Added `data/model_capabilities.json`
