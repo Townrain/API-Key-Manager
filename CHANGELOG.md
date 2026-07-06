@@ -5,14 +5,73 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0] - 2026-06-26
+
+### Added
+
+- **Tauri Desktop App** — New native desktop client `tauri-compare` (KeyHub Desktop):
+  - Cross-platform support for Windows, macOS, and Linux (Tauri v2.5)
+  - Dashboard with key statistics and SSE real-time progress stream
+  - Provider management with CRUD and real connection test
+  - Tools panel: batch validation, model testing, signature verification report
+  - Operation logs viewer and cleanup
+  - Import history viewer
+  - Tech stack: React 19 + TypeScript + Vite
+- **Desktop CI/CD** — New GitHub Actions workflow `.github/workflows/build.yml` for PyInstaller and `cargo tauri build`
+- **English README** — Added `README_EN.md` with full English documentation
+
+### Changed
+
+- **Project Branding** — README title updated from "API Key Manager" to "KeyHub Desktop"
+- **Model Registry Sync** — Synchronized provider models and capabilities from Cherry Studio (2026-06-27)
+  - Updated `key_manager/providers/models_registry.py`
+  - Added `data/model_capabilities.json`
+
+### Fixed
+
+- **Provider Details Endpoint** — Fixed provider detail endpoint compatibility issues
+- **Real Connection Test** — Added/improved real connection testing support for provider management
+
+## [4.3.0] - 2026-06-24
+
+### Added
+
+- **Coverage-Driven Testing** — Massive test coverage improvement across all web routes:
+  - `detector.py`: 60% → 96% — Full detection logic coverage preventing v4.2.1-class bug regressions
+  - `web/routes/test.py`: 41% → 99% — Test routes full coverage
+  - `web/routes/providers.py`: 37% → 100% — Provider CRUD full coverage
+  - `web/routes/misc.py`: 53% → 100% — Webhook/logs/signature report full coverage
+  - `web/routes/models.py`: 72% → 97% — Model endpoints full coverage
+  - `web/routes/check.py`: 74% → 97% — Validation endpoints full coverage
+- **New Test Files**:
+  - `test_detector_unit.py` (31 tests) — Detection logic unit tests covering 7 core paths
+  - `test_routes_test.py` (48 tests) — Test route endpoint tests
+  - `test_routes_providers.py` (32 tests) — Provider CRUD route tests
+  - `test_routes_misc.py` (26 tests) — Webhook/logs/signature report route tests
+  - `test_routes_models.py` (34 tests) — Model list/capabilities/SSE route tests
+  - `test_routes_check.py` (23 tests) — Validation/SSRF/auto-save route tests
+- **Detection Logic Regression Tests**:
+  - Locks all 7 branch paths of `detect_provider()`
+  - Covers both v4.2.1-fixed bugs (format match skip validation, multi-candidate early return)
+  - Covers edge cases: 402 balance-insufficient detection, signature match threshold, timeout handling
+
+### Testing
+
+- Total: 913 tests (up from 687), coverage: 92.09% (up from 79.15%)
+- 167 new tests added across 6 new test files
+
+### Fixed
+
+- Fixed `test_tester.py` missing `test_config` fixture parameter in `test_run_test_progress_callback`
+
 ## [4.2.1] - 2026-06-23
 
 ### Fixed
 
-- **检测逻辑修复**: 修复格式匹配跳过验证的BUG，当有多个候选者时继续进行并发探测验证
-- **变量命名优化**: `is_valid` 重命名为 `got_models`，更准确地表达语义
-- **死代码清理**: 删除签名匹配中不可达的500分加分逻辑
-- **删除/复制API认证修复**: 修复 `deleteKey()` 和 `copyKey()` 使用原生 `fetch()` 导致认证失败的问题，改为使用 `safeFetch()`
+- **Detection Logic Fix** — Fixed format matching skipping validation bug: now continues concurrent probing when multiple candidates exist
+- **Variable Naming** — Renamed `is_valid` to `got_models` for clearer semantics
+- **Dead Code Cleanup** — Removed unreachable 500-point scoring logic from signature matching
+- **Delete/Copy API Auth Fix** — Fixed `deleteKey()` and `copyKey()` using native `fetch()` causing authentication failures, changed to use `safeFetch()`
 
 ## [4.2.0] - 2026-06-23
 
@@ -112,7 +171,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **HTML Template**:
   - `index.html` reduced from 531 to 508 lines
-  - Added "清除" button for log cleanup in the logs section
+  - Added "Clear" button for log cleanup in the logs section
 
 ## [4.0.0] - 2026-06-21
 
@@ -187,11 +246,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Test Coverage
 
 - **Total Tests**: 728+ (up from 726+)
-- **Coverage**: 80% (meets 60% threshold)
-- **Files**: Reduced from 30 to 25 test files
-### Test Coverage
-
-- **Total Tests**: 726+ (up from 583+)
 - **Coverage**: 80% (meets 60% threshold)
 - **Files**: Reduced from 30 to 25 test files
 ## [3.2.0] - 2026-06-19
