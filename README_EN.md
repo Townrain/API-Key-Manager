@@ -4,7 +4,7 @@
 
 # API Key Manager
 
-Python tool for batch managing API keys for 45+ AI providers, with CLI and Web interfaces.
+Python tool for batch managing API keys for 45+ AI providers, with CLI, Web, and Desktop interfaces.
 
 ## Features
 
@@ -22,6 +22,7 @@ Python tool for batch managing API keys for 45+ AI providers, with CLI and Web i
 - **API Documentation** - Swagger UI and Redoc auto-generated docs
 - **Internationalization** - Chinese and English error messages
 - **SDK Support** - Python and TypeScript client libraries
+- **Desktop App** - Tauri v2.5 native desktop app (new in v5.0.0), Windows / macOS / Linux
 - **Webhook Notifications** - Event-driven webhook notification system
 
 ## System Architecture
@@ -150,6 +151,10 @@ curl -X DELETE http://localhost:18001/api/providers/my-llm
 ```
 
 ## Quick Start
+
+### Desktop App (v5.0.0)
+
+Download the installer for your platform from [Releases](https://github.com/Townrain/API-Key-Manager/releases), extract and run `keyhub-desktop.exe`.
 
 ### Installation
 
@@ -1026,246 +1031,7 @@ def _load_keys_data(config_override: dict | None = None) -> dict:
 
 ## Changelog
 
-
-### v4.3.0 (2026-06-24)
-
-- **Major test coverage improvement**: Coverage increased from 79.15% to 92.09%, added 167 new tests
-  - `detector.py`: 60% → 96% — Full detection logic coverage, prevents v4.2.1-type bug regressions
-  - `web/routes/test.py`: 41% → 99% — Full test route coverage
-  - `web/routes/providers.py`: 37% → 100% — Full provider CRUD coverage
-  - `web/routes/misc.py`: 53% → 100% — Full webhook/log/signature report coverage
-  - `web/routes/models.py`: 72% → 97% — Full model endpoint coverage
-  - `web/routes/check.py`: 74% → 97% — Full validation endpoint coverage
-
-- **New test files**:
-  - `test_detector_unit.py` (31 tests) — Detection logic unit tests, covers 7 core paths
-  - `test_routes_test.py` (48 tests) — Test route endpoint tests
-  - `test_routes_providers.py` (32 tests) — Provider CRUD route tests
-  - `test_routes_misc.py` (26 tests) — Webhook/log/signature report route tests
-  - `test_routes_models.py` (34 tests) — Model list/capability/SSE route tests
-  - `test_routes_check.py` (23 tests) — Validation/SSRF/auto-save route tests
-
-- **Detection logic regression tests**:
-  - Locked down all 7 branch paths of `detect_provider()`
-  - Covers two bugs fixed in v4.2.1 (format matching skipping validation, multiple candidates returning directly)
-  - Covers edge cases: 402 insufficient balance identification, signature matching threshold, timeout handling
-
-- **Bug fixes**:
-  - Fixed missing `test_config` fixture parameter in `test_run_test_progress_callback` in `test_tester.py`
-
-
-### v4.2.1 (2026-06-23)
-
-- **Detection logic fix**:
-  - Fixed bug where format matching skipped validation: when multiple candidates exist, no longer returns directly, continues with concurrent probing validation
-  - Fixed misleading variable naming: `is_valid` renamed to `got_models`
-  - Cleaned up dead code: removed unreachable 500-point bonus logic
-
-- **Delete/copy API authentication fix**:
-  - Fixed `deleteKey()` and `copyKey()` using native `fetch()` causing authentication failures
-  - Changed to use `safeFetch()` which automatically carries the Authorization header
-
-### v4.2.0 (2026-06-23)
-
-- **Unified authentication system**: Reuses encryption key as API authentication token
-  - Added `derive_api_token()` function to derive API token from encryption key
-  - Uses independent salt (`key-manager-api-auth-token-v1`) to avoid cross-contamination with storage encryption
-  - PBKDF2HMAC 600K iterations, 32-byte token, caching mechanism
-  - Modified `auth_middleware()` to auto-fallback to derived token
-  - Extended auth whitelist, static files don't require authentication
-
-- **Frontend auto-carries token**: No manual configuration needed
-  - Injected `window.__API_TOKEN__` into `<head>` of `templates/index.html`
-  - Modified `safeFetch()` to automatically add `Authorization: Bearer <token>` header
-  - Modified `models.js` SSE requests to also carry token
-  - Added `apiToken` field in `state.js`
-
-- **Single key deletion feature**:
-  - Added `POST /api/keys/delete` API endpoint
-  - Frontend added delete button (trash icon)
-  - Uses project-standard `showConfirm` confirmation dialog
-
-- **Auto-save detected keys**:
-  - Automatically saves detected keys to registry
-  - Updates key status and detection records
-
-- **Copy full key feature**:
-  - Added `POST /api/keys/get-full-key` API endpoint
-  - Frontend click on key copies the full key
-
-- **Test verification**:
-  - All tests passed: 687 passed, 1 skipped
-  - Coverage: 75.72% (exceeds 60% requirement)
-  - Added 5 `derive_api_token()` unit tests
-
-- **Optional encryption toggle**: Supports plaintext storage for local development
-  - Added `storage.encrypted` configuration option (default `true`)
-  - Setting `encrypted: false` disables encryption, stores keys as plaintext JSON
-  - `load()` auto-detects file format, compatible with existing encrypted/plaintext files
-  - Fixed `_load_keys_data()` throwing exception instead of returning empty dict on decryption failure (H1 fix)
-
-### v4.1.0 (2026-06-22)
-
-- **Web module technical debt optimization**:
-  - Fixed dead code in `middleware.py` (unused `now - 300.0` expression)
-  - Extracted `build_chat_url()` utility function, eliminating 3 duplicate Chat URL construction logic
-  - Extracted `resolve_provider()` utility function, eliminating 5 duplicate provider detection+validation patterns
-  - Fixed deprecated `datetime.utcnow()` in `keys.py`, replaced with `datetime.now(timezone.utc)`
-  - Added `logger.debug()` logging to all silent exception blocks
-  - Moved inline imports (`import re as _re`, `import time as _time`) to module top
-  - Unified error response format for `test.py` model endpoints, using `ErrorResponse` instead of raw dict
-  - Removed duplicate comments in `_app.py`
-  - Code lines reduced by ~110, added `web/utils.py` shared utility module
-
-- **Operation log cleanup feature**:
-  - Added `DELETE /api/logs` API endpoint, supports cleaning main log for today or specified date
-  - Added `ProjectLogger.clear_main_log()` method
-
-- **Test verification**:
-  - All tests passed: 682 passed, 1 skipped
-  - Coverage: 78.40% (exceeds 60% requirement)
-
-- **Frontend cleanup optimization**:
-  - CSS: Added missing `--neon-cyan-dim` variable, added `.btn-sm` `.btn-danger` `.url-input` `.toolbar-divider` utility classes
-  - CSS: Extracted inline styles from Confirm modal and add provider form to CSS classes
-  - CSS: Split signature report styles to `components/signature-report.css`
-  - CSS: Inline `style=` reduced from 71 to 39, `onfocus`/`onblur` reduced from 10 to 0
-  - JS: Extracted `selectCustomOption`, `toggleCustomSelect`, `toggleLogs` to `ui-helpers.js`
-  - JS: Added `clearLogs()` function with confirmation dialog
-  - HTML: `index.html` reduced from 531 lines to 508 lines
-
-### v4.0.0 (2026-06-21)
-
-- **Frontend modular refactoring**: Refactored monolithic `index.html` (4725 lines) into modular structure:
-  - CSS split: 5 theme files + 7 component files
-    - `tokens.css` — CSS variables
-    - `base.css` — Base styles, layout, responsive
-    - `components.css` — Component entry (@import)
-    - `components/` — 7 individual components (button, form, card, table, stat, nav, overlay)
-    - `modals.css` — Modal styles
-    - `animations.css` — Animations and transitions
-  - JS modularization: 12 ES modules
-    - `state.js` — Global state management
-    - `utils.js` — Pure utility functions
-    - `api/` — 9 API modules (client, stats, keys, check, test, balance, models, providers, misc)
-    - UI modules: toast, progress, confirm, keys-table, providers, batch, modals, model-detect
-    - `init.js` — Entry point and event binding
-  - `index.html` reduced to 467 lines
-- **API module split**: Split frontend API modules by backend route structure:
-  - `api/client.js` — Common fetch logic (safeFetch)
-  - `api/index.js` — Re-exports all functions
-  - Each route module has its own file
-- **Static file serving**: Added `StaticFiles` middleware
-- **Error handling enhancement**: Added try-catch error handling to loadKeys/loadStats
-- **ES module fix**: Fixed State object read-only binding issue
-
-- **Web module refactoring**: Refactored monolithic `web.py` (2094 lines) into modular package structure:
-  - `web/_app.py` — Application entry (239 lines)
-  - `web/middleware.py` — Middleware and error handlers
-  - `web/progress.py` — ProgressTracker and SSE helpers
-  - `web/routes/` — 8 route modules (keys, check, test, balance, models, providers, stats, misc)
-- **Test suite refactoring**:
-  - Merged supplementary test files (test_parser_supplement, test_validator_supplement, test_ssrf_supplement)
-  - Removed duplicate test files (test_web_fixes)
-  - Fixed mock paths to match new web module structure
-  - Extracted shared fixtures and helpers to conftest.py
-  - Removed redundant @pytest.mark.asyncio decorators
-  - Fixed rate limit middleware test isolation issues
-- **Code deduplication**: Eliminated duplicate model check logic in `api_check_single`
-- **Debug system cleanup**: Removed `sys.path.insert` hack, using clean optional import pattern
-- **Duplicate route fix**: Merged duplicate `GET /api/providers` routes
-- **Log display fix**: Fixed logs displaying as `[object Object]`
-- **Extensibility**: Added extension guide for new routes, middleware, and error handlers in `routes/__init__.py`
-
-- **Provider system refactoring**:
-  - Removed `check_model` attribute, changed to first get model list from API then test
-  - Removed redundant methods from all providers (build_headers, get_models, test_token_limit, test_concurrency, _probe, check_real)
-  - Standard providers reduced from ~77 lines to ~5-8 lines
-  - Total ~2,400 lines of redundant code removed
-  - Added `chat_endpoint` attribute, auto-derives chat completions endpoint from `check_endpoint`
-
-- **Detection logic fix**:
-  - Fixed detection logic no longer returning provider just because `/v1/models` returns 200
-  - `/v1/models` only used to get model list, cannot determine provider
-  - `/chat/completions` returning 200 is needed to determine provider
-  - Added prefix matching logic, supports provider detection for shared prefixes (like `sk-`)
-  - Free models are very important for detection, detection logic tests all models including free models
-
-- **Documentation updates**:
-  - Updated README.md's "Provider Smart Detection" section with detailed detection flow explanation
-  - Updated docs/DEVELOPMENT.md's "Detection System" section
-  - Updated docs/PROVIDER_REFACTORING_PLAN.md, added "Detection Logic Details" section
-  - Added detailed comments in detector.py explaining the difference between `/v1/models` and `/chat/completions`
-
-- **Bug fixes and improvements**:
-  - Fixed SDK documentation method names not matching actual (`get_keys()` → `keys()` etc.)
-  - Fixed "No passphrase found" error when deleting keys, added auto-generation of encryption key
-  - Fixed signature verification report endpoint 404 error, changed to dynamic report generation
-  - Fixed missing add custom provider button, added frontend UI
-
-### v3.2.0 (2026-06-19)
-
-- **Model detection by model testing**: Support testing token limits and concurrency directly in model detection modal
-- **Provider management UI**: Added frontend UI for adding/managing custom providers
-- **Removed check_model**: Removed check_model attribute from ProviderBase, providers must get models from API
-- **Concurrent test API improvement**: Improved error handling, provides detailed error information
-- **Provider token test fix**: Fixed providers using wrong models or wrong API endpoints
-- **Balance API fix**: Fixed balance detection for providers that support balance queries
-
-### v3.1.0 (2026-06-19)
-
-- **Provider auto-discovery**: Uses pkgutil auto-discovery instead of 47 explicit imports
-- **Provider metadata attributes**: All providers declare class attributes like display_name, key_prefixes
-- **Default implementations**: test_token_limit, test_concurrency and other methods are now concrete methods
-- **YAML configuration support**: Can define custom providers in config.yaml
-- **Provider Web API**: Added /api/providers CRUD endpoints
-- **Code streamlining**: 39 standard providers reduced from ~100 lines to ~15 lines
-
-### v3.0.0 (2026-06-15)
-
-- **Exact matching fix**: Capability detection changed from substring matching to ^$ anchored exact matching, fixed o1 false-matching o1-mini etc.
-- **API bug fixes**: Fixed /api/stats/chart runtime crash, /api/keys and /api/keys/export missing key field
-- **Test supplementation**: Added tests for 8 endpoints (test/token, test/concurrency, models/capabilities, models/check, progress/stream etc.)
-- **Frontend cache optimization**: Model type switching uses local cache filtering, no longer makes repeated API requests
-- **Cherry Studio sync workflow fix**: Fixed GitHub Actions path errors and validation scripts
-- **Autofill style fix**: Fixed browser autofill causing input field background to turn white
-
-### v2.2.2 (2026-06-14)
-
-- **Model detection secondary window**: Added model detection popup, supports search, type filtering, select all, batch detection
-- **Model type icons**: Display model capability icons (vision/reasoning/web search/tools/embedding/rerank/free)
-- **Model capability data update**: Synced latest model capability data from Cherry Studio (3184 records)
-- **Detection logic optimization**: DeepSeek overdue keys correctly identified, no longer misidentified as other providers
-- **Specified model detection**: Also supports specified model detection when auto-detecting providers
-
-### v2.2.1 (2026-06-14)
-
-- **Detection logic fix**: Must call check() to verify key validity after auto-identification
-- **Signature matching fix**: Status codes no longer hardcoded to 401, uses actual status codes
-- **Unreliable providers**: ppio, nvidia, modelscope do not participate in scoring
-- **Model selector**: Added model dropdown, supports selecting specific model for detection
-- **Cherry Studio sync**: Fixed ownedBy mapping (alibaba→dashscope etc.)
-- **Test supplementation**: Added test_parser_supplement, test_ssrf_supplement, test_validator_supplement
-
-### v2.2.0 (2026-06-14)
-
-- **Detection logic refactoring**: Added three-step detection logic (/v1/models → concurrent testing)
-- **URL fix**: Extract version path from check_endpoint, fixed 404 issues for OpenCode etc.
-- **Concurrency optimization**: Both /v1/models and chat/completions called concurrently
-- **Timeout control**: All network requests have 5-second timeout
-- **Model sync**: Synced model data from Cherry Studio, supports ownedBy mapping
-- **New providers**: OpenCode Go, OpenCode Zen
-
-### v2.1.2 (2026-06-11)
-
-- **Bug fix**: Fixed `KeyManager.detect_provider()` calling async function without await
-- **Test expansion**: Provider contract tests expanded to all 44 providers
-- **New tests**: Added `test_proxy.py`, `test_logger.py`, `test_tester.py`, `test_core.py`
-- **Coverage improvement**: Test coverage increased from 74% to 88%
-
-### v2.1.1
-
-- Initial release
+See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 ## License
 
