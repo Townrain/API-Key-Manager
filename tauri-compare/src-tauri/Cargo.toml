@@ -1,6 +1,6 @@
 [package]
 name = "keyhub-desktop"
-version = "4.3.0"
+version = "5.0.1"
 description = "KeyHub - API Key Manager Desktop App"
 authors = ["you"]
 license = ""

@@ -9,12 +9,12 @@ import { StaggeredFadeIn } from '../theme/animations';
 type Page = 'dashboard' | 'keys' | 'providers' | 'tools' | 'logs' | 'history';
 
 const NAV_ITEMS: { page: Page; icon: React.ElementType; label: string }[] = [
-  { page: 'dashboard', icon: LayoutDashboard, label: '仪表盘' },
-  { page: 'keys', icon: Key, label: '密钥管理' },
-  { page: 'providers', icon: Cloud, label: '服务商' },
-  { page: 'tools', icon: Wrench, label: '工具箱' },
-  { page: 'logs', icon: FileText, label: '日志' },
-  { page: 'history', icon: History, label: '导入历史' },
+  { page: 'dashboard', icon: LayoutDashboard, label: '浠〃鐩? },
+  { page: 'keys', icon: Key, label: '瀵嗛挜绠＄悊' },
+  { page: 'providers', icon: Cloud, label: '鏈嶅姟鍟? },
+  { page: 'tools', icon: Wrench, label: '宸ュ叿绠? },
+  { page: 'logs', icon: FileText, label: '鏃ュ織' },
+  { page: 'history', icon: History, label: '瀵煎叆鍘嗗彶' },
 ];
 
 interface Props {
@@ -136,7 +136,7 @@ export function Sidebar({ colors: c, dark, currentPage, onToggleTheme, onNavigat
         <motion.div
           role="button"
           tabIndex={0}
-          aria-label={dark ? '切换到亮色模式' : '切换到暗色模式'}
+          aria-label={dark ? '鍒囨崲鍒颁寒鑹叉ā寮? : '鍒囨崲鍒版殫鑹叉ā寮?}
           whileTap={{ scale: 0.88 }}
           whileHover={{ y: 2 }}
           transition={{
@@ -169,7 +169,7 @@ export function Sidebar({ colors: c, dark, currentPage, onToggleTheme, onNavigat
           >
             {dark ? <Sun size={20} color={c.warning} /> : <Moon size={20} color={c.textSecondary} />}
           </motion.div>
-          <span style={{ fontSize: 13, color: c.textSecondary }}>{dark ? '亮色模式' : '暗色模式'}</span>
+          <span style={{ fontSize: 13, color: c.textSecondary }}>{dark ? '浜壊妯″紡' : '鏆楄壊妯″紡'}</span>
         </motion.div>
 
         {/* Connection status */}
@@ -184,7 +184,7 @@ export function Sidebar({ colors: c, dark, currentPage, onToggleTheme, onNavigat
             background: c.success,
             boxShadow: `0 0 6px ${c.success}66`,
           }} />
-          <span style={{ flex: 1, fontSize: 11, color: c.textSecondary }}>后端已连接</span>
+          <span style={{ flex: 1, fontSize: 11, color: c.textSecondary }}>鍚庣宸茶繛鎺?/span>
           <span style={{ fontFamily: 'Consolas', fontSize: 10, color: c.textTertiary }}>:18001</span>
         </div>
 
@@ -196,7 +196,7 @@ export function Sidebar({ colors: c, dark, currentPage, onToggleTheme, onNavigat
           display: 'flex', alignItems: 'center', gap: 8,
         }}>
           <Info size={16} color={c.textTertiary} />
-          <span style={{ fontSize: 11, color: c.textTertiary }}>v4.3.0</span>
+          <span style={{ fontSize: 11, color: c.textTertiary }}>v5.0.1</span>
         </div>
       </div>
     </nav>
