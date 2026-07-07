@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.2] - 2026-07-08
+
+### Added
+- Tauri React 前端集成到 pywebview 桌面壳（单 exe 便携）
+- Inno Setup 安装包：用户可选安装目录
+- 启动加载页：fetch 指数退避 + Retry 按钮 + 30s 超时提示
+- `_resolve_config_path()` 统一 frozen 模式路径解析
+- `get_project_logger()` 懒加载：导入时不创建目录
+- `/assets/` 认证白名单
+
+### Fixed
+- 修复 auth token 不一致导致首次启动 401
+- 修复 CORS 拦截 pywebview 内联 HTML 的 fetch 请求
+- 修复加载页 JS 函数未被调用（永久转圈）
+- 修复 `_get_passphrase` 多调用者密钥不一致
+- 修复 pywebview 导入失败静默崩溃（改为弹出提示）
+- 修复 Sidebar.tsx 中文编码乱码
+
+### Changed
+- 桌面壳从 Tauri 双 exe 架构迁移为 pywebview 单 exe
+- `project_logger` 改为懒加载单例（影响 5 个路由模块 + 测试）
 
 ## [5.0.1] - 2026-07-07
 

@@ -11,9 +11,14 @@ import { ImportHistoryPage, type ImportRecord } from './pages/ImportHistoryPage'
 import { api, setAuthToken } from './api/client';
 import './App.css';
 
-// Read auth token from localStorage (configurable by user)
-const savedToken = localStorage.getItem('keyhub_api_token');
-if (savedToken) setAuthToken(savedToken);
+// Read auth token: window.__API_TOKEN__ (injected) > localStorage
+const apiToken = (window as any).__API_TOKEN__ || localStorage.getItem('keyhub_api_token') || '';
+if (apiToken) {
+  setAuthToken(apiToken);
+  if (!localStorage.getItem('keyhub_api_token')) {
+    localStorage.setItem('keyhub_api_token', apiToken);
+  }
+}
 
 type Page = 'dashboard' | 'keys' | 'providers' | 'tools' | 'logs' | 'history';
 

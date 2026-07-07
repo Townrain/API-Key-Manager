@@ -22,14 +22,14 @@
 - **API 文档** - Swagger UI 和 Redoc 自动文档
 - **国际化** - 支持中英文错误信息
 - **SDK 支持** - Python 和 TypeScript 客户端库
-- **桌面应用** - 单文件便携 exe，pywebview 桌面窗口
+- **桌面应用** - 单 exe 便携安装，React 前端 + pywebview 桌面窗口
 - **Webhook 通知** - 事件驱动的 Webhook 通知系统
 
 ## 快速开始
 
-### 桌面应用（v5.0.0）
+### 桌面应用（v5.0.2）
 
-从 [Releases](https://github.com/Townrain/API-Key-Manager/releases) 下载 `KeyHub-Setup.exe`，安装到任意目录即可。
+从 [Releases](https://github.com/Townrain/API-Key-Manager/releases) 下载 `KeyHub-Setup.exe`，选择任意目录安装即可。首次启动自动生成配置文件，所有数据保持在安装目录内。
 
 ### CLI / Web
 

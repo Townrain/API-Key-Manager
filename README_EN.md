@@ -22,7 +22,7 @@ Python tool for batch managing API keys for 45+ AI providers, with CLI, Web, and
 - **API Documentation** - Swagger UI and Redoc auto-generated docs
 - **Internationalization** - Chinese and English error messages
 - **SDK Support** - Python and TypeScript client libraries
-- **Desktop App** - Single-file portable exe with pywebview window
+- **Desktop App** - Single-exe portable install, React frontend + pywebview window
 - **Webhook Notifications** - Event-driven webhook notification system
 
 ## System Architecture
@@ -152,9 +152,9 @@ curl -X DELETE http://localhost:18001/api/providers/my-llm
 
 ## Quick Start
 
-### Desktop App (v5.0.0)
+### Desktop App (v5.0.2)
 
-Download `KeyHub-Setup.exe` from [Releases](https://github.com/Townrain/API-Key-Manager/releases) and install to any directory.
+Download `KeyHub-Setup.exe` from [Releases](https://github.com/Townrain/API-Key-Manager/releases), install to any directory. First launch auto-generates config; all data stays portable within the install directory.
 
 ### Installation
 
