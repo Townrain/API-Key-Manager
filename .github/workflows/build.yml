@@ -58,15 +58,10 @@ jobs:
             --hidden-import pythonnet `
             web.py
 
-      - name: Install Inno Setup
-        uses: LeoNatan/inno-setup-action@v1
+      - name: Build Installer with Inno Setup
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
         with:
-          version: '6.3.0'
-
-      - name: Build Installer
-        shell: pwsh
-        run: |
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+          path: installer.iss
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
