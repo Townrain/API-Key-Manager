@@ -243,3 +243,39 @@ class TestAuthTimingAttack:
         assert "hmac.compare_digest" in func_body
         # Should NOT use == for auth comparison
         assert 'auth_header == f"Bearer' not in func_body
+
+
+def test_loading_page_has_fetch_and_retry():
+    """Loading page should use fetch() with exponential backoff and Retry button."""
+    web_py = Path(__file__).parent.parent / "web.py"
+    source = web_py.read_text(encoding="utf-8")
+
+    # Should contain fetch-based polling
+    assert "fetch(" in source
+    # Should have exponential backoff
+    assert "nextDelay" in source or "delays" in source
+    # Should have retry button
+    assert "Retry" in source
+    # Should NOT have the old Image() polling (dead-end return)
+    assert 'i.onload=i.onerror' not in source
+    # Should NOT have dead return after timeout
+    assert 'n>60' not in source
+
+
+def test_pywebview_import_failure_handler():
+    """Pywebview import failure should use MessageBoxW, not input()."""
+    web_py = Path(__file__).parent.parent / "web.py"
+    source = web_py.read_text(encoding="utf-8")
+
+    # Should have MessageBoxW for the import failure
+    assert "MessageBoxW" in source and "WebView2" in source
+    # Should NOT have input() in the import failure handler context
+    lines = source.split("\n")
+    in_except = False
+    for line in lines:
+        if "except ImportError" in line:
+            in_except = True
+        elif in_except and line.strip() and not line.startswith(" "):
+            in_except = False
+        if in_except and "input(" in line:
+            raise AssertionError("input() found in pywebview ImportError handler")

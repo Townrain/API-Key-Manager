@@ -1,6 +1,8 @@
+from pathlib import Path
 import base64
 import json
 import os
+import sys
 
 import pytest
 
@@ -513,3 +515,15 @@ def test_decrypt_failure_raises_storage_error(tmp_path):
     with pytest.raises(StorageError, match="Decryption failed"):
         store.load()
 
+
+def test_resolve_config_path_frozen(monkeypatch):
+    """_resolve_config_path should resolve to exe dir when frozen."""
+    from key_manager.storage import _resolve_config_path
+
+    # Non-frozen: CWD-relative
+    assert _resolve_config_path() == Path("config.yaml")
+
+    # Frozen: next to exe
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(sys, "argv", [r"D:\KeyHub\KeyHub.exe"])
+    assert _resolve_config_path() == Path(r"D:\KeyHub\config.yaml")

@@ -1,5 +1,7 @@
 """Tests for logger module."""
+import os
 import json
+import importlib
 import logging
 from pathlib import Path
 
@@ -271,3 +273,20 @@ class TestProjectLogger:
                 f.unlink()
         files = logger.get_log_files()
         assert files == []
+
+
+def test_import_does_not_create_directories(tmp_path, monkeypatch):
+    """Importing key_manager.logger should NOT create directories."""
+    original_cwd = os.getcwd()
+    try:
+        monkeypatch.chdir(tmp_path)
+        # Force reimport to test lazy initialization
+        import key_manager.logger
+        importlib.reload(key_manager.logger)
+        # After import, no ./data/logs should exist
+        assert not (tmp_path / "data").exists()
+        # After calling get_project_logger(), dirs SHOULD be created
+        key_manager.logger.get_project_logger()
+        assert (tmp_path / "data" / "logs").exists()
+    finally:
+        os.chdir(original_cwd)
