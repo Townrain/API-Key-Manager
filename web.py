@@ -129,7 +129,13 @@ if __name__ == "__main__":
                 server_ok = True
                 break
             except Exception as ex:
-                _log(f"waiting... ({type(ex).__name__}: {ex})")
+                detail = str(ex)
+                if hasattr(ex, 'read'):
+                    try:
+                        detail = ex.read().decode('utf-8', errors='replace')[:500]
+                    except Exception:
+                        pass
+                _log(f"waiting... ({type(ex).__name__}: {detail})")
 
         if not server_ok:
             from pathlib import Path
