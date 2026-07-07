@@ -2,8 +2,7 @@ name: Tests
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [master]
     paths:
       - 'key_manager/**'
       - 'tests/**'
@@ -18,7 +17,6 @@ on:
       - 'pyproject.toml'
       - 'requirements.txt'
       - '.github/workflows/test.yml'
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
