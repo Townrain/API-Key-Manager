@@ -58,14 +58,28 @@ jobs:
             --hidden-import pythonnet `
             web.py
 
-      - name: Upload artifact
+      - name: Install Inno Setup
+        uses: LeoNatan/inno-setup-action@v1
+        with:
+          version: '6.3.0'
+
+      - name: Build Installer
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: KeyHub-Windows
-          path: dist/KeyHub.exe
+          path: |
+            dist/KeyHub.exe
+            dist/KeyHub-Setup.exe
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/KeyHub.exe
+          files: |
+            dist/KeyHub.exe
+            dist/KeyHub-Setup.exe
