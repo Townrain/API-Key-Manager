@@ -4,11 +4,23 @@ from datetime import datetime
 from pathlib import Path
 
 
+def _ensure_logs_dir(logs_dir: str) -> Path:
+    """Resolve and create logs directory, with fallback to home if unwritable."""
+    d = Path(logs_dir)
+    try:
+        d.mkdir(parents=True, exist_ok=True)
+        return d
+    except OSError:
+        fallback = Path.home() / ".keyhub" / "logs"
+        fallback.mkdir(parents=True, exist_ok=True)
+        return fallback
+
+
 class KeyLogger:
     """Structured logger with date-based file rotation."""
 
     def __init__(self, logs_dir: str, category: str):
-        self.logs_dir = Path(logs_dir)
+        self.logs_dir = _ensure_logs_dir(logs_dir)
         self.category = category
         self.logger = logging.getLogger(f"keymanager.{category}")
         self.logger.setLevel(logging.DEBUG)
@@ -16,7 +28,6 @@ class KeyLogger:
             self._setup_file_handler()
 
     def _setup_file_handler(self):
-        self.logs_dir.mkdir(parents=True, exist_ok=True)
         date_str = datetime.now().strftime("%Y-%m-%d")
         log_file = self.logs_dir / f"{self.category}_{date_str}.log"
 
@@ -44,8 +55,7 @@ class ProjectLogger:
     """Main project logger that logs all operations."""
 
     def __init__(self, logs_dir: str = "./data/logs"):
-        self.logs_dir = Path(logs_dir)
-        self.logs_dir.mkdir(parents=True, exist_ok=True)
+        self.logs_dir = _ensure_logs_dir(logs_dir)
         self._setup_loggers()
 
     def _setup_loggers(self):
