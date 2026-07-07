@@ -130,20 +130,26 @@ setup_error_handlers(app)
 # WEB UI
 # ---
 
+_TAURI_DIR = Path(__file__).resolve().parent.parent.parent / "static_tauri"
 _TEMPLATES_DIR = Path(__file__).resolve().parent.parent.parent / "templates"
 _TEMPLATES_DIR_ALT = Path(__file__).resolve().parent.parent / "templates"
 
+# Tauri React SPA: mount assets at /assets
+if (_TAURI_DIR / "assets").is_dir():
+    app.mount("/assets", StaticFiles(directory=str(_TAURI_DIR / "assets")), name="tauri_assets")
+
+# Legacy static files
+_STATIC_DIR = Path(__file__).resolve().parent.parent.parent / "static"
+if _STATIC_DIR.is_dir():
+    app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
+
+# Jinja2 templates (legacy fallback)
 if _TEMPLATES_DIR.exists():
     templates = Jinja2Templates(directory=str(_TEMPLATES_DIR))
 elif _TEMPLATES_DIR_ALT.exists():
     templates = Jinja2Templates(directory=str(_TEMPLATES_DIR_ALT))
 else:
     templates = None
-
-# Static files (CSS, JS extracted from inline)
-_STATIC_DIR = Path(__file__).resolve().parent.parent.parent / "static"
-if _STATIC_DIR.is_dir():
-    app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 
 
 @app.get("/", include_in_schema=False)
@@ -156,12 +162,20 @@ async def web_ui(request: Request):
     except Exception:
         pass
 
+    # Tauri React SPA (preferred)
+    tauri_index = _TAURI_DIR / "index.html"
+    if tauri_index.exists():
+        html = tauri_index.read_text(encoding="utf-8")
+        html = html.replace("<title>tauri-compare</title>", "<title>KeyHub</title>")
+        html = html.replace("</head>", f"<script>window.__API_TOKEN__ = '{api_token}';</script></head>")
+        return HTMLResponse(html)
+
+    # Legacy Jinja2 template fallback
     if templates and (_TEMPLATES_DIR / "index.html").exists():
         return templates.TemplateResponse("index.html", {"request": request, "api_token": api_token})
     if templates and (_TEMPLATES_DIR_ALT / "index.html").exists():
         return templates.TemplateResponse("index.html", {"request": request, "api_token": api_token})
     return HTMLResponse("<html><body><h1>API Key Manager</h1><p>Web UI not found.</p></body></html>")
-
 
 # ---
 # Route modules (extracted to key_manager/web/routes/)

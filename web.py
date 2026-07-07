@@ -15,11 +15,6 @@ if __name__ == "__main__":
     # PyInstaller: chdir to exe directory → all paths stay portable
     if getattr(sys, "frozen", False):
         os.chdir(os.path.dirname(sys.argv[0]))
-    # PyInstaller: chdir to exe directory → all paths stay portable
-    if getattr(sys, "frozen", False):
-        exe_dir = os.path.dirname(sys.argv[0])
-        os.chdir(exe_dir)
-        _log(f"chdir to {exe_dir}")
 
     # PyInstaller --noconsole: stderr/stdout are None, uvicorn crashes on .isatty()
     if sys.stderr is None:
