@@ -12,10 +12,9 @@ from key_manager.web import app
 if __name__ == "__main__":
     import os
 
-    _startup_log = []
-    def _log(msg):
-        _startup_log.append(msg)
-
+    # PyInstaller: chdir to exe directory → all paths stay portable
+    if getattr(sys, "frozen", False):
+        os.chdir(os.path.dirname(sys.argv[0]))
     # PyInstaller: chdir to exe directory → all paths stay portable
     if getattr(sys, "frozen", False):
         exe_dir = os.path.dirname(sys.argv[0])
@@ -36,21 +35,11 @@ if __name__ == "__main__":
         # Ensure ./data/ dirs
         for d in ["data", "data/logs", "data/input"]:
             Path(d).mkdir(parents=True, exist_ok=True)
-            _log(f"created dir: {d}")
-        # Ensure config.yaml exists
+            Path(d).mkdir(parents=True, exist_ok=True)
         from key_manager.config import load_config
         load_config()
-        _log("config.yaml ready")
 
-    try:
-        _bootstrap()
-    except Exception as e:
-        import traceback
-        from pathlib import Path
-        err = f"Bootstrap failed: {e}\n{traceback.format_exc()}"
-        Path("startup_error.log").write_text(err)
-        raise
-
+    _bootstrap()
     import argparse
 
     parser = argparse.ArgumentParser(description="API Key Manager")
@@ -93,24 +82,7 @@ if __name__ == "__main__":
         port = args.port
 
         def _run_server():
-            from pathlib import Path
-            Path("server_startup.log").write_text("thread started\n")
-            # Redirect uvicorn output to file so we can see what happens
-            import sys as _sys
-            log_f = open("uvicorn.log", "w")
-            _old_stdout, _old_stderr = _sys.stdout, _sys.stderr
-            _sys.stdout = log_f
-            _sys.stderr = log_f
-            try:
-                uvicorn.run(app, host=host, port=port, log_level="info")
-            except Exception:
-                import traceback
-                Path("server_startup.log").write_text(
-                    "Server crashed:\n" + traceback.format_exc()
-                )
-            finally:
-                _sys.stdout, _sys.stderr = _old_stdout, _old_stderr
-                log_f.close()
+            uvicorn.run(app, host=host, port=port, log_level="warning")
 
         server_thread = threading.Thread(target=_run_server, daemon=True)
         server_thread.start()
