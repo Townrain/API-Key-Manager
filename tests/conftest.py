@@ -132,19 +132,17 @@ def mock_provider():
 
 
 @pytest.fixture(autouse=True)
-def reset_environment():
+def reset_environment(monkeypatch):
     """Reset global state between tests."""
-    import os
     from pathlib import Path
     from key_manager.storage import clear_all_caches
     _RATE_LIMIT_STORE.clear()
-    os.environ.pop("KEY_MANAGER_SECRET", None)
+    monkeypatch.delenv("KEY_MANAGER_SECRET", raising=False)
+    monkeypatch.delenv("KEY_MANAGER_API_KEY", raising=False)
     Path("config.yaml").unlink(missing_ok=True)
     clear_all_caches()
     yield
     _RATE_LIMIT_STORE.clear()
-    os.environ.pop("KEY_MANAGER_SECRET", None)
-    Path("config.yaml").unlink(missing_ok=True)
     clear_all_caches()
 # ── Shared helpers (not fixtures, used by fixture factories) ────────────
 
