@@ -30,7 +30,6 @@ if __name__ == "__main__":
         # Ensure ./data/ dirs
         for d in ["data", "data/logs", "data/input"]:
             Path(d).mkdir(parents=True, exist_ok=True)
-            Path(d).mkdir(parents=True, exist_ok=True)
         from key_manager.config import load_config
         load_config()
 
