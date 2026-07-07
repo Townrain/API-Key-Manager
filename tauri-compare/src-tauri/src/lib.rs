@@ -104,7 +104,7 @@ mod job {
             } else {
                 log::info!("Child PID {} assigned to Job Object", child.id());
             }
-            // Leak the job handle intentionally — it stays alive for the process lifetime.
+            // Leak the job handle intentionally 鈥?it stays alive for the process lifetime.
             // When the process exits (any reason), the OS closes the handle and kills all
             // assigned child processes via JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE.
         }
@@ -135,7 +135,7 @@ fn find_backend_dir(exe_dir: &std::path::Path) -> Option<std::path::PathBuf> {
         if dir.join("web.py").exists() {
             return Some(dir);
         }
-        let sub = dir.join("API-Key-Manager-4.3.0");
+        let sub = dir.join("API-Key-Manager-5.0.1");
         if sub.join("web.py").exists() {
             return Some(sub);
         }
