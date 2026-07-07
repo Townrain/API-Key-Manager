@@ -124,7 +124,7 @@ if __name__ == "__main__":
         for i in range(30):
             time.sleep(0.5)
             try:
-                resp = urllib.request.urlopen(f"http://{host}:{port}/api/stats", timeout=2)
+                resp = urllib.request.urlopen(f"http://{host}:{port}/", timeout=2)
                 _log(f"server ready (status {resp.status})")
                 server_ok = True
                 break
