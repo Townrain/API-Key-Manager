@@ -1,5 +1,6 @@
 import copy
 import logging
+import sys
 from pathlib import Path
 
 import yaml
@@ -77,8 +78,30 @@ def _validate_config(config: dict) -> dict:
     return config
 
 
+def _copy_example_config(config_path: Path):
+    """Copy bundled config.yaml.example to config.yaml on first run."""
+    if getattr(sys, "frozen", False):
+        sample = Path(sys._MEIPASS) / "config.yaml.example"
+    else:
+        sample = Path("config.yaml.example")
+    if sample.exists():
+        try:
+            config_path.write_bytes(sample.read_bytes())
+            logger.info(f"Created default config at {config_path}")
+        except OSError:
+            pass
+
+
 def load_config(path: str = "config.yaml") -> dict:
+    # PyInstaller exe: resolve path next to the exe, auto-create from example
+    if getattr(sys, "frozen", False):
+        exe_dir = Path(sys.argv[0]).parent
+        path = str(exe_dir / "config.yaml")
+
     config_path = Path(path)
+    if not config_path.exists():
+        _copy_example_config(config_path)
+
     if config_path.exists():
         try:
             with open(config_path, encoding="utf-8") as f:

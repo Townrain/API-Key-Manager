@@ -12,6 +12,10 @@ from key_manager.web import app
 if __name__ == "__main__":
     import os
 
+    # PyInstaller: chdir to exe directory → all paths stay portable
+    if getattr(sys, "frozen", False):
+        os.chdir(os.path.dirname(sys.argv[0]))
+
     # PyInstaller --noconsole: stderr/stdout are None, uvicorn crashes on .isatty()
     if sys.stderr is None:
         sys.stderr = open(os.devnull, "w")

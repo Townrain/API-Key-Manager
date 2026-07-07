@@ -1,16 +1,12 @@
 import json
 import logging
-import sys
 from datetime import datetime
 from pathlib import Path
 
 
 def _ensure_logs_dir(logs_dir: str = "./data/logs") -> Path:
-    """Logs dir: ~/.keyhub/logs if PyInstaller exe, ./data/logs otherwise."""
-    if getattr(sys, "frozen", False):
-        d = Path.home() / ".keyhub" / "logs"
-    else:
-        d = Path(logs_dir)
+    """Create and return the logs directory."""
+    d = Path(logs_dir)
     d.mkdir(parents=True, exist_ok=True)
     return d
 
