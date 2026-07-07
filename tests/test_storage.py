@@ -525,9 +525,15 @@ def test_resolve_config_path_frozen(monkeypatch):
 
     # Frozen: next to exe
     exe_path = Path("/opt/keyhub/KeyHub")
+    frozen = getattr(sys, "frozen", None)
+    argv = sys.argv
+    sys.frozen = True
+    sys.argv = [str(exe_path)]
     try:
-        sys.frozen = True
-        sys.argv = [str(exe_path)]
         assert _resolve_config_path() == exe_path.parent / "config.yaml"
     finally:
-        del sys.frozen
+        sys.argv = argv
+        if frozen is None:
+            del sys.frozen
+        else:
+            sys.frozen = frozen
