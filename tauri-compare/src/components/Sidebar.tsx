@@ -169,7 +169,7 @@ export function Sidebar({ colors: c, dark, currentPage, onToggleTheme, onNavigat
           >
             {dark ? <Sun size={20} color={c.warning} /> : <Moon size={20} color={c.textSecondary} />}
           </motion.div>
-          <span style={{ fontSize: 13, color: c.textSecondary }}>{dark ? '浜壊妯″紡' : '鏆楄壊妯″紡'}</span>
+          <span style={{ fontSize: 13, color: c.textSecondary }}>{dark ? '亮色模式' : '暗色模式'}</span>
         </motion.div>
 
         {/* Connection status */}
