@@ -22,14 +22,14 @@
 - **API 文档** - Swagger UI 和 Redoc 自动文档
 - **国际化** - 支持中英文错误信息
 - **SDK 支持** - Python 和 TypeScript 客户端库
-- **桌面应用** - Tauri v2.5 原生桌面应用（v5.0.0 新增），Windows / macOS / Linux
+- **桌面应用** - 单文件便携 exe，pywebview 桌面窗口
 - **Webhook 通知** - 事件驱动的 Webhook 通知系统
 
 ## 快速开始
 
 ### 桌面应用（v5.0.0）
 
-从 [Releases](https://github.com/Townrain/API-Key-Manager/releases) 下载对应平台的安装包，解压后运行 `keyhub-desktop.exe`。
+从 [Releases](https://github.com/Townrain/API-Key-Manager/releases) 下载 `KeyHub-Setup.exe`，安装到任意目录即可。
 
 ### CLI / Web
 

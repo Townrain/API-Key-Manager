@@ -70,10 +70,15 @@ jobs:
             --hidden-import pythonnet `
             web.py
 
-      - name: Build Installer with Inno Setup
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
-        with:
-          path: installer.iss
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress -y
+
+      - name: Build Installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          & $iscc installer.iss
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

@@ -22,7 +22,7 @@ Python tool for batch managing API keys for 45+ AI providers, with CLI, Web, and
 - **API Documentation** - Swagger UI and Redoc auto-generated docs
 - **Internationalization** - Chinese and English error messages
 - **SDK Support** - Python and TypeScript client libraries
-- **Desktop App** - Tauri v2.5 native desktop app (new in v5.0.0), Windows / macOS / Linux
+- **Desktop App** - Single-file portable exe with pywebview window
 - **Webhook Notifications** - Event-driven webhook notification system
 
 ## System Architecture
@@ -154,7 +154,7 @@ curl -X DELETE http://localhost:18001/api/providers/my-llm
 
 ### Desktop App (v5.0.0)
 
-Download the installer for your platform from [Releases](https://github.com/Townrain/API-Key-Manager/releases), extract and run `keyhub-desktop.exe`.
+Download `KeyHub-Setup.exe` from [Releases](https://github.com/Townrain/API-Key-Manager/releases) and install to any directory.
 
 ### Installation
 
