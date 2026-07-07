@@ -10,6 +10,16 @@ import sys
 from key_manager.web import app
 
 if __name__ == "__main__":
+    import os
+
+    # PyInstaller --noconsole: stderr/stdout are None, uvicorn crashes on .isatty()
+    if sys.stderr is None:
+        sys.stderr = open(os.devnull, "w")
+    if sys.stdout is None:
+        sys.stdout = open(os.devnull, "w")
+    if sys.stdin is None:
+        sys.stdin = open(os.devnull)
+
     import argparse
 
     parser = argparse.ArgumentParser(description="API Key Manager")
