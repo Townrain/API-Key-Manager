@@ -170,8 +170,9 @@ def test_tampered_nonce(encrypted_file):
 
 def test_tampered_ciphertext(encrypted_file):
     raw = json.loads(encrypted_file.read_text(encoding="utf-8"))
-    decoded = base64.b64decode(raw["data"])
-    tampered = base64.b64encode(decoded[:4] + b"\x00" + decoded[5:]).decode()
+    decoded = bytearray(base64.b64decode(raw["data"]))
+    decoded[-1] ^= 1  # Flip last byte (auth tag) — guaranteed to differ
+    tampered = base64.b64encode(bytes(decoded)).decode()
     raw["data"] = tampered
     encrypted_file.write_text(json.dumps(raw), encoding="utf-8")
     store = KeyStore(encrypted_file)
