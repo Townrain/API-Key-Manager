@@ -117,52 +117,54 @@ if __name__ == "__main__":
 
         _log(f"starting server on {host}:{port}")
 
-        # --- Wait for server to be ready ---
-        import time
-        import urllib.request
-        server_ok = False
-        for i in range(30):
-            time.sleep(0.5)
-            try:
-                resp = urllib.request.urlopen(f"http://{host}:{port}/", timeout=2)
-                _log(f"server ready (status {resp.status})")
-                server_ok = True
-                break
-            except Exception as ex:
-                detail = str(ex)
-                if hasattr(ex, 'read'):
-                    try:
-                        detail = ex.read().decode('utf-8', errors='replace')[:500]
-                    except Exception:
-                        pass
-                _log(f"waiting... ({type(ex).__name__}: {detail})")
+        # --- Loading page (shown immediately while server starts) ---
+        app_url = f"http://{host}:{port}"
+        loading_html = f"""<!DOCTYPE html>
+        <html><head><meta charset="utf-8"><style>
+  body {{ background:#0a0a0f; color:#00f0ff; font-family:monospace;
+         display:flex; align-items:center; justify-content:center;
+         height:100vh; margin:0; flex-direction:column; gap:16px; }}
+  .spinner {{ width:40px; height:40px; border:3px solid #1a1a2e;
+              border-top:3px solid #00f0ff; border-radius:50%;
+              animation:spin 0.8s linear infinite; }}
+  @keyframes spin {{ to {{ transform:rotate(360deg); }} }}
+            </style></head><body>
+  <div class="spinner"></div>
+  <div id="status">KeyHub is starting...</div>
+  <script>
+    var count = 0;
+    function check() {{
+      fetch('{app_url}')
+        .then(function(r) {{
+          if(r.ok || r.status==401 || r.status==500) location.href='{app_url}';
+          else setTimeout(check, 300);
+        }})
+        .catch(function() {{
+          count++;
+          document.getElementById('status').textContent=
+            'Starting server... ('+(count/2).toFixed(1)+'s)';
+          setTimeout(check, 500);
+        }});
+    }}
+    check();
+  </script>
+        </body></html>"""
 
-        if not server_ok:
-            from pathlib import Path
-            Path("startup_error.log").write_text("\n".join(_startup_log))
-            ctypes.windll.user32.MessageBoxW(
-                0,
-                "Server failed to start within 15 seconds.\nCheck startup_error.log for details.",
-                "KeyHub - Error",
-                0x10,
-            )
-            sys.exit(1)
-
-        # --- Launch native window ---
+        # --- Launch native window immediately ---
         try:
             import webview
         except ImportError:
             import webbrowser
-            webbrowser.open(f"http://{host}:{port}")
-            print(f"pywebview not installed. Opened browser: http://{host}:{port}")
+            webbrowser.open(app_url)
+            print(f"pywebview not installed. Opened browser: {app_url}")
             print("Install with: pip install pywebview")
             input("Press Enter to exit...")
             sys.exit(0)
 
         _log("opening pywebview window")
-        webview.create_window(
+        window = webview.create_window(
             title="KeyHub",
-            url=f"http://{host}:{port}",
+            html=loading_html,
             width=1280,
             height=800,
             min_size=(960, 640),
