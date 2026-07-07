@@ -1,4 +1,4 @@
-﻿"""Key Manager - Batch API key management for 45+ AI providers."""
+"""Key Manager - Batch API key management for 45+ AI providers."""
 from key_manager.core import KeyManager
 from key_manager.errors import ErrorCode, KeyManagerError
 from key_manager.providers import PROVIDERS, get_display_name
@@ -13,5 +13,5 @@ __all__ = [
     "KeyStore",
 ]
 
-__version__ = "4.3.0"
+__version__ = "4.4.0"
 
