@@ -8,24 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [5.0.2] - 2026-07-08
 
 ### Added
-- Tauri React 前端集成到 pywebview 桌面壳（单 exe 便携）
-- Inno Setup 安装包：用户可选安装目录
-- 启动加载页：fetch 指数退避 + Retry 按钮 + 30s 超时提示
-- `_resolve_config_path()` 统一 frozen 模式路径解析
-- `get_project_logger()` 懒加载：导入时不创建目录
-- `/assets/` 认证白名单
+- Tauri React frontend integrated into pywebview desktop shell (single-exe portable)
+- Inno Setup installer: user chooses install directory
+- Startup loading page: fetch() polling with exponential backoff + Retry button
+- `_resolve_config_path()` for consistent frozen-mode path resolution
+- `get_project_logger()` lazy singleton: no directory creation at import time
+- `/assets/` auth whitelist for Tauri static files
 
 ### Fixed
-- 修复 auth token 不一致导致首次启动 401
-- 修复 CORS 拦截 pywebview 内联 HTML 的 fetch 请求
-- 修复加载页 JS 函数未被调用（永久转圈）
-- 修复 `_get_passphrase` 多调用者密钥不一致
-- 修复 pywebview 导入失败静默崩溃（改为弹出提示）
-- 修复 Sidebar.tsx 中文编码乱码
+- Auth token inconsistency causing 401 on first launch
+- CORS blocking pywebview inline HTML fetch requests
+- Loading page JS poll function never called (infinite spinner)
+- `_get_passphrase` producing different keys across callers
+- Pywebview import failure causing silent crash (now shows MessageBoxW)
+- Sidebar.tsx Chinese text encoding corruption
 
 ### Changed
-- 桌面壳从 Tauri 双 exe 架构迁移为 pywebview 单 exe
-- `project_logger` 改为懒加载单例（影响 5 个路由模块 + 测试）
+- Desktop shell migrated from Tauri dual-exe to pywebview single-exe
+- `project_logger` converted to lazy singleton (affects 5 route modules + tests)
 
 ## [5.0.1] - 2026-07-07
 
@@ -34,7 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Migrate model data source from Cherry Studio to OpenCode models.dev**
   - New script scripts/extract_from_opencode.py fetches from https://models.dev/api.json
   - Model capabilities now use explicit boolean fields (`tool_call`, `modalities`, `reasoning`) instead of regex matching
-easoning) instead of regex matching
   - model_capabilities.py rewritten: O(1) dict lookup, 412 -> 138 lines
   - Regenerated models_registry.py: 32 providers, 1556 models (merge models.dev + preserved Cherry data)
 
