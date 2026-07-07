@@ -127,38 +127,31 @@ if __name__ == "__main__":
         # --- Loading page (shown immediately while server starts) ---
         app_url = f"http://{host}:{port}"
         loading_html = f"""<!DOCTYPE html>
-        <html><head><meta charset="utf-8"><style>
-  body {{ background:#0a0a0f; color:#00f0ff; font-family:monospace;
-         display:flex; align-items:center; justify-content:center;
-         height:100vh; margin:0; flex-direction:column; gap:16px; }}
-  .spinner {{ width:40px; height:40px; border:3px solid #1a1a2e;
-              border-top:3px solid #00f0ff; border-radius:50%;
-              animation:spin 0.8s linear infinite; }}
-  @keyframes spin {{ to {{ transform:rotate(360deg); }} }}
-            </style></head><body>
-  <div class="spinner"></div>
-  <div id="status">KeyHub is starting...</div>
-  <script>
-    var count = 0;
-    function check() {{
-      count++;
-      if (count > 60) {{
-        document.getElementById('status').innerHTML =
-          'Server not responding.<br><small>Check startup_error.log in app folder.</small>';
-        return;
-      }}
-      fetch('{app_url}')
-        .then(function(r) {{
-          if(r.ok || r.status==401 || r.status==500) location.href='{app_url}';
-          else setTimeout(check, 300);
-        }})
-        .catch(function() {{
-          document.getElementById('status').textContent=
-            'Starting server... ('+(count/2).toFixed(1)+'s)';
-          setTimeout(check, 500);
-        }});
-    }}
-        </body></html>"""
+<html><head><meta charset="utf-8"><style>
+  body{{background:#0a0a0f;color:#00f0ff;font-family:monospace;
+        display:flex;align-items:center;justify-content:center;
+        height:100vh;margin:0;flex-direction:column;gap:16px}}
+  .spinner{{width:40px;height:40px;border:3px solid #1a1a2e;
+           border-top:3px solid #00f0ff;border-radius:50%;
+           animation:spin 0.8s linear infinite}}
+  @keyframes spin{{to{{transform:rotate(360deg)}}}}
+</style></head><body>
+<div class="spinner"></div>
+<div id="s">KeyHub is starting...</div>
+<script>
+var n=0;
+function p(){{
+  n++;
+  if(n>60){{document.getElementById('s').innerHTML='Server not responding.<br><small>Check startup_error.log</small>';return}}
+  document.getElementById('s').textContent='Starting server... ('+(n/2).toFixed(1)+'s)';
+  var i=new Image();
+  i.onload=i.onerror=function(){{location.href='{app_url}'}};
+  i.src='{app_url}/?'+n;
+  setTimeout(p,500);
+}}
+p();
+</script>
+</body></html>"""
 
         # --- Launch native window immediately ---
         try:
