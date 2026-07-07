@@ -93,13 +93,14 @@ if __name__ == "__main__":
         port = args.port
 
         def _run_server():
+            from pathlib import Path
+            Path("server_startup.log").write_text("thread started\n")
             try:
-                uvicorn.run(app, host=host, port=port, log_level="warning")
+                uvicorn.run(app, host=host, port=port, log_level="info")
             except Exception:
                 import traceback
-                from pathlib import Path
-                Path("startup_error.log").write_text(
-                    "\n".join(_startup_log) + "\n\nServer crashed:\n" + traceback.format_exc()
+                Path("server_startup.log").write_text(
+                    "Server crashed:\n" + traceback.format_exc()
                 )
 
         server_thread = threading.Thread(target=_run_server, daemon=True)
