@@ -3,10 +3,7 @@
 ; Data (config, logs, keys) stays within the chosen directory.
 
 #define MyAppName "KeyHub"
-#define MyAppVersion GetFileVersion("dist\KeyHub.exe")
-#ifndef MyAppVersion
-  #define MyAppVersion "0.0.0"
-#endif
+#define MyAppVersion "1.0.0"
 #define MyAppPublisher "KeyHub"
 #define MyAppURL "https://github.com/Townrain/API-Key-Manager"
 #define MyAppExeName "KeyHub.exe"
@@ -32,8 +29,6 @@ SolidCompression=yes
 ; Installer metadata
 OutputDir=dist
 OutputBaseFilename=KeyHub-Setup
-SetupIconFile=static\favicon.ico
-UninstallDisplayIcon={app}\{#MyAppExeName}
 ; Windows version req
 MinVersion=10.0
 ; Privileges
