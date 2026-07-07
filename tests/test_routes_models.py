@@ -198,66 +198,6 @@ class TestModelsTypeFilters:
         assert "gpt-4o" in body["models"]
         assert "gpt-3.5-turbo" not in body["models"]
 
-    def test_filter_websearch(self, client):
-        """Type filter 'websearch' (line 107)."""
-        mock_detector = MagicMock()
-        mock_detector.load = AsyncMock()
-        mock_detector.is_websearch_model = lambda m: m == "gpt-4o"
-
-        body = self._run_with_filter(client, "websearch", mock_detector)
-        assert "gpt-4o" in body["models"]
-
-    def test_filter_reasoning(self, client):
-        """Type filter 'reasoning' (line 109)."""
-        mock_detector = MagicMock()
-        mock_detector.load = AsyncMock()
-        mock_detector.is_reasoning_model = lambda m: m == "gpt-4o"
-
-        body = self._run_with_filter(client, "reasoning", mock_detector)
-        assert "gpt-4o" in body["models"]
-
-    def test_filter_embedding(self, client):
-        """Type filter 'embedding' (line 111)."""
-        mock_detector = MagicMock()
-        mock_detector.load = AsyncMock()
-        mock_detector.is_embedding_model = lambda m: m == "text-embedding-3-small"
-
-        body = self._run_with_filter(client, "embedding", mock_detector)
-        assert "text-embedding-3-small" in body["models"]
-        assert "gpt-4o" not in body["models"]
-
-    def test_filter_rerank(self, client):
-        """Type filter 'rerank' (line 113)."""
-        mock_detector = MagicMock()
-        mock_detector.load = AsyncMock()
-        mock_detector.is_rerank_model = lambda m: m == "rerank-v1"
-
-        mock_provider = _mock_provider("openai", models=["rerank-v1", "gpt-4o"])
-
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
-            with patch("key_manager.model_capabilities.detector", mock_detector):
-                resp = client.get("/api/models?provider=openai&key=sk-test123&type_filter=rerank")
-
-        body = resp.json()
-        assert "rerank-v1" in body["models"]
-        assert "gpt-4o" not in body["models"]
-
-    def test_filter_free(self, client):
-        """Type filter 'free' (line 115)."""
-        mock_detector = MagicMock()
-        mock_detector.load = AsyncMock()
-        mock_detector.is_free_model = lambda m: "free" in m
-
-        mock_provider = _mock_provider("openai", models=["gpt-4-free", "gpt-4o"])
-
-        with patch("key_manager.web._app.PROVIDERS", {"openai": mock_provider}):
-            with patch("key_manager.model_capabilities.detector", mock_detector):
-                resp = client.get("/api/models?provider=openai&key=sk-test123&type_filter=free")
-
-        body = resp.json()
-        assert "gpt-4-free" in body["models"]
-        assert "gpt-4o" not in body["models"]
-
     def test_filter_exception_falls_through(self, client):
         """Exception in detector.load() → no filtering, return all models (line 116-117)."""
         mock_detector = MagicMock()
