@@ -95,6 +95,12 @@ if __name__ == "__main__":
         def _run_server():
             from pathlib import Path
             Path("server_startup.log").write_text("thread started\n")
+            # Redirect uvicorn output to file so we can see what happens
+            import sys as _sys
+            log_f = open("uvicorn.log", "w")
+            _old_stdout, _old_stderr = _sys.stdout, _sys.stderr
+            _sys.stdout = log_f
+            _sys.stderr = log_f
             try:
                 uvicorn.run(app, host=host, port=port, log_level="info")
             except Exception:
@@ -102,6 +108,9 @@ if __name__ == "__main__":
                 Path("server_startup.log").write_text(
                     "Server crashed:\n" + traceback.format_exc()
                 )
+            finally:
+                _sys.stdout, _sys.stderr = _old_stdout, _old_stderr
+                log_f.close()
 
         server_thread = threading.Thread(target=_run_server, daemon=True)
         server_thread.start()
