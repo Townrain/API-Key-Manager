@@ -100,14 +100,20 @@ _AUTH_WHITELIST = {"/", "/docs", "/redoc", "/openapi.json", "/static/"}
 async def auth_middleware(request: Request, call_next):
     """Authenticate requests via Bearer token.
 
-    Only enforced when auth.api_key is explicitly configured in config.yaml
-    or KEY_MANAGER_API_KEY env var is set. Desktop/local usage skips auth.
+    Priority: explicit api_key > env var > derived token from encryption passphrase.
     """
     cfg = _config or {}
     api_key = cfg.get("auth", {}).get("api_key", "") or os.environ.get("KEY_MANAGER_API_KEY", "")
 
+    # Fallback to derived token from encryption passphrase
     if not api_key:
-        # No explicit key configured → open access (desktop/local mode)
+        try:
+            from key_manager.storage import derive_api_token
+            api_key = derive_api_token(cfg)
+        except Exception:
+            pass
+
+    if not api_key:
         return await call_next(request)
 
     # Check whitelist (including static files)

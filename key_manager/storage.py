@@ -80,20 +80,46 @@ def derive_api_token(config: dict | None = None, salt: bytes = None) -> str:
     _key_cache[cache_key] = token_bytes
     return token_bytes.hex()
 
+_passphrase_cache: str | None = None
+
 def _get_passphrase(config: dict | None = None) -> str:
-    """Get encryption passphrase from config, env var, or auto-generate."""
+    """Get encryption passphrase from cache, env var, config, or auto-generate.
+
+    Uses a module-level cache so all callers get the same passphrase,
+    even when config dicts are loaded at different times.
+    """
+    global _passphrase_cache
+    if _passphrase_cache is not None:
+        return _passphrase_cache
+
     # 1. Check environment variable
     secret = os.environ.get("KEY_MANAGER_SECRET")
     if secret:
+        _passphrase_cache = secret
         return secret
 
-    # 2. Check config file
+    # 2. Check in-memory config dict (fast path)
     if config and config.get("encryption", {}).get("passphrase"):
-        return config["encryption"]["passphrase"]
+        _passphrase_cache = config["encryption"]["passphrase"]
+        return _passphrase_cache
 
-    # 3. Auto-generate and save
+    # 3. Read from config file on disk (catches passphrases saved by another caller)
+    try:
+        import yaml
+        config_path = Path("config.yaml")
+        if config_path.exists():
+            disk_cfg = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+            passphrase = disk_cfg.get("encryption", {}).get("passphrase")
+            if passphrase:
+                _passphrase_cache = passphrase
+                return passphrase
+    except Exception:
+        pass
+
+    # 4. Auto-generate and save
     passphrase = secrets.token_urlsafe(32)
     _save_passphrase_to_config(passphrase)
+    _passphrase_cache = passphrase
     logger.info("Auto-generated encryption passphrase and saved to config.yaml")
     return passphrase
 
