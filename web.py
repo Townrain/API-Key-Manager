@@ -110,7 +110,14 @@ if __name__ == "__main__":
         port = args.port
 
         def _run_server():
-            uvicorn.run(app, host=host, port=port, log_level="warning")
+            try:
+                uvicorn.run(app, host=host, port=port, log_level="warning")
+            except Exception:
+                import traceback
+                from pathlib import Path
+                Path("startup_error.log").write_text(
+                    "\n".join(_startup_log) + "\n\nServer crashed:\n" + traceback.format_exc()
+                )
 
         server_thread = threading.Thread(target=_run_server, daemon=True)
         server_thread.start()
@@ -134,20 +141,23 @@ if __name__ == "__main__":
   <script>
     var count = 0;
     function check() {{
+      count++;
+      if (count > 60) {{
+        document.getElementById('status').innerHTML =
+          'Server not responding.<br><small>Check startup_error.log in app folder.</small>';
+        return;
+      }}
       fetch('{app_url}')
         .then(function(r) {{
           if(r.ok || r.status==401 || r.status==500) location.href='{app_url}';
           else setTimeout(check, 300);
         }})
         .catch(function() {{
-          count++;
           document.getElementById('status').textContent=
             'Starting server... ('+(count/2).toFixed(1)+'s)';
           setTimeout(check, 500);
         }});
     }}
-    check();
-  </script>
         </body></html>"""
 
         # --- Launch native window immediately ---
