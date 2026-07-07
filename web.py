@@ -27,6 +27,10 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=18001, help="Server port (default: 18001)")
     args = parser.parse_args()
 
+    # PyInstaller exe: auto-enable desktop mode if not explicitly disabled
+    if getattr(sys, "frozen", False):
+        args.desktop = True
+
     if not args.desktop:
         # ------ Server mode (original behavior) ------
         import uvicorn
