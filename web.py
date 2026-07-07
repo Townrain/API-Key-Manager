@@ -82,7 +82,6 @@ if __name__ == "__main__":
         server_thread = threading.Thread(target=_run_server, daemon=True)
         server_thread.start()
 
-        _log(f"starting server on {host}:{port}")
 
         # --- Loading page (shown immediately while server starts) ---
         app_url = f"http://{host}:{port}"
@@ -139,7 +138,6 @@ poll();
             )
             sys.exit(1)
 
-        _log("opening pywebview window")
         window = webview.create_window(
             title="KeyHub",
             html=loading_html,
