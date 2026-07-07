@@ -100,28 +100,14 @@ _AUTH_WHITELIST = {"/", "/docs", "/redoc", "/openapi.json", "/static/"}
 async def auth_middleware(request: Request, call_next):
     """Authenticate requests via Bearer token.
 
-    Priority: explicit api_key > env var > derived token from encryption passphrase.
+    Only enforced when auth.api_key is explicitly configured in config.yaml
+    or KEY_MANAGER_API_KEY env var is set. Desktop/local usage skips auth.
     """
     cfg = _config or {}
     api_key = cfg.get("auth", {}).get("api_key", "") or os.environ.get("KEY_MANAGER_API_KEY", "")
 
-    # Fallback to derived token from encryption passphrase
     if not api_key:
-        try:
-            from key_manager.storage import derive_api_token
-            api_key = derive_api_token(cfg)
-        except Exception:
-            pass
-
-    if not api_key:
-        # Log warning once at startup (not on every request)
-        app = request.app
-        if not hasattr(app, '_auth_warning_logged'):
-            logger.warning(
-                "Authentication is disabled. Set KEY_MANAGER_API_KEY env var or "
-                "auth.api_key in config.yaml to secure your API."
-            )
-            app._auth_warning_logged = True
+        # No explicit key configured → open access (desktop/local mode)
         return await call_next(request)
 
     # Check whitelist (including static files)
@@ -138,7 +124,6 @@ async def auth_middleware(request: Request, call_next):
         message=t(ErrorCode.AUTH_REQUIRED.value),
     )
     return JSONResponse(status_code=401, content=response.model_dump())
-
 
 # ---------------------------------------------------------------------------
 # Internationalization
