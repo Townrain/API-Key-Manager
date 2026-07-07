@@ -15,6 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Extract version from tag
+        shell: pwsh
+        run: |
+          $ver = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}' -replace '^v', '' } else { '0.0.0' }
+          $parts = $ver -split '\.'
+          $tuple = "($($parts[0]),$($parts[1] -as [int] -replace '^$','0'),$($parts[2] -as [int] -replace '^$','0'),0)"
+          (Get-Content version_info.template) `
+            -replace '{{VERSION_TUPLE}}', $tuple `
+            -replace '{{VERSION}}', $ver `
+          | Set-Content version_info.txt
+          Write-Host "Version: $ver  Tuple: $tuple"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -26,7 +38,7 @@ jobs:
       - name: Bundle single exe with PyInstaller
         shell: pwsh
         run: |
-          pyinstaller --onefile --noconsole --name KeyHub `
+          pyinstaller --onefile --noconsole --name KeyHub --version-file version_info.txt `
             --add-data "key_manager;key_manager" `
             --add-data "templates;templates" `
             --add-data "static;static" `

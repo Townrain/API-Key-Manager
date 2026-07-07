@@ -3,8 +3,10 @@
 ; Data (config, logs, keys) stays within the chosen directory.
 
 #define MyAppName "KeyHub"
-#define MyAppVersion "1.0.0"
-#define MyAppPublisher "KeyHub"
+#define MyAppVersion GetFileVersion("dist\KeyHub.exe")
+#ifndef MyAppVersion
+  #define MyAppVersion "0.0.0"
+#endif
 #define MyAppPublisher "KeyHub"
 #define MyAppURL "https://github.com/Townrain/API-Key-Manager"
 #define MyAppExeName "KeyHub.exe"
