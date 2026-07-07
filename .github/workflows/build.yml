@@ -15,19 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # --- Python backend ---
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install Python dependencies
+      - name: Install dependencies
         run: pip install -r requirements.txt pyinstaller
 
-      - name: Bundle Python backend with PyInstaller
+      - name: Bundle single exe with PyInstaller
         shell: pwsh
         run: |
-          pyinstaller --onefile --name keyhub-backend `
+          pyinstaller --onefile --noconsole --name KeyHub `
             --add-data "key_manager;key_manager" `
             --add-data "templates;templates" `
             --add-data "static;static" `
@@ -54,66 +53,19 @@ jobs:
             --hidden-import uvicorn.protocols.websockets.auto `
             --hidden-import uvicorn.lifespan `
             --hidden-import uvicorn.lifespan.on `
+            --hidden-import clr `
+            --hidden-import webview.platforms.winforms `
+            --hidden-import pythonnet `
             web.py
 
-      # --- Node.js frontend ---
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: tauri-compare/package-lock.json
-
-      - name: Install frontend dependencies
-        working-directory: tauri-compare
-        run: npm ci
-
-      # --- Rust / Tauri ---
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache Rust dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            tauri-compare/src-tauri/target
-          key: ${{ runner.os }}-rust-${{ hashFiles('tauri-compare/src-tauri/Cargo.lock') }}
-
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli
-
-      # --- Build Tauri app ---
-      - name: Build Tauri app
-        working-directory: tauri-compare
-        run: cargo tauri build --no-bundle
-
-      # --- Copy backend exe next to app exe ---
-      - name: Bundle backend with app
-        shell: bash
-        run: |
-          cp dist/keyhub-backend.exe tauri-compare/src-tauri/target/release/
-          ls -la tauri-compare/src-tauri/target/release/*.exe
-
-      # --- Upload artifacts ---
-      - name: Upload desktop exe
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: keyhub-desktop-windows
-          path: tauri-compare/src-tauri/target/release/keyhub-desktop.exe
+          name: KeyHub-Windows
+          path: dist/KeyHub.exe
 
-      - name: Upload backend exe
-        uses: actions/upload-artifact@v4
-        with:
-          name: keyhub-backend-windows
-          path: tauri-compare/src-tauri/target/release/keyhub-backend.exe
-
-      # --- Create GitHub Release on tag push ---
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            tauri-compare/src-tauri/target/release/keyhub-desktop.exe
-            tauri-compare/src-tauri/target/release/keyhub-backend.exe
+          files: dist/KeyHub.exe
