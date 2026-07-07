@@ -94,7 +94,7 @@ async def rate_limit_middleware(request: Request, call_next):
 # Authentication
 # ---------------------------------------------------------------------------
 
-_AUTH_WHITELIST = {"/", "/docs", "/redoc", "/openapi.json", "/static/"}
+_AUTH_WHITELIST = {"/", "/docs", "/redoc", "/openapi.json", "/static/", "/assets/"}
 
 
 async def auth_middleware(request: Request, call_next):
