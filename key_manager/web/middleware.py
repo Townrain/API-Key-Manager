@@ -118,7 +118,7 @@ async def auth_middleware(request: Request, call_next):
 
     # Check whitelist (including static files)
     path = request.url.path
-    if path in _AUTH_WHITELIST or path.startswith("/static/"):
+    if path in _AUTH_WHITELIST or path.startswith("/static/") or path.startswith("/assets/"):
         return await call_next(request)
 
     auth_header = request.headers.get("authorization", "")
