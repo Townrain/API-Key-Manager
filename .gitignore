@@ -55,3 +55,7 @@ tauri-compare/src-tauri/target/
 
 # Claude temp files
 *claude-notify*
+
+
+# SSH keys
+data/id_ed25519*
