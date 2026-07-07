@@ -149,13 +149,8 @@ if _STATIC_DIR.is_dir():
 @app.get("/", include_in_schema=False)
 async def web_ui(request: Request):
     """Serve the web UI with API token injected."""
-    # Derive API token for frontend injection
-    api_token = ""
-    try:
-        from key_manager.storage import derive_api_token
-        api_token = derive_api_token(config)
-    except Exception:
-        pass
+    import os
+    api_token = config.get("auth", {}).get("api_key", "") or os.environ.get("KEY_MANAGER_API_KEY", "")
 
     if templates and (_TEMPLATES_DIR / "index.html").exists():
         return templates.TemplateResponse("index.html", {"request": request, "api_token": api_token})
