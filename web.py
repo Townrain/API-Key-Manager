@@ -24,6 +24,23 @@ if __name__ == "__main__":
     if sys.stdin is None:
         sys.stdin = open(os.devnull)
 
+    # --- Bootstrap: ensure data dirs and config exist ---
+    def _bootstrap():
+        from pathlib import Path
+        # Ensure ./data/ dirs
+        for d in ["data", "data/logs", "data/input"]:
+            Path(d).mkdir(parents=True, exist_ok=True)
+        # Ensure config.yaml exists
+        from key_manager.config import load_config
+        load_config()  # auto-creates config.yaml from bundled example
+
+    try:
+        _bootstrap()
+    except Exception as e:
+        import traceback
+        from pathlib import Path
+        Path("startup_error.log").write_text(f"Bootstrap failed: {e}\n{traceback.format_exc()}")
+        raise
     import argparse
 
     parser = argparse.ArgumentParser(description="API Key Manager")

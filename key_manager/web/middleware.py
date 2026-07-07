@@ -209,6 +209,20 @@ def setup_middleware(app: FastAPI, config: dict) -> None:
 
 def setup_error_handlers(app: FastAPI) -> None:
     """Register all error handlers on the given FastAPI app."""
+    import traceback
+
+    @app.exception_handler(Exception)
+    async def unhandled_exception_handler(request: Request, exc: Exception):
+        logger.error(f"Unhandled error on {request.method} {request.url.path}: {exc}")
+        logger.error(traceback.format_exc())
+        return JSONResponse(
+            status_code=500,
+            content=ErrorResponse(
+                error=ErrorCode.SYSTEM_INTERNAL_ERROR,
+                message=f"{type(exc).__name__}: {exc}",
+            ).model_dump(),
+        )
+
     app.exception_handler(RequestValidationError)(pydantic_validation_error_handler)
     app.exception_handler(KeyManagerError)(key_manager_error_handler)
     app.exception_handler(ValidationError)(validation_error_handler)
