@@ -546,7 +546,7 @@ Error message simplification is implemented in the `simplify_error()` function i
 
 ### Model List Source
 
-The system syncs model data from Cherry Studio, generating a `models_registry.py` file containing static model lists for each provider:
+The system syncs model data from OpenCode [models.dev](https://models.dev), generating a `models_registry.py` file (Chinese providers retain Cherry Studio data):
 
 ```python
 PROVIDER_MODELS = {
@@ -599,17 +599,19 @@ for i in range(0, len(models), batch_size):
 
 The system supports filtering models by type:
 
-| Type | Description | Filter Method |
-|------|-------------|---------------|
-| Vision Models | Support image input | `is_vision_model()` |
-| Tool Models | Support function calling | `is_tool_model()` |
-| Reasoning Models | Support chain of thought | `is_reasoning_model()` |
-| Web Search Models | Support web search | `is_websearch_model()` |
-| Free Models | Free quota | `is_free_model()` |
-| Embedding Models | Text embedding | `is_embedding_model()` |
-| Rerank Models | Search reranking | `is_rerank_model()` |
+| Type | Description | Filter Method | Source |
+|------|-------------|---------------|--------|
+| Vision Models | Support image input | `is_vision_model()` | models.dev |
+| Tool Models | Support function calling | `is_tool_model()` | models.dev |
+| Reasoning Models | Support chain of thought | `is_reasoning_model()` | models.dev |
 
-Capability data is synced from Cherry Studio, stored in `data/model_capabilities.json`.
+Capability data (vision / tooluse / reasoning) is synced from [models.dev](https://models.dev/api.json) using explicit boolean fields, stored in `data/model_capabilities.json`.
+
+### Model Capability Note
+
+> **v4.4**: Capability detection migrated from Cherry Studio regex to [OpenCode models.dev](https://models.dev) explicit fields.
+> Only three reliable capabilities: **vision** (`modalities.input`), **tooluse** (`tool_call`), **reasoning** (`reasoning`).
+> New script `scripts/extract_from_opencode.py`, CI `.github/workflows/sync-opencode-models.yml` daily sync.
 
 ## Project Structure
 ```
@@ -949,7 +951,7 @@ The same key may work on both platforms, and the system will return the first pr
 
 ### 5. Model List Timeliness
 
-Model lists are synced from Cherry Studio, updated once daily. Newly released models may need to wait for the next sync before they can be detected.
+Model lists are synced from [models.dev](https://models.dev), updated once daily. Newly released models may need to wait for the next sync before they can be detected.
 
 ## Expected Design Decisions (Security Review Notes)
 

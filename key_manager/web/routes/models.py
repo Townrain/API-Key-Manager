@@ -103,16 +103,8 @@ async def api_models(
             filtered = [m for m in models if detector.is_vision_model(m)]
         elif type_filter in ("tool", "tooluse"):
             filtered = [m for m in models if detector.is_tool_model(m)]
-        elif type_filter == "websearch":
-            filtered = [m for m in models if detector.is_websearch_model(m)]
         elif type_filter == "reasoning":
             filtered = [m for m in models if detector.is_reasoning_model(m)]
-        elif type_filter == "embedding":
-            filtered = [m for m in models if detector.is_embedding_model(m)]
-        elif type_filter == "rerank":
-            filtered = [m for m in models if detector.is_rerank_model(m)]
-        elif type_filter == "free":
-            filtered = [m for m in models if detector.is_free_model(m)]
     except Exception:
         pass
 

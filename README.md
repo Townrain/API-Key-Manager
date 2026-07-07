@@ -556,7 +556,7 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
 
 ### 模型列表来源
 
-系统从 Cherry Studio 同步模型数据，生成 `models_registry.py` 文件，包含每个服务商的静态模型列表：
+系统从 OpenCode [models.dev](https://models.dev) 同步模型数据，生成 `models_registry.py` 文件（中国区服务商保留 Cherry Studio 数据）：
 
 ```python
 PROVIDER_MODELS = {
@@ -609,17 +609,19 @@ for i in range(0, len(models), batch_size):
 
 系统支持按类型筛选模型：
 
-| 类型 | 说明 | 筛选方法 |
-|------|------|----------|
-| 视觉模型 | 支持图像输入 | `is_vision_model()` |
-| 工具模型 | 支持函数调用 | `is_tool_model()` |
-| 推理模型 | 支持思维链 | `is_reasoning_model()` |
-| 联网模型 | 支持网络搜索 | `is_websearch_model()` |
-| 免费模型 | 免费额度 | `is_free_model()` |
-| 嵌入模型 | 文本嵌入 | `is_embedding_model()` |
-| 重排模型 | 搜索重排 | `is_rerank_model()` |
+| 类型 | 说明 | 筛选方法 | 数据来源 |
+|------|------|----------|----------|
+| 视觉模型 | 支持图像输入 | `is_vision_model()` | models.dev |
+| 工具模型 | 支持函数调用 | `is_tool_model()` | models.dev |
+| 推理模型 | 支持思维链 | `is_reasoning_model()` | models.dev |
 
-能力数据从 Cherry Studio 同步，存储在 `data/model_capabilities.json` 中。
+能力数据（vision / tooluse / reasoning）从 [models.dev](https://models.dev/api.json) 同步，基于显式布尔字段，存储在 `data/model_capabilities.json` 中。
+
+### 模型能力说明
+
+> **v4.4**: 能力检测从 Cherry Studio 正则迁移到 [OpenCode models.dev](https://models.dev) 显式字段。
+> 仅保留三个可靠能力：**vision**（`modalities.input`）、**tooluse**（`tool_call`）、**reasoning**（`reasoning`）。
+> 新增 `scripts/extract_from_opencode.py`，CI `.github/workflows/sync-opencode-models.yml` 每日自动同步。
 
 ## 项目结构
 ```
@@ -958,7 +960,7 @@ const result = await client.checkSingle({ key: 'sk-xxx', provider: 'openai' });
 
 ### 5. 模型列表的时效性
 
-模型列表从 Cherry Studio 同步，每日更新一次。新发布的模型可能需要等待同步后才能被检测到。
+模型列表从 [models.dev](https://models.dev) 同步，每日更新一次。新发布的模型可能需要等待同步后才能被检测到。
 
 ## 预期的设计决策（安全审查说明）
 

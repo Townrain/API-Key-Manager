@@ -1,0 +1,41 @@
+name: Sync OpenCode models.dev Data
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: sync-opencode-models
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Extract from models.dev
+        run: python scripts/extract_from_opencode.py
+
+      - name: Check for changes
+        id: diff
+        run: |
+          git diff --quiet data/model_capabilities.json key_manager/providers/models_registry.py data/cache/ || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/model_capabilities.json key_manager/providers/models_registry.py data/cache/
+          git commit -m "chore: sync from models.dev $(date +%Y-%m-%d)"
+          git push

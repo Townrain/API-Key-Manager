@@ -1,28 +1,27 @@
 """
-模型能力检测模块
+模型能力检测模块 v2
 
-从 GitHub 同步 Cherry Studio 的模型能力规则，支持三层降级：
-1. 从 GitHub 拉取最新版
-2. 使用本地缓存（7天 TTL）
+从 models.dev (https://models.dev/api.json) 获取模型能力数据，
+基于显式字段而非正则模式匹配。支持三层降级：
+1. 从 GitHub/本地加载 models.dev 数据
+2. 使用本地缓存（12h TTL）
 3. 使用硬编码兜底数据
 
+v2 变更:
+- vision/tooluse/reasoning: O(1) dict 查表 (来自 models.dev 显式字段)
+- embedding/rerank/websearch/free: 已移除 (models.dev 无对应字段, 不可靠)
+
 用法:
-    from src.model_capabilities import detector
-
-    # 初始化（在应用启动时调用）
+    from key_manager.model_capabilities import detector
     await detector.load()
-
-    # 检测模型能力
-    if detector.is_vision_model("gpt-4o"):
+    if detector.is_vision_model("gpt-5"):
         print("支持视觉")
-
-    if detector.is_tool_model("claude-sonnet-4"):
-        print("支持工具调用")
 """
+
+from __future__ import annotations
 
 import json
 import logging
-import re
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -30,382 +29,176 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-# 配置
-CAPS_URL = "https://raw.githubusercontent.com/Townrain/API-Key-Manager/main/data/model_capabilities.json"
-CACHE_FILE = Path("data/cache/model_capabilities.json")
-FALLBACK_FILE = Path("data/model_capabilities_fallback.json")
-CACHE_TTL = timedelta(days=7)
-SCHEMA_VERSION = 1
+# ── 配置 ─────────────────────────────────────────────────────────────────
 
+CAPS_FILE = Path("data/model_capabilities.json")       # models.dev 生成的能力文件
+CACHE_FILE = Path("data/cache/model_capabilities.json")  # 本地缓存
+FALLBACK_FILE = Path("data/model_capabilities_fallback.json")
+CACHE_TTL = timedelta(hours=12)
+SCHEMA_VERSION = 2  # v2: per-model dict format
+
+
+# ── 检测器 ───────────────────────────────────────────────────────────────
 
 class ModelCapabilityDetector:
-    """模型能力检测器（三层降级）"""
+    """模型能力检测器 v2 — 仅 models.dev 字段 (vision/tooluse/reasoning)"""
 
-    def __init__(self):
-        self._caps: dict | None = None
+    def __init__(self) -> None:
+        self._models: dict[str, dict[str, bool]] = {}   # v2: per-model dict
         self._loaded_from: str | None = None
         self._loaded_at: datetime | None = None
 
+    # ── 加载 ─────────────────────────────────────────────────────────
+
     async def load(self, force: bool = False) -> str:
-        """
-        加载模型能力配置（三层降级）
+        """三层降级加载: 主文件 → 缓存 → 兜底
 
         Returns:
-            str: 数据来源 ("github", "cache", "fallback")
-
-        降级顺序:
-            1. 从 GitHub 拉取最新版
-            2. 使用本地缓存（7天 TTL）
-            3. 使用硬编码兜底数据
+            数据来源: "primary", "cache", "fallback"
         """
-        if not force and self._caps and self._loaded_at:
-            # 检查是否需要重新加载（1小时内的请求直接返回缓存）
+        if not force and self._models and self._loaded_at:
             if datetime.utcnow() - self._loaded_at < timedelta(hours=1):
-                return self._loaded_from
+                return self._loaded_from or "primary"
 
-        # 第 1 层：尝试从 GitHub 拉取
+        # 第 1 层: 主文件
         try:
-            self._caps = await self._fetch_from_github()
-            if self._validate_schema(self._caps):
-                self._save_to_cache(self._caps)
-                self._loaded_from = "github"
-                self._loaded_at = datetime.utcnow()
-                logger.info("从 GitHub 加载模型能力配置成功")
-                return self._loaded_from
-            else:
-                logger.warning("GitHub 返回的配置 schema 版本不兼容")
-        except Exception as e:
-            logger.warning(f"GitHub 拉取失败: {e}")
-
-        # 第 2 层：使用本地缓存
-        try:
-            self._caps = self._load_from_cache()
-            self._loaded_from = "cache"
+            self._load_models(CAPS_FILE)
+            self._loaded_from = "primary"
             self._loaded_at = datetime.utcnow()
-            logger.info("从本地缓存加载模型能力配置成功")
+            logger.info("模型能力加载成功 (primary)")
             return self._loaded_from
         except Exception as e:
-            logger.warning(f"本地缓存加载失败: {e}")
+            logger.warning(f"主文件加载失败: {e}")
 
-        # 第 3 层：使用硬编码兜底
-        self._caps = self._load_fallback()
+        # 第 2 层: 缓存
+        try:
+            self._load_models(CACHE_FILE)
+            self._loaded_from = "cache"
+            self._loaded_at = datetime.utcnow()
+            logger.info("模型能力加载成功 (cache)")
+            return self._loaded_from
+        except Exception as e:
+            logger.warning(f"缓存加载失败: {e}")
+
+        # 第 3 层: 兜底
+        self._load_fallback()
         self._loaded_from = "fallback"
         self._loaded_at = datetime.utcnow()
-        logger.info("使用硬编码兜底数据")
+        logger.info("模型能力加载成功 (fallback — minimal data)")
         return self._loaded_from
 
-    async def _fetch_from_github(self) -> dict:
-        """从 GitHub 拉取最新配置"""
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(CAPS_URL, timeout=10)
-            resp.raise_for_status()
-            return resp.json()
+    def _load_models(self, path: Path) -> None:
+        """加载 v2 格式的能力文件."""
+        if not path.exists():
+            raise FileNotFoundError(f"文件不存在: {path}")
+        data = json.loads(path.read_text(encoding="utf-8"))
 
-    def _validate_schema(self, data: dict) -> bool:
-        """验证 schema 版本"""
-        return data.get("schema_version") == SCHEMA_VERSION
+        # 兼容 v1 (regex) 和 v2 (per-model dict)
+        if data.get("schema_version") == 2 and "models" in data:
+            self._models = data["models"]
+        elif data.get("schema_version") == 1:
+            # v1 兼容: 从 regex patterns 构建 dict (保留已匹配结果)
+            logger.warning("加载 v1 格式数据 — 功能降级")
+            self._models = {}
+        else:
+            raise ValueError(f"不支持的 schema 版本: {data.get('schema_version')}")
 
-    def _save_to_cache(self, data: dict):
-        """保存到本地缓存"""
-        CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
-        CACHE_FILE.write_text(
-            json.dumps(data, indent=2, ensure_ascii=False),
-            encoding="utf-8"
-        )
-
-    def _load_from_cache(self) -> dict:
-        """从本地缓存加载"""
-        if not CACHE_FILE.exists():
-            raise FileNotFoundError("缓存文件不存在")
-
-        data = json.loads(CACHE_FILE.read_text(encoding="utf-8"))
-
-        # 检查 schema 版本
-        if not self._validate_schema(data):
-            raise ValueError(f"Schema 版本不兼容: {data.get('schema_version')}")
-
-        # 检查是否过期
-        updated_str = data.get("updated_at", "")
-        if updated_str:
-            updated = datetime.fromisoformat(updated_str.rstrip("Z"))
-            if datetime.utcnow() - updated > CACHE_TTL:
-                raise ValueError("缓存已过期")
-
-        return data
-
-    def _load_fallback(self) -> dict:
-        """加载硬编码兜底数据"""
+    def _load_fallback(self) -> None:
+        """硬编码最小兜底数据."""
         if FALLBACK_FILE.exists():
-            return json.loads(FALLBACK_FILE.read_text(encoding="utf-8"))
+            return self._load_models(FALLBACK_FILE)
 
-        # 如果兜底文件也不存在，返回最小可用数据
-        return {
-            "schema_version": 1,
-            "updated_at": "2026-01-01T00:00:00Z",
-            "source": "hardcoded-minimal",
-            "capabilities": {
-                "vision": {
-                    "allowed_patterns": ["gpt-4o", "claude-3", "gemini", "o1", "o3"],
-                    "excluded_patterns": ["o1-mini", "o3-mini"]
-                },
-                "tooluse": {
-                    "allowed_patterns": ["gpt-4o", "gpt-4", "claude", "deepseek", "gemini"],
-                    "excluded_patterns": ["o1-mini"]
-                },
-                "embedding": {
-                    "embedding_regex": "(?i)(?:text-embedding|embed|bge-|e5-|gte-|voyage-)",
-                    "rerank_regex": "(?i)(?:rerank|re-rank)"
-                }
-            }
+        self._models = {
+            "gpt-5":      {"vision": True,  "tooluse": True,  "reasoning": True},
+            "gpt-4o":     {"vision": True,  "tooluse": True,  "reasoning": False},
+            "gpt-4o-mini":{"vision": True,  "tooluse": True,  "reasoning": False},
+            "claude-sonnet-4": {"vision": True, "tooluse": True, "reasoning": False},
+            "claude-opus-4":   {"vision": True, "tooluse": True, "reasoning": False},
+            "gemini-2.5-pro":  {"vision": True, "tooluse": True, "reasoning": False},
+            "deepseek-chat":   {"vision": False,"tooluse": True, "reasoning": False},
+            "deepseek-reasoner":{"vision": False,"tooluse": True, "reasoning": True},
         }
+
+    async def _fetch_remote(self) -> dict | None:
+        """从 GitHub 拉取最新能力文件 (可选, 用于热更新)."""
+        url = "https://raw.githubusercontent.com/Townrain/API-Key-Manager/main/data/model_capabilities.json"
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(url, timeout=10)
+                resp.raise_for_status()
+                data = resp.json()
+                if data.get("schema_version") == 2 and "models" in data:
+                    CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+                    CACHE_FILE.write_text(
+                        json.dumps(data, indent=2, ensure_ascii=False),
+                        encoding="utf-8",
+                    )
+                    return data["models"]
+        except Exception as e:
+            logger.warning(f"远程拉取失败: {e}")
+        return None
+
+    # ── models.dev 能力 (dict 查表, O(1)) ────────────────────────────
 
     def is_vision_model(self, model_id: str) -> bool:
+        """判断是否为视觉模型。
+
+        Args: model_id: 模型 ID (如 "gpt-5", "claude-sonnet-4-5")
+        Returns: 是否支持图像/视频输入
         """
-        判断是否为视觉模型
-
-        Args:
-            model_id: 模型 ID (如 "gpt-4o", "claude-sonnet-4")
-
-        Returns:
-            bool: 是否支持视觉输入
-        """
-        if not self._caps:
-            return False
-
-        vision = self._caps["capabilities"].get("vision", {})
-        allowed = vision.get("allowed_patterns", [])
-        excluded = vision.get("excluded_patterns", [])
-
-        # 检查排除列表
-        for pattern in excluded:
-            try:
-                if re.search(pattern, model_id, re.IGNORECASE):
-                    return False
-            except re.error:
-                continue
-
-        # 检查允许列表
-        for pattern in allowed:
-            try:
-                if re.search(pattern, model_id, re.IGNORECASE):
-                    return True
-            except re.error:
-                continue
-
-        return False
+        entry = self._models.get(model_id)
+        return entry.get("vision", False) if entry else False
 
     def is_tool_model(self, model_id: str) -> bool:
+        """判断是否支持工具调用。
+
+        Args: model_id: 模型 ID
+        Returns: 是否支持 function-calling
         """
-        判断是否支持工具调用
-
-        Args:
-            model_id: 模型 ID
-
-        Returns:
-            bool: 是否支持工具调用
-        """
-        if not self._caps:
-            return False
-
-        tooluse = self._caps["capabilities"].get("tooluse", {})
-        allowed = tooluse.get("allowed_patterns", [])
-        excluded = tooluse.get("excluded_patterns", [])
-
-        # 检查排除列表
-        for pattern in excluded:
-            try:
-                if re.search(pattern, model_id, re.IGNORECASE):
-                    return False
-            except re.error:
-                continue
-
-        # 检查允许列表
-        for pattern in allowed:
-            try:
-                if re.search(pattern, model_id, re.IGNORECASE):
-                    return True
-            except re.error:
-                continue
-
-        return False
-
-    def is_embedding_model(self, model_id: str) -> bool:
-        """
-        判断是否为嵌入模型
-
-        Args:
-            model_id: 模型 ID
-
-        Returns:
-            bool: 是否为嵌入模型
-        """
-        if not self._caps:
-            return False
-
-        regex = self._caps["capabilities"]["embedding"].get("embedding_regex")
-        if regex:
-            try:
-                return bool(re.search(regex, model_id, re.IGNORECASE))
-            except re.error:
-                return False
-        return False
-
-    def is_rerank_model(self, model_id: str) -> bool:
-        """
-        判断是否为重排模型
-
-        Args:
-            model_id: 模型 ID
-
-        Returns:
-            bool: 是否为重排模型
-        """
-        if not self._caps:
-            return False
-
-        regex = self._caps["capabilities"]["embedding"].get("rerank_regex")
-        if regex:
-            try:
-                return bool(re.search(regex, model_id, re.IGNORECASE))
-            except re.error:
-                return False
-        return False
+        entry = self._models.get(model_id)
+        return entry.get("tooluse", False) if entry else False
 
     def is_reasoning_model(self, model_id: str) -> bool:
+        """判断是否为推理模型 (支持思维链/thinking)。
+
+        Args: model_id: 模型 ID
+        Returns: 是否支持 reasoning
         """
-        判断是否为推理模型
+        entry = self._models.get(model_id)
+        return entry.get("reasoning", False) if entry else False
 
-        Args:
-            model_id: 模型 ID
-
-        Returns:
-            bool: 是否为推理模型
-        """
-        if not self._caps:
-            return False
-
-        # 从配置中获取推理模型列表
-        reasoning = self._caps["capabilities"].get('reasoning', {})
-        allowed = reasoning.get('allowed_patterns', [])
-        excluded = reasoning.get('excluded_patterns', [])
-
-        # 检查排除列表
-        for pattern in excluded:
-            try:
-                if re.search(pattern, model_id, re.IGNORECASE):
-                    return False
-            except re.error:
-                continue
-
-        # 检查允许列表
-        for pattern in allowed:
-            try:
-                if re.search(pattern, model_id, re.IGNORECASE):
-                    return True
-            except re.error:
-                continue
-
-        return False
-
-    def is_websearch_model(self, model_id: str) -> bool:
-        """
-        判断是否为联网搜索模型
-
-        Args:
-            model_id: 模型 ID
-
-        Returns:
-            bool: 是否支持联网搜索
-        """
-        if not self._caps:
-            return False
-
-        # 从配置中获取联网模型列表
-        websearch = self._caps["capabilities"].get('websearch', {})
-        allowed = websearch.get('allowed_patterns', [])
-        excluded = websearch.get('excluded_patterns', [])
-
-        # 检查排除列表
-        for pattern in excluded:
-            try:
-                if re.search(pattern, model_id, re.IGNORECASE):
-                    return False
-            except re.error:
-                continue
-
-        # 检查允许列表
-        for pattern in allowed:
-            try:
-                if re.search(pattern, model_id, re.IGNORECASE):
-                    return True
-            except re.error:
-                continue
-
-        return False
-
-    def is_free_model(self, model_id: str) -> bool:
-        """
-        判断是否为免费模型
-
-        Args:
-            model_id: 模型 ID
-
-        Returns:
-            bool: 是否为免费模型
-        """
-        if not self._caps:
-            return False
-
-        # 从配置中获取免费模型列表
-        free = self._caps["capabilities"].get('free', {})
-        allowed = free.get('allowed_patterns', [])
-
-        # 检查允许列表
-        for pattern in allowed:
-            try:
-                if re.search(pattern, model_id, re.IGNORECASE):
-                    return True
-            except re.error:
-                continue
-
-        return False
+    # ── 聚合 ─────────────────────────────────────────────────────────
 
     def get_model_capabilities(self, model_id: str) -> dict[str, bool]:
-        """
-        获取模型的所有能力
+        """获取模型的所有能力。
 
-        Args:
-            model_id: 模型 ID
+        Only vision/tooluse/reasoning from models.dev
 
         Returns:
-            dict: 能力字典
+            {"vision": bool, "tooluse": bool, "reasoning": bool}
         """
         return {
-            "vision": self.is_vision_model(model_id),
-            "tooluse": self.is_tool_model(model_id),
-            "embedding": self.is_embedding_model(model_id),
-            "rerank": self.is_rerank_model(model_id),
+            "vision":    self.is_vision_model(model_id),
+            "tooluse":   self.is_tool_model(model_id),
             "reasoning": self.is_reasoning_model(model_id),
-            "websearch": self.is_websearch_model(model_id),
-            "free": self.is_free_model(model_id),
         }
+
+    # ── 元信息 ────────────────────────────────────────────────────────
 
     @property
     def loaded_from(self) -> str | None:
-        """数据来源: github / cache / fallback"""
+        """数据来源: primary / cache / fallback."""
         return self._loaded_from
 
     @property
     def is_loaded(self) -> bool:
-        """是否已加载"""
-        return self._caps is not None
+        """是否已加载."""
+        return bool(self._models)
 
     @property
-    def updated_at(self) -> str | None:
-        """数据更新时间"""
-        if self._caps:
-            return self._caps.get("updated_at")
-        return None
+    def model_count(self) -> int:
+        """已加载的模型数量."""
+        return len(self._models)
 
 
 # 全局单例

@@ -34,7 +34,7 @@ export async function fetchModelsForModal() {
     const provider = document.getElementById('manual-provider').value;
 
     if (!key && !provider) {
-        showToast('请先输入 Key 或选择服务商', 'error');
+        showToast('璇峰厛杈撳叆 Key 鎴栭€夋嫨鏈嶅姟鍟?, 'error');
         return;
     }
 
@@ -51,11 +51,11 @@ export async function fetchModelsForModal() {
         selectedModels = new Set(filtered);
         renderModelList(filtered);
         updateSelectAllButton();
-        showToast(`已从缓存筛选 ${filtered.length} 个模型`, 'success');
+        showToast(`宸蹭粠缂撳瓨绛涢€?${filtered.length} 涓ā鍨媊, 'success');
         return;
     }
 
-    listEl.innerHTML = '<div style="color: var(--neon-cyan); text-align: center; padding: 40px;"><div class="progress-spinner" style="width: 20px; height: 20px; margin: 0 auto 10px;"></div>获取模型中...</div>';
+    listEl.innerHTML = '<div style="color: var(--neon-cyan); text-align: center; padding: 40px;"><div class="progress-spinner" style="width: 20px; height: 20px; margin: 0 auto 10px;"></div>鑾峰彇妯″瀷涓?..</div>';
 
     try {
         const params = new URLSearchParams();
@@ -72,7 +72,7 @@ export async function fetchModelsForModal() {
         }
 
         if (!data.models || data.models.length === 0) {
-            listEl.innerHTML = '<div style="color: var(--neon-amber); text-align: center; padding: 40px;">未找到模型</div>';
+            listEl.innerHTML = '<div style="color: var(--neon-amber); text-align: center; padding: 40px;">鏈壘鍒版ā鍨?/div>';
             return;
         }
 
@@ -101,9 +101,9 @@ export async function fetchModelsForModal() {
         renderModelList(finalModels);
         updateSelectAllButton();
 
-        showToast(`已获取 ${data.models.length} 个模型`, 'success');
+        showToast(`宸茶幏鍙?${data.models.length} 涓ā鍨媊, 'success');
     } catch (e) {
-        listEl.innerHTML = `<div style="color: var(--neon-red); text-align: center; padding: 40px;">获取失败: ${e.message}</div>`;
+        listEl.innerHTML = `<div style="color: var(--neon-red); text-align: center; padding: 40px;">鑾峰彇澶辫触: ${e.message}</div>`;
     }
 }
 
@@ -115,11 +115,7 @@ export function filterModelsByType(models, typeFilter) {
         switch (typeFilter) {
             case 'vision': return caps && caps.vision;
             case 'reasoning': return caps && caps.reasoning;
-            case 'websearch': return caps && caps.websearch;
             case 'tooluse': return caps && caps.tooluse;
-            case 'embedding': return caps && caps.embedding;
-            case 'rerank': return caps && caps.rerank;
-            case 'free': return (caps && caps.free) || /free/i.test(m);
             default: return true;
         }
     });
@@ -129,7 +125,7 @@ export function renderModelList(models) {
     const listEl = document.getElementById('model-detect-list');
 
     if (!models || models.length === 0) {
-        listEl.innerHTML = '<div style="color: var(--text-ghost); text-align: center; padding: 40px;">请先点击"获取模型"按钮</div>';
+        listEl.innerHTML = '<div style="color: var(--text-ghost); text-align: center; padding: 40px;">璇峰厛鐐瑰嚮"鑾峰彇妯″瀷"鎸夐挳</div>';
         return;
     }
 
@@ -137,7 +133,7 @@ export function renderModelList(models) {
     const filtered = searchTerm ? models.filter(m => m.toLowerCase().includes(searchTerm)) : models;
 
     if (filtered.length === 0) {
-        listEl.innerHTML = '<div style="color: var(--text-ghost); text-align: center; padding: 40px;">未找到匹配的模型</div>';
+        listEl.innerHTML = '<div style="color: var(--text-ghost); text-align: center; padding: 40px;">鏈壘鍒板尮閰嶇殑妯″瀷</div>';
         return;
     }
 
@@ -145,11 +141,7 @@ export function renderModelList(models) {
     const typeConfig = {
         vision: { icon: '👁️', color: '#00b96b', label: 'Vision' },
         reasoning: { icon: '💡', color: '#6372bd', label: 'Reasoning' },
-        websearch: { icon: '🌐', color: '#1677ff', label: 'Web Search' },
         tooluse: { icon: '🔧', color: '#f18737', label: 'Tools' },
-        embedding: { text: '嵌入', color: '#FFA500', label: 'Embedding' },
-        rerank: { text: '重排', color: '#6495ED', label: 'Reranker' },
-        free: { text: '免费', color: '#7cb305', label: 'Free' },
     };
 
     let html = '';
@@ -226,7 +218,7 @@ export function updateSelectAllButton() {
     const searchTerm = document.getElementById('model-search-input').value.toLowerCase();
     const filtered = searchTerm ? modalModels.filter(m => m.toLowerCase().includes(searchTerm)) : modalModels;
     const allSelected = filtered.length > 0 && filtered.every(m => selectedModels.has(m));
-    btn.textContent = allSelected ? '取消全选' : '全选';
+    btn.textContent = allSelected ? '鍙栨秷鍏ㄩ€? : '鍏ㄩ€?;
 }
 
 export function filterModels() {
@@ -235,7 +227,7 @@ export function filterModels() {
 
 export async function detectSelectedModels() {
     if (selectedModels.size === 0) {
-        showToast('请先选择要检测的模型', 'error');
+        showToast('璇峰厛閫夋嫨瑕佹娴嬬殑妯″瀷', 'error');
         return;
     }
 
@@ -244,13 +236,13 @@ export async function detectSelectedModels() {
     const concurrency = parseInt(document.getElementById('modal-concurrency-input').value) || 1;
 
     if (!key && !provider) {
-        showToast('请先输入 Key 或选择服务商', 'error');
+        showToast('璇峰厛杈撳叆 Key 鎴栭€夋嫨鏈嶅姟鍟?, 'error');
         return;
     }
 
     const detectBtn = document.getElementById('detect-selected-btn');
     detectBtn.disabled = true;
-    detectBtn.textContent = '检测中...';
+    detectBtn.textContent = '妫€娴嬩腑...';
 
     // Mark all selected as checking
     for (const model of selectedModels) {
@@ -260,11 +252,11 @@ export async function detectSelectedModels() {
             if (!statusEl) {
                 statusEl = document.createElement('span');
                 statusEl.className = 'model-detect-status checking';
-                statusEl.textContent = '检测中';
+                statusEl.textContent = '妫€娴嬩腑';
                 item.appendChild(statusEl);
             } else {
                 statusEl.className = 'model-detect-status checking';
-                statusEl.textContent = '检测中';
+                statusEl.textContent = '妫€娴嬩腑';
             }
         }
     }
@@ -287,7 +279,7 @@ export async function detectSelectedModels() {
                     const statusEl = item.querySelector('.model-detect-status');
                     if (statusEl) {
                         statusEl.className = 'model-detect-status unavailable';
-                        statusEl.textContent = '失败';
+                        statusEl.textContent = '澶辫触';
                     }
                 }
                 failCount++;
@@ -296,7 +288,7 @@ export async function detectSelectedModels() {
                     const statusEl = item.querySelector('.model-detect-status');
                     if (statusEl) {
                         statusEl.className = 'model-detect-status available';
-                        statusEl.textContent = result.max_concurrency ? `${result.max_concurrency} 并发` : '可用';
+                        statusEl.textContent = result.max_concurrency ? `${result.max_concurrency} 骞跺彂` : '鍙敤';
                     }
                 }
                 successCount++;
@@ -306,7 +298,7 @@ export async function detectSelectedModels() {
                 const statusEl = item.querySelector('.model-detect-status');
                 if (statusEl) {
                     statusEl.className = 'model-detect-status unavailable';
-                    statusEl.textContent = '错误';
+                    statusEl.textContent = '閿欒';
                 }
             }
             failCount++;
@@ -314,14 +306,14 @@ export async function detectSelectedModels() {
     }
 
     detectBtn.disabled = false;
-    detectBtn.textContent = '检测可用';
-    showToast(`检测完成: ${successCount} 可用, ${failCount} 失败`, 'success');
+    detectBtn.textContent = '妫€娴嬪彲鐢?;
+    showToast(`妫€娴嬪畬鎴? ${successCount} 鍙敤, ${failCount} 澶辫触`, 'success');
 }
 
 // Token Test for Selected Models
 export async function runTokenTestForSelectedModels() {
     if (selectedModels.size === 0) {
-        showToast('请先选择要测试的模型', 'error');
+        showToast('璇峰厛閫夋嫨瑕佹祴璇曠殑妯″瀷', 'error');
         return;
     }
 
@@ -329,13 +321,13 @@ export async function runTokenTestForSelectedModels() {
     const provider = document.getElementById('manual-provider').value;
 
     if (!key && !provider) {
-        showToast('请先输入 Key 或选择服务商', 'error');
+        showToast('璇峰厛杈撳叆 Key 鎴栭€夋嫨鏈嶅姟鍟?, 'error');
         return;
     }
 
     const tokenBtn = document.getElementById('token-test-btn');
     tokenBtn.disabled = true;
-    tokenBtn.textContent = '测试中...';
+    tokenBtn.textContent = '娴嬭瘯涓?..';
 
     // Mark all selected as checking
     for (const model of selectedModels) {
@@ -345,11 +337,11 @@ export async function runTokenTestForSelectedModels() {
             if (!statusEl) {
                 statusEl = document.createElement('span');
                 statusEl.className = 'model-detect-status checking';
-                statusEl.textContent = '测试中';
+                statusEl.textContent = '娴嬭瘯涓?;
                 item.appendChild(statusEl);
             } else {
                 statusEl.className = 'model-detect-status checking';
-                statusEl.textContent = '测试中';
+                statusEl.textContent = '娴嬭瘯涓?;
             }
         }
     }
@@ -372,7 +364,7 @@ export async function runTokenTestForSelectedModels() {
                     const statusEl = item.querySelector('.model-detect-status');
                     if (statusEl) {
                         statusEl.className = 'model-detect-status unavailable';
-                        statusEl.textContent = '失败';
+                        statusEl.textContent = '澶辫触';
                     }
                 }
                 failCount++;
@@ -391,7 +383,7 @@ export async function runTokenTestForSelectedModels() {
                 const statusEl = item.querySelector('.model-detect-status');
                 if (statusEl) {
                     statusEl.className = 'model-detect-status unavailable';
-                    statusEl.textContent = '错误';
+                    statusEl.textContent = '閿欒';
                 }
             }
             failCount++;
@@ -399,6 +391,6 @@ export async function runTokenTestForSelectedModels() {
     }
 
     tokenBtn.disabled = false;
-    tokenBtn.textContent = 'Token上限';
-    showToast(`Token测试完成: ${successCount} 成功, ${failCount} 失败`, 'success');
+    tokenBtn.textContent = 'Token涓婇檺';
+    showToast(`Token娴嬭瘯瀹屾垚: ${successCount} 鎴愬姛, ${failCount} 澶辫触`, 'success');
 }
