@@ -19,7 +19,7 @@ from key_manager.api_models import (
 )
 from key_manager.errors import ErrorCode, ErrorResponse, ValidationError
 from key_manager.i18n import t
-from key_manager.logger import project_logger
+from key_manager.logger import get_project_logger
 from key_manager.parser import mask_key
 
 router = APIRouter(tags=["Keys"])
@@ -62,7 +62,7 @@ async def api_import(body: ImportRequest):
             }
             new += 1
         _app_mod._save_keys_data(data)
-        project_logger.log_web_action("import", f"batch: {new} new, {dupes} dupes")
+        get_project_logger().log_web_action("import", f"batch: {new} new, {dupes} dupes")
         return ImportResponse(new=new, duplicates=dupes, errors=errors)
 
     allowed_dirs = _app_mod.config.get("scan", {}).get("directories", ["./data/input"])
@@ -80,7 +80,7 @@ async def api_import(body: ImportRequest):
         batch=None,
         keys_file=_app_mod.config["storage"]["keys_file"],
     )
-    project_logger.log_web_action("import", f"{body.file or body.directory}: {new} new, {dupes} dupes")
+    get_project_logger().log_web_action("import", f"{body.file or body.directory}: {new} new, {dupes} dupes")
     return ImportResponse(new=new, duplicates=dupes, errors=errors)
 
 
@@ -143,7 +143,7 @@ async def api_import_upload(request: Request):
     except Exception:
         pass
 
-    project_logger.log_web_action("import_upload", f"{filename}: {new} new, {dupes} dupes")
+    get_project_logger().log_web_action("import_upload", f"{filename}: {new} new, {dupes} dupes")
     return ImportResponse(new=new, duplicates=dupes, errors=errors)
 
 
@@ -225,7 +225,7 @@ async def api_export_keys(
             max_concurrency=tests.get("max_concurrency"),
         ))
 
-    project_logger.log_web_action("export", f"{len(exported)} keys")
+    get_project_logger().log_web_action("export", f"{len(exported)} keys")
     return KeyExportResponse(keys=exported, total=len(exported))
 
 
@@ -240,7 +240,7 @@ async def api_clear_keys():
         cleared = len(data.get("keys", {}))
         data["keys"] = {}
         _app_mod._save_keys_data(data)
-    project_logger.log_web_action("clear", f"{cleared} keys removed")
+    get_project_logger().log_web_action("clear", f"{cleared} keys removed")
     return {"cleared": cleared}
 
 
@@ -268,7 +268,7 @@ async def api_get_full_key(request: Request):
     # Find the full key by matching key_masked
     for full_key, info in keys_dict.items():
         if info.get("key_masked") == key_masked:
-            project_logger.log_web_action("get_full_key", key_masked)
+            get_project_logger().log_web_action("get_full_key", key_masked)
             return {"key": full_key}
 
     raise ValidationError(
@@ -308,7 +308,7 @@ async def api_delete_key(request: Request):
     if key_to_delete:
         del keys_dict[key_to_delete]
         _app_mod._save_keys_data(data)
-        project_logger.log_web_action("delete", key_masked)
+        get_project_logger().log_web_action("delete", key_masked)
         return {"deleted": 1, "key_masked": key_masked}
 
     raise ValidationError(

@@ -52,34 +52,42 @@ class TestLogs:
     """GET /api/logs, GET /api/logs/operations, DELETE /api/logs."""
 
     def test_get_logs(self, client):
-        with patch("key_manager.web.routes.misc.project_logger") as mock_log:
-            mock_log.get_recent_logs.return_value = ["line1", "line2"]
+        mock_logger = MagicMock()
+        with patch("key_manager.web.routes.misc.get_project_logger") as mock_get:
+            mock_get.return_value = mock_logger
+            mock_logger.get_recent_logs.return_value = ["line1", "line2"]
             resp = client.get("/api/logs")
         assert resp.status_code == 200
         assert resp.json()["logs"] == ["line1", "line2"]
 
     def test_get_operations(self, client):
         ops = [{"timestamp": "2024-01-01T00:00:00", "operation": "check", "status": "ok"}]
-        with patch("key_manager.web.routes.misc.project_logger") as mock_log:
-            mock_log.get_operations_log.return_value = ops
+        mock_logger = MagicMock()
+        with patch("key_manager.web.routes.misc.get_project_logger") as mock_get:
+            mock_get.return_value = mock_logger
+            mock_logger.get_operations_log.return_value = ops
             resp = client.get("/api/logs/operations")
         assert resp.status_code == 200
         assert len(resp.json()["operations"]) == 1
 
     def test_clear_logs(self, client):
-        with patch("key_manager.web.routes.misc.project_logger") as mock_log:
-            mock_log.clear_main_log.return_value = {"success": True, "cleared": 1}
+        mock_logger = MagicMock()
+        with patch("key_manager.web.routes.misc.get_project_logger") as mock_get:
+            mock_get.return_value = mock_logger
+            mock_logger.clear_main_log.return_value = {"success": True, "cleared": 1}
             resp = client.delete("/api/logs")
         assert resp.status_code == 200
         assert resp.json()["success"] is True
-        mock_log.clear_main_log.assert_called_once_with(None)
+        mock_logger.clear_main_log.assert_called_once_with(None)
 
     def test_clear_logs_with_date(self, client):
-        with patch("key_manager.web.routes.misc.project_logger") as mock_log:
-            mock_log.clear_main_log.return_value = {"success": True, "cleared": 1}
+        mock_logger = MagicMock()
+        with patch("key_manager.web.routes.misc.get_project_logger") as mock_get:
+            mock_get.return_value = mock_logger
+            mock_logger.clear_main_log.return_value = {"success": True, "cleared": 1}
             resp = client.delete("/api/logs?date=2024-01-01")
         assert resp.status_code == 200
-        mock_log.clear_main_log.assert_called_once_with("2024-01-01")
+        mock_logger.clear_main_log.assert_called_once_with("2024-01-01")
 
 
 # ── PROGRESS ─────────────────────────────────────────────────────────────────

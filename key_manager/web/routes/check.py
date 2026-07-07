@@ -19,7 +19,7 @@ from key_manager.api_models import (
 from key_manager.detector import detect_by_prefix
 from key_manager.errors import ErrorCode, ValidationError
 from key_manager.i18n import t
-from key_manager.logger import project_logger
+from key_manager.logger import get_project_logger
 from key_manager.parser import mask_key
 from key_manager.providers import get_display_name
 from key_manager.providers.base import CheckResult, simplify_error
@@ -104,7 +104,7 @@ async def api_check(
         status_filter=s or None,
         progress_callback=_make_progress_callback(),
     )
-    project_logger.log_web_action("check_all", f"total={results.get('total', 0)}")
+    get_project_logger().log_web_action("check_all", f"total={results.get('total', 0)}")
 
     # Dispatch webhook
     task = asyncio.create_task(
@@ -215,7 +215,7 @@ async def api_check_single(body: CheckSingleRequest):
 
             status_str = "valid" if result.valid else ("invalid" if result.status_code in (401, 403) else "error")
 
-            project_logger.log_web_action("check_single", f"{mask_key(key)} {provider_name}: {status_str}")
+            get_project_logger().log_web_action("check_single", f"{mask_key(key)} {provider_name}: {status_str}")
 
             # Simplify error message for readability
             simplified_error = simplify_error(result.error, result.status_code) if result.error else None
@@ -242,7 +242,7 @@ async def api_check_single(body: CheckSingleRequest):
                         "created_at": timestamp,
                     }
                     _app_mod._save_keys_data(data)
-                    project_logger.log_web_action("auto_import", f"{mask_key(key)} from check")
+                    get_project_logger().log_web_action("auto_import", f"{mask_key(key)} from check")
                 else:
                     # Update existing key status
                     keys_dict[key]["status"] = status_str
@@ -253,7 +253,7 @@ async def api_check_single(body: CheckSingleRequest):
                     keys_dict[key]["checks"].append({"status": status_str, "provider": provider_name, "timestamp": timestamp})
                     _app_mod._save_keys_data(data)
             except Exception as e:
-                project_logger.main_logger.warning(f"Failed to auto-save checked key: {e}")
+                get_project_logger().main_logger.warning(f"Failed to auto-save checked key: {e}")
 
             return CheckSingleResponse(
                 key_masked=mask_key(key),
@@ -352,6 +352,6 @@ async def api_check_batch(body: CheckBatchRequest):
             summary.error += 1
 
     summary.total = len(batch_results)
-    project_logger.log_web_action("check_batch", f"total={summary.total}, valid={summary.valid}")
+    get_project_logger().log_web_action("check_batch", f"total={summary.total}, valid={summary.valid}")
 
     return CheckBatchResponse(results=results, summary=summary)

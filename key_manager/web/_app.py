@@ -14,7 +14,7 @@ from fastapi.templating import Jinja2Templates
 from key_manager.config import load_config
 from key_manager.detector import detect_provider  # noqa: F401
 from key_manager.errors import StorageError
-from key_manager.logger import project_logger
+from key_manager.logger import get_project_logger
 from key_manager.parser import (
     import_keys,  # noqa: F401
     validate_import_path,  # noqa: F401
@@ -110,7 +110,7 @@ def _load_keys_data(config_override: dict | None = None) -> dict:
     except StorageError:
         raise
     except Exception as e:
-        project_logger.main_logger.warning(f"Failed to load/decrypt keys data: {e}")
+        get_project_logger().main_logger.warning(f"Failed to load/decrypt keys data: {e}")
         # Return empty data structure for unexpected errors (e.g., corrupt JSON)
         return {"keys": {}}
 

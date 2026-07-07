@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import secrets
+import sys
 from pathlib import Path
 
 from cryptography.hazmat.primitives import hashes
@@ -12,6 +13,13 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from key_manager.errors import ErrorCode, StorageError
 
 logger = logging.getLogger(__name__)
+
+
+def _resolve_config_path() -> Path:
+    """Resolve config.yaml path — next to exe when frozen, CWD otherwise."""
+    if getattr(sys, "frozen", False):
+        return Path(sys.argv[0]).parent / "config.yaml"
+    return Path("config.yaml")
 
 
 _ITERATIONS = 600_000  # OWASP 2023 recommendation for PBKDF2-HMAC-SHA256
@@ -106,7 +114,7 @@ def _get_passphrase(config: dict | None = None) -> str:
     # 3. Read from config file on disk (catches passphrases saved by another caller)
     try:
         import yaml
-        config_path = Path("config.yaml")
+        config_path = _resolve_config_path()
         if config_path.exists():
             disk_cfg = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
             passphrase = disk_cfg.get("encryption", {}).get("passphrase")
@@ -126,7 +134,7 @@ def _get_passphrase(config: dict | None = None) -> str:
 
 def _save_passphrase_to_config(passphrase: str) -> None:
     """Append encryption passphrase to config.yaml without rewriting existing content."""
-    config_path = Path("config.yaml")
+    config_path = _resolve_config_path()
 
     try:
         existing = ""

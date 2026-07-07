@@ -51,23 +51,6 @@ if __name__ == "__main__":
         Path("startup_error.log").write_text(err)
         raise
 
-    # --- Bootstrap: ensure data dirs and config exist ---
-    def _bootstrap():
-        from pathlib import Path
-        # Ensure ./data/ dirs
-        for d in ["data", "data/logs", "data/input"]:
-            Path(d).mkdir(parents=True, exist_ok=True)
-        # Ensure config.yaml exists
-        from key_manager.config import load_config
-        load_config()  # auto-creates config.yaml from bundled example
-
-    try:
-        _bootstrap()
-    except Exception as e:
-        import traceback
-        from pathlib import Path
-        Path("startup_error.log").write_text(f"Bootstrap failed: {e}\n{traceback.format_exc()}")
-        raise
     import argparse
 
     parser = argparse.ArgumentParser(description="API Key Manager")
@@ -139,17 +122,28 @@ if __name__ == "__main__":
 <div class="spinner"></div>
 <div id="s">KeyHub is starting...</div>
 <script>
-var n=0;
-function p(){{
-  n++;
-  if(n>60){{document.getElementById('s').innerHTML='Server not responding.<br><small>Check startup_error.log</small>';return}}
-  document.getElementById('s').textContent='Starting server... ('+(n/2).toFixed(1)+'s)';
-  var i=new Image();
-  i.onload=i.onerror=function(){{location.href='{app_url}'}};
-  i.src='{app_url}/?'+n;
-  setTimeout(p,500);
+var startTime = Date.now();
+var attempt = 0;
+var maxRetries = 120;
+function poll() {{
+  if (attempt >= maxRetries) {{
+    document.getElementById('s').innerHTML = 'Still waiting...<br><button onclick="location.href=\\'{app_url}\\'" style="margin-top:12px;padding:8px 24px;background:#00f0ff;color:#0a0a0f;border:none;border-radius:4px;cursor:pointer;font:inherit">Retry</button>';
+    return;
+  }}
+  var elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  document.getElementById('s').textContent = 'Starting server... (' + elapsed + 's)';
+  fetch('{app_url}/?r=' + attempt)
+    .then(function(r) {{
+      if (r.ok || r.status >= 400) {{ location.href = '{app_url}'; }}
+      else {{ attempt++; setTimeout(poll, nextDelay()); }}
+    }})
+    .catch(function() {{ attempt++; setTimeout(poll, nextDelay()); }});
 }}
-p();
+function nextDelay() {{
+  var delays = [500, 500, 1000, 1000, 2000, 2000, 4000, 4000];
+  return attempt < delays.length ? delays[attempt] : 5000;
+}}
+poll();
 </script>
 </body></html>"""
 
@@ -157,12 +151,16 @@ p();
         try:
             import webview
         except ImportError:
-            import webbrowser
-            webbrowser.open(app_url)
-            print(f"pywebview not installed. Opened browser: {app_url}")
-            print("Install with: pip install pywebview")
-            input("Press Enter to exit...")
-            sys.exit(0)
+            ctypes.windll.user32.MessageBoxW(
+                0,
+                "WebView2 Runtime is required but not found.\n\n"
+                "Download it from:\n"
+                "https://go.microsoft.com/fwlink/p/?LinkId=2124703\n\n"
+                "After installing WebView2, restart KeyHub.",
+                "KeyHub - Missing Dependency",
+                0x30,
+            )
+            sys.exit(1)
 
         _log("opening pywebview window")
         window = webview.create_window(

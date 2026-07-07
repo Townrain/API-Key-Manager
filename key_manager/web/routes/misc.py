@@ -15,7 +15,7 @@ from key_manager.api_models import (
     ProxyResponse,
 )
 from key_manager.errors import ErrorCode, ValidationError
-from key_manager.logger import project_logger
+from key_manager.logger import get_project_logger
 from key_manager.proxy import get_proxy
 from key_manager.web.progress import _progress_tracker, _sse_progress_event_generator
 from key_manager.webhook import webhook_manager
@@ -53,14 +53,14 @@ async def api_proxy():
 @router.get("/api/logs", tags=["Logs"], response_model=LogsResponse)
 async def api_logs():
     """Get recent log entries."""
-    logs = project_logger.get_recent_logs()
+    logs = get_project_logger().get_recent_logs()
     return LogsResponse(logs=logs)  # Return strings directly for frontend compatibility
 
 
 @router.get("/api/logs/operations", tags=["Logs"], response_model=OperationsResponse)
 async def api_logs_operations():
     """Get recent operation log entries."""
-    operations = project_logger.get_operations_log()
+    operations = get_project_logger().get_operations_log()
     return OperationsResponse(operations=[OperationEntry(**entry) for entry in operations])
 
 
@@ -74,7 +74,7 @@ async def api_logs_clear(date: str = None):
     Returns:
         dict with success status and details
     """
-    result = project_logger.clear_main_log(date)
+    result = get_project_logger().clear_main_log(date)
     return result
 
 

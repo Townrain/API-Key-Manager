@@ -10,7 +10,7 @@ import key_manager.web._app as _app_mod
 from key_manager.api_models import TestSingleRequest, TestSingleResponse
 from key_manager.errors import ErrorCode, ValidationError
 from key_manager.i18n import t
-from key_manager.logger import project_logger
+from key_manager.logger import get_project_logger
 from key_manager.parser import mask_key
 from key_manager.proxy import get_proxy
 from key_manager.tester import run_test
@@ -40,7 +40,7 @@ async def api_test():
                 progress_callback=_make_progress_callback(),
             )
             _progress_tracker.done("done", results)
-            project_logger.log_web_action("test_all", f"tested={results.get('total_tested', 0)}")
+            get_project_logger().log_web_action("test_all", f"tested={results.get('total_tested', 0)}")
             await webhook_manager.dispatch(
                 WebhookEvent.BATCH_TEST_COMPLETED,
                 {"total_tested": results.get("total_tested", 0)},
@@ -128,7 +128,7 @@ async def api_test_single(body: TestSingleRequest):
         except Exception:
             pass
 
-    project_logger.log_web_action(
+    get_project_logger().log_web_action(
         "test_single",
         f"{mask_key(key)} {provider_name}: tokens={max_tokens}, concurrency={max_concurrency}",
     )

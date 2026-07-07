@@ -8,7 +8,7 @@ import key_manager.web._app as _app_mod
 from key_manager.api_models import BalanceRequest, BalanceResponse
 from key_manager.errors import ErrorCode, ValidationError
 from key_manager.i18n import t
-from key_manager.logger import project_logger
+from key_manager.logger import get_project_logger
 from key_manager.parser import mask_key
 from key_manager.proxy import get_proxy
 from key_manager.ssrf import get_allowed_domains, validate_custom_base_url
@@ -79,7 +79,7 @@ async def api_balance(body: BalanceRequest):
         else:
             error = "Provider does not support balance queries"
 
-        project_logger.log_web_action("balance", f"{mask_key(key)} {provider_name}: {balance_value}")
+        get_project_logger().log_web_action("balance", f"{mask_key(key)} {provider_name}: {balance_value}")
 
         return BalanceResponse(
             provider=provider_name,

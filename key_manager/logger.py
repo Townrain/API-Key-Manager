@@ -233,5 +233,12 @@ class ProjectLogger:
         return {"success": True, "date": date, "deleted_lines": lines_count}
 
 
-# Global logger instance
-project_logger = ProjectLogger()
+# Lazy singleton — defers directory creation to first get_project_logger() call
+_project_logger: "ProjectLogger | None" = None
+
+def get_project_logger() -> "ProjectLogger":
+    """Return the singleton ProjectLogger, creating it on first access."""
+    global _project_logger
+    if _project_logger is None:
+        _project_logger = ProjectLogger()
+    return _project_logger
