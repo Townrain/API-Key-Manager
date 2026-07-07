@@ -135,13 +135,16 @@ def mock_provider():
 def reset_environment():
     """Reset global state between tests."""
     import os
+    from pathlib import Path
     from key_manager.storage import clear_all_caches
     _RATE_LIMIT_STORE.clear()
     os.environ.pop("KEY_MANAGER_SECRET", None)
+    Path("config.yaml").unlink(missing_ok=True)
     clear_all_caches()
     yield
     _RATE_LIMIT_STORE.clear()
     os.environ.pop("KEY_MANAGER_SECRET", None)
+    Path("config.yaml").unlink(missing_ok=True)
     clear_all_caches()
 # ── Shared helpers (not fixtures, used by fixture factories) ────────────
 

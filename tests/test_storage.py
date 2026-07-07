@@ -31,10 +31,10 @@ def store(tmp_path):
 
 
 @pytest.fixture
-def encrypted_file(tmp_path):
-    from pathlib import Path
+def encrypted_file(tmp_path, monkeypatch):
     from key_manager.storage import clear_all_caches
-    Path("config.yaml").unlink(missing_ok=True)
+    # Isolate from global config.yaml — write to tmp_path only
+    monkeypatch.chdir(tmp_path)
     path = tmp_path / "keys.json"
     KeyStore(path).save(SAMPLE_DATA)
     clear_all_caches()
@@ -524,7 +524,6 @@ def test_resolve_config_path_frozen(monkeypatch):
     assert _resolve_config_path() == Path("config.yaml")
 
     # Frozen: next to exe
-    from pathlib import Path
     exe_path = Path("/opt/keyhub/KeyHub")
     monkeypatch.setattr(sys, "frozen", True, raising=False)
     monkeypatch.setattr(sys, "argv", [str(exe_path)])
