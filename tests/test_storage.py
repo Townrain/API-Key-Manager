@@ -30,10 +30,13 @@ def store(tmp_path):
 
 @pytest.fixture
 def encrypted_file(tmp_path):
+    from pathlib import Path
+    from key_manager.storage import clear_all_caches
+    Path("config.yaml").unlink(missing_ok=True)
     path = tmp_path / "keys.json"
     KeyStore(path).save(SAMPLE_DATA)
+    clear_all_caches()
     return path
-
 
 @pytest.fixture
 def plaintext_file(tmp_path):

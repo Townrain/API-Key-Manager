@@ -59,6 +59,20 @@ def clear_key_cache() -> None:
     _key_cache.clear()
 
 
+def clear_passphrase_cache() -> None:
+    """Clear the module-level passphrase cache.
+
+    Call this in test teardown to prevent cross-test pollution.
+    """
+    global _passphrase_cache
+    _passphrase_cache = None
+
+
+def clear_all_caches() -> None:
+    """Clear all module-level caches (keys + passphrase)."""
+    clear_key_cache()
+    clear_passphrase_cache()
+
 def derive_api_token(config: dict | None = None, salt: bytes = None) -> str:
     """Derive an API authentication token from the encryption passphrase.
 
@@ -212,7 +226,7 @@ class KeyStore:
         encrypted = self.config.get("storage", {}).get("encrypted", True) is True
         if not encrypted:
             logger.warning("rotate_key called but storage.encrypted=false — passphrase not used")
-        clear_key_cache()  # Invalidate stale cached keys from old passphrase
+        clear_key_cache()
         if not self.path.exists():
             raise StorageError(code=ErrorCode.STORAGE_READ_ERROR, message=f"File not found: {self.path}")
         raw = self.path.read_text(encoding="utf-8")
@@ -224,9 +238,11 @@ class KeyStore:
             data = self._decrypt(envelope)
         else:
             data = envelope
+        clear_passphrase_cache()  # clear old cache so _encrypt uses new passphrase
         self.config.setdefault("encryption", {})["passphrase"] = new_passphrase
         os.environ["KEY_MANAGER_SECRET"] = new_passphrase
         self.save(data)
+        clear_passphrase_cache()  # clean up: don't leak passphrase to caller's env
         return data
 
     def _encrypt(self, data: dict) -> dict:

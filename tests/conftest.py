@@ -133,11 +133,16 @@ def mock_provider():
 
 @pytest.fixture(autouse=True)
 def reset_environment():
-    """Reset rate limit store before each test."""
+    """Reset global state between tests."""
+    import os
+    from key_manager.storage import clear_all_caches
     _RATE_LIMIT_STORE.clear()
+    os.environ.pop("KEY_MANAGER_SECRET", None)
+    clear_all_caches()
     yield
     _RATE_LIMIT_STORE.clear()
-
+    os.environ.pop("KEY_MANAGER_SECRET", None)
+    clear_all_caches()
 # ── Shared helpers (not fixtures, used by fixture factories) ────────────
 
 def make_config(tmp_path, *, api_key="test-api-key-12345", concurrency=10, timeout=10):
