@@ -64,7 +64,15 @@ if __name__ == "__main__":
         server_thread.start()
 
         # --- Launch native window ---
-        import webview
+        try:
+            import webview
+        except ImportError:
+            import webbrowser
+            webbrowser.open(f"http://{host}:{port}")
+            print(f"pywebview not installed. Opened browser: http://{host}:{port}")
+            print("Install with: pip install pywebview")
+            input("Press Enter to exit...")
+            sys.exit(0)
 
         webview.create_window(
             title="KeyHub",
