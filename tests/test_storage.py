@@ -525,6 +525,9 @@ def test_resolve_config_path_frozen(monkeypatch):
 
     # Frozen: next to exe
     exe_path = Path("/opt/keyhub/KeyHub")
-    monkeypatch.setattr(sys, "frozen", True, raising=False)
-    monkeypatch.setattr(sys, "argv", [str(exe_path)])
-    assert _resolve_config_path() == exe_path.parent / "config.yaml"
+    try:
+        sys.frozen = True
+        sys.argv = [str(exe_path)]
+        assert _resolve_config_path() == exe_path.parent / "config.yaml"
+    finally:
+        del sys.frozen
