@@ -41,7 +41,7 @@ class OpenCodeGoProvider(ProviderBase):
                 resp = await client.post(
                     f"{self.get_base_url()}/v1/chat/completions",
                     headers=headers,
-                    json={"model": model_id, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5},
+                    json={"model": model_id, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 1},
                     timeout=10
                 )
                 if resp.status_code != 200:

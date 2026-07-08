@@ -58,7 +58,7 @@ async def _check_model_specific(
         resp = await client.post(
             chat_url,
             headers=headers,
-            json={"model": model_name, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
+            json={"model": model_name, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 1}
         )
         latency = (_time.monotonic() - start) * 1000
         if resp.status_code == 200:

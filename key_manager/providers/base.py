@@ -191,7 +191,7 @@ class ProviderBase(ABC):
                 resp = await client.post(
                     chat_url,
                     headers=headers,
-                    json={"model": model, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
+                    json={"model": model, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 1}
                 )
                 latency = (time.monotonic() - start) * 1000
 
@@ -373,7 +373,7 @@ class ProviderBase(ABC):
                 resp = await client.post(
                     f"{self.get_base_url()}/chat/completions",
                     headers=headers,
-                    json={"model": model, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
+                    json={"model": model, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 1}
                 )
                 latency = (time.monotonic() - start) * 1000
                 body = resp.text[:500]

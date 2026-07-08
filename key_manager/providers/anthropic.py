@@ -42,7 +42,7 @@ class AnthropicProvider(ProviderBase):
                 json={
                     "model": "claude-3-haiku-20240307",
                     "messages": [{"role": "user", "content": "hi"}],
-                    "max_tokens": 5
+                    "max_tokens": 1
                 }
             )
             latency = (time.monotonic() - start) * 1000

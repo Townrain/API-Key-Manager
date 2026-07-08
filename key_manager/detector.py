@@ -204,7 +204,7 @@ async def detect_provider(client, key: str, suspected_provider: str = None) -> s
                 client.post(
                     chat_url,
                     headers=headers,
-                    json={"model": model, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
+                    json={"model": model, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 1}
                 ),
                 timeout=5.0
             )
