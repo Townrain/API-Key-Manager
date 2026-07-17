@@ -38,7 +38,7 @@ jobs:
       - name: Bundle single exe with PyInstaller
         shell: pwsh
         run: |
-          pyinstaller --onefile --noconsole --name KeyHub --version-file version_info.txt `
+          pyinstaller --onefile --noconsole --name KeyHub --version-file version_info.txt --icon keyhub.ico `
             --add-data "key_manager;key_manager" `
             --add-data "templates;templates" `
             --add-data "static;static" `
