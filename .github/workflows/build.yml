@@ -74,28 +74,8 @@ jobs:
             web.py
 
       - name: Verify icon embedded in EXE
-        shell: pwsh
-        run: |
-          python -c "
-import struct;
-with open('dist/KeyHub.exe', 'rb') as f:
-    exe = f.read()
-# Find RT_GROUP_ICON (type 14) or RT_ICON (type 3) in PE resources
-# Simplest check: look for PNG signatures (our icon uses all-PNG frames)
-png_count = 0
-pos = 0
-while True:
-    pos = exe.find(b'\\x89PNG\\r\\n\\x1a\\n', pos)
-    if pos == -1: break
-    png_count += 1
-    pos += 1
-print(f'PNG signatures in EXE: {png_count}')
-if png_count >= 6:
-    print('Icon VERIFIED: all 6 PNG frames found')
-else:
-    print(f'WARNING: only {png_count} PNG frames (expected 6+)')
-    exit(1)
-"
+        run: python scripts/verify_icon.py
+
 
       - name: Build Installer with Inno Setup
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
