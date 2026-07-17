@@ -27,7 +27,7 @@
 
 ## 快速开始
 
-### 桌面应用（v5.0.2）
+### 桌面应用（v5.0.3）
 
 从 [Releases](https://github.com/Townrain/API-Key-Manager/releases) 下载 `KeyHub-Setup.exe`，选择任意目录安装即可。首次启动自动生成配置文件，所有数据保持在安装目录内。
 

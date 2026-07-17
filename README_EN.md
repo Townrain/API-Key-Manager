@@ -152,7 +152,7 @@ curl -X DELETE http://localhost:18001/api/providers/my-llm
 
 ## Quick Start
 
-### Desktop App (v5.0.2)
+### Desktop App (v5.0.3)
 
 Download `KeyHub-Setup.exe` from [Releases](https://github.com/Townrain/API-Key-Manager/releases), install to any directory. First launch auto-generates config; all data stays portable within the install directory.
 

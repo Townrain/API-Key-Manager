@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [5.0.3] - 2026-07-17
+
+### Fixed
+- Dual-page routing restored: web mode serves Jinja2 cyberpunk UI, desktop mode serves React SPA
+- EXE startup failure: added missing pythonnet.runtime and cryptography backend hidden imports to CI build
+- Sync workflow CI crash: removed data/cache/ from git tracking (ignored by .gitignore)
+- Batch import blank page: guarded Tauri-native APIs in React SPA to prevent crash in pywebview
+- Import upload missing auth: importUpload() now sends Bearer token header
+- Desktop icon mismatch: generated keyhub.ico from web cyan key design, added --icon to PyInstaller
+
+### Changed
+- web.py: sets KEYHUB_DESKTOP=1 env var in desktop mode for server-side routing
+- _app.py: env-var-driven dual-page routing with inline favicon injection for desktop
+- Rebuilt React SPA (static_tauri/) with Tauri API guards and auth fixes
+
+### Added
+- 5 new TestWebUI test cases covering web/desktop routing, API token, favicon, fallback paths
+
 ## [5.0.2] - 2026-07-08
 
 ### Added
