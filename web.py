@@ -52,6 +52,9 @@ if __name__ == "__main__":
 
     else:
         # ------ Desktop mode (pywebview) ------
+        import os
+        os.environ["KEYHUB_DESKTOP"] = "1"  # Signal _app.py to serve Tauri React SPA
+
         import ctypes
         import threading
 

@@ -392,3 +392,82 @@ class TestSignatureReport:
         result = body["results"][0]
         # "some-new-keyword-xyz" should be extracted as a new signature
         assert any("some-new-keyword" in s for s in result["new_signatures"])
+
+
+# ── WEB UI (root route dual-page logic) ────────────────────────────────────────
+
+
+class TestWebUI:
+    """GET / — dual-page routing: desktop (React SPA) vs web (Jinja2)."""
+
+    def test_web_mode_serves_jinja2_template(self, client, monkeypatch):
+        """Without KEYHUB_DESKTOP, serve the original cyberpunk Jinja2 UI."""
+        monkeypatch.delenv("KEYHUB_DESKTOP", raising=False)
+
+        resp = client.get("/")
+
+        assert resp.status_code == 200
+        html = resp.text
+        # Jinja2 template markers
+        assert "KeyHub // API 密钥管理中心" in html
+        assert 'class="bg-matrix"' in html
+        assert 'class="bg-grid"' in html
+        assert 'class="scanline"' in html
+        # API token injected
+        assert "window.__API_TOKEN__" in html
+        assert 'type="module" src="/static/js/init.js"' in html
+
+    def test_desktop_mode_serves_react_spa(self, client, monkeypatch):
+        """With KEYHUB_DESKTOP=1, serve the Tauri React SPA from static_tauri/."""
+        monkeypatch.setenv("KEYHUB_DESKTOP", "1")
+
+        resp = client.get("/")
+
+        assert resp.status_code == 200
+        html = resp.text
+        # React SPA markers
+        assert '<div id="root"></div>' in html
+        assert "<title>KeyHub</title>" in html
+        # API token injected
+        assert "window.__API_TOKEN__" in html
+        # React bundle loaded
+        assert "/assets/index-" in html
+
+    def test_desktop_mode_fallback_when_static_tauri_missing(self, client, monkeypatch):
+        """When KEYHUB_DESKTOP=1 but static_tauri/ missing, fallback to Jinja2."""
+        monkeypatch.setenv("KEYHUB_DESKTOP", "1")
+        # Patch _TAURI_DIR to a nonexistent path so tauri_index.exists() is False
+        import key_manager.web._app as _app_mod
+        monkeypatch.setattr(_app_mod, "_TAURI_DIR", _app_mod._TAURI_DIR / "__nonexistent__")
+
+        resp = client.get("/")
+
+        assert resp.status_code == 200
+        html = resp.text
+        # Should fall through to Jinja2 template
+        assert "KeyHub // API 密钥管理中心" in html
+        assert 'class="bg-matrix"' in html
+
+    def test_both_modes_inject_api_token(self, client, monkeypatch):
+        """Both web and desktop modes inject window.__API_TOKEN__."""
+        # Web mode
+        monkeypatch.delenv("KEYHUB_DESKTOP", raising=False)
+        resp = client.get("/")
+        assert "window.__API_TOKEN__" in resp.text
+
+        # Desktop mode
+        monkeypatch.setenv("KEYHUB_DESKTOP", "1")
+        resp = client.get("/")
+        assert "window.__API_TOKEN__" in resp.text
+
+    def test_keyhub_desktop_zero_behaves_like_web_mode(self, client, monkeypatch):
+        """KEYHUB_DESKTOP=0 should be treated same as unset (web mode)."""
+        monkeypatch.setenv("KEYHUB_DESKTOP", "0")
+
+        resp = client.get("/")
+
+        assert resp.status_code == 200
+        html = resp.text
+        # Should serve Jinja2 template, not React SPA
+        assert "KeyHub // API 密钥管理中心" in html
+        assert '<div id="root">' not in html

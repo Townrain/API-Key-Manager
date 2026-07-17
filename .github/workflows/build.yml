@@ -42,6 +42,7 @@ jobs:
             --add-data "key_manager;key_manager" `
             --add-data "templates;templates" `
             --add-data "static;static" `
+            --add-data "static_tauri;static_tauri" `
             --add-data "config.yaml.example;." `
             --hidden-import key_manager.web `
             --hidden-import key_manager.web._app `
@@ -68,6 +69,8 @@ jobs:
             --hidden-import clr `
             --hidden-import webview.platforms.winforms `
             --hidden-import pythonnet `
+            --hidden-import pythonnet.runtime `
+            --hidden-import cryptography.hazmat.backends.openssl.backend `
             web.py
 
       - name: Build Installer with Inno Setup

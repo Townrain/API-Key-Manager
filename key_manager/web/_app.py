@@ -154,7 +154,13 @@ else:
 
 @app.get("/", include_in_schema=False)
 async def web_ui(request: Request):
-    """Serve the web UI with API token injected."""
+    """Serve the web UI with API token injected.
+
+    Desktop mode (KEYHUB_DESKTOP=1): Tauri React SPA from static_tauri/
+    Web mode (default): Jinja2 cyberpunk UI from templates/
+    """
+    import os
+
     api_token = ""
     try:
         from key_manager.storage import derive_api_token
@@ -162,15 +168,19 @@ async def web_ui(request: Request):
     except Exception:
         pass
 
-    # Tauri React SPA (preferred)
-    tauri_index = _TAURI_DIR / "index.html"
-    if tauri_index.exists():
-        html = tauri_index.read_text(encoding="utf-8")
-        html = html.replace("<title>tauri-compare</title>", "<title>KeyHub</title>")
-        html = html.replace("</head>", f"<script>window.__API_TOKEN__ = '{api_token}';</script></head>")
-        return HTMLResponse(html)
+    is_desktop = os.environ.get("KEYHUB_DESKTOP") == "1"
 
-    # Legacy Jinja2 template fallback
+    # Desktop mode: serve Tauri React SPA
+    if is_desktop:
+        tauri_index = _TAURI_DIR / "index.html"
+        if tauri_index.exists():
+            html = tauri_index.read_text(encoding="utf-8")
+            html = html.replace("<title>tauri-compare</title>", "<title>KeyHub</title>")
+            html = html.replace("</head>", f"<script>window.__API_TOKEN__ = '{api_token}';</script></head>")
+            return HTMLResponse(html)
+        # Fallback: if static_tauri missing, serve Jinja2 template
+
+    # Web mode (default): serve original cyberpunk Jinja2 UI
     if templates and (_TEMPLATES_DIR / "index.html").exists():
         return templates.TemplateResponse("index.html", {"request": request, "api_token": api_token})
     if templates and (_TEMPLATES_DIR_ALT / "index.html").exists():
