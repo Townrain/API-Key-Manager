@@ -208,8 +208,8 @@ def setup_error_handlers(app: FastAPI) -> None:
         logger.error(traceback.format_exc())
         return JSONResponse(
             status_code=500,
-            content=ErrorResponse(
-                error=ErrorCode.SYSTEM_INTERNAL_ERROR,
+            content=ErrorResponse.error_factory(
+                code=ErrorCode.SYSTEM_INTERNAL_ERROR,
                 message=f"{type(exc).__name__}: {exc}",
             ).model_dump(),
         )
