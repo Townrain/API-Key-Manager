@@ -191,9 +191,9 @@ async def web_ui(request: Request):
 
     # Web mode (default): serve original cyberpunk Jinja2 UI
     if templates and (_TEMPLATES_DIR / "index.html").exists():
-        return templates.TemplateResponse("index.html", {"request": request, "api_token": api_token})
+        return templates.TemplateResponse(request, "index.html", {"api_token": api_token})
     if templates and (_TEMPLATES_DIR_ALT / "index.html").exists():
-        return templates.TemplateResponse("index.html", {"request": request, "api_token": api_token})
+        return templates.TemplateResponse(request, "index.html", {"api_token": api_token})
     return HTMLResponse("<html><body><h1>API Key Manager</h1><p>Web UI not found.</p></body></html>")
 
 # ---
