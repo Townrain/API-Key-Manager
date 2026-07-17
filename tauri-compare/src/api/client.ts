@@ -330,11 +330,16 @@ export const api = {
   // Import
   importSingleKey: (key: string) =>
     request<{ new: number; duplicates: number; errors: string[] }>('/api/import', { method: 'POST', body: JSON.stringify({ batch: [key] }) }),
+
   importUpload: async (filename: string, data: string) => {
     const formData = new FormData();
     const blob = new Blob([data], { type: 'application/json' });
     formData.append('file', blob, filename);
-    const res = await fetch(`${BASE_URL}/api/import/upload`, { method: 'POST', body: formData });
+    const headers: Record<string, string> = {};
+    if (_authToken) {
+      headers['Authorization'] = `Bearer ${_authToken}`;
+    }
+    const res = await fetch(`${BASE_URL}/api/import/upload`, { method: 'POST', headers, body: formData });
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
     return res.json();
   },

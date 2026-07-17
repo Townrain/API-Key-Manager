@@ -4,10 +4,20 @@ import {
   Cloud, ArrowRight, ExternalLink, BookOpen, RefreshCw,
   Plus, Pencil, Trash2, Wifi, AlertCircle, CheckCircle, XCircle, Loader2,
 } from 'lucide-react';
-import { open } from '@tauri-apps/plugin-shell';
 import type { Colors } from '../theme/tokens';
 import { api, type ProviderInfo, type ProviderDetail, type ProviderConfig, type ProviderCreateBody, type ProviderTestResult } from '../api/client';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+
+const isTauri = typeof window !== 'undefined' && '__TAURI__' in window;
+
+async function openUrl(url: string) {
+  if (isTauri) {
+    const { open } = await import('@tauri-apps/plugin-shell');
+    await open(url);
+  } else {
+    window.open(url, '_blank');
+  }
+}
 
 interface Props {
   colors: Colors;
@@ -358,7 +368,7 @@ export function ProvidersPage({ colors: c, visible, onNavigateToKeys }: Props) {
                     <div style={{ display: 'flex', marginBottom: 10 }}>
                       <div style={{ width: 80, fontSize: 12, fontWeight: 500, color: c.textTertiary }}>官网</div>
                       <span
-                        onClick={() => open(selectedDetail.website_url!)}
+                        onClick={() => openUrl(selectedDetail.website_url!)}
                         style={{ fontSize: 13, color: c.primary, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
                         onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
                         onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
@@ -372,7 +382,7 @@ export function ProvidersPage({ colors: c, visible, onNavigateToKeys }: Props) {
                     <div style={{ display: 'flex', marginBottom: 10 }}>
                       <div style={{ width: 80, fontSize: 12, fontWeight: 500, color: c.textTertiary }}>文档</div>
                       <span
-                        onClick={() => open(selectedDetail.docs_url!)}
+                        onClick={() => openUrl(selectedDetail.docs_url!)}
                         style={{ fontSize: 13, color: c.primary, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
                         onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
                         onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}

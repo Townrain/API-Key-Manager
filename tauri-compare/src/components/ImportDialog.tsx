@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileCheck, X, AlertCircle, CheckCircle, FileJson } from 'lucide-react';
-import { getCurrentWindow } from '@tauri-apps/api/window';
-import { invoke } from '@tauri-apps/api/core';
 import type { Colors } from '../theme/tokens';
 import { api } from '../api/client';
+
+const isTauri = typeof window !== 'undefined' && '__TAURI__' in window;
 
 interface Props {
   colors: Colors;
@@ -25,38 +25,47 @@ export function ImportDialog({ colors: c, open, onClose, onImportSuccess }: Prop
   const [errorMsg, setErrorMsg] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Tauri native file-drop events
+  // Tauri native file-drop events (only when running in Tauri)
   useEffect(() => {
-    if (!open) return;
+    if (!open || !isTauri) return;
 
     let unlisten: (() => void) | null = null;
 
-    getCurrentWindow().onDragDropEvent((event) => {
-      if (event.payload.type === 'over') {
-        setDragging(true);
-      } else if (event.payload.type === 'leave') {
-        setDragging(false);
-      } else if (event.payload.type === 'drop') {
-        setDragging(false);
-        const paths = event.payload.paths;
-        if (!paths.length) return;
+    (async () => {
+      try {
+        const { getCurrentWindow } = await import('@tauri-apps/api/window');
+        const { invoke } = await import('@tauri-apps/api/core');
 
-        const path = paths[0];
-        const name = path.split(/[/\\]/).pop() || path;
+        getCurrentWindow().onDragDropEvent((event) => {
+          if (event.payload.type === 'over') {
+            setDragging(true);
+          } else if (event.payload.type === 'leave') {
+            setDragging(false);
+          } else if (event.payload.type === 'drop') {
+            setDragging(false);
+            const paths = event.payload.paths;
+            if (!paths.length) return;
 
-        invoke<string>('read_file_text', { path })
-          .then((text) => {
-            setFileName(name);
-            setFileText(text);
-            setStage('select');
-            setErrorMsg('');
-          })
-          .catch((err: any) => {
-            setErrorMsg('无法读取文件: ' + (err.message || err));
-            setStage('error');
-          });
+            const path = paths[0];
+            const name = path.split(/[/\\]/).pop() || path;
+
+            invoke<string>('read_file_text', { path })
+              .then((text) => {
+                setFileName(name);
+                setFileText(text);
+                setStage('select');
+                setErrorMsg('');
+              })
+              .catch((err: any) => {
+                setErrorMsg('无法读取文件: ' + (err.message || err));
+                setStage('error');
+              });
+          }
+        }).then(fn => { unlisten = fn; });
+      } catch {
+        // Tauri APIs not available (running in web/pywebview context)
       }
-    }).then(fn => { unlisten = fn; });
+    })();
 
     return () => { unlisten?.(); };
   }, [open]);
