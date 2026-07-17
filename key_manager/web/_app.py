@@ -176,6 +176,15 @@ async def web_ui(request: Request):
         if tauri_index.exists():
             html = tauri_index.read_text(encoding="utf-8")
             html = html.replace("<title>tauri-compare</title>", "<title>KeyHub</title>")
+            # Replace external favicon with inline key icon (same as web UI)
+            key_icon = ("data:image/svg+xml,"
+                        "<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27>"
+                        "<path d=%27M15 7a2 2 0 0 1 2 2m4 0a6 6 0 0 1-7.74 5.74L11 17H9v2H7v2"
+                        "H4a1 1 0 0 1-1-1v-2.59a1 1 0 0 1 .29-.71l5.96-5.96A6 6 0 1 1 21 9z%27"
+                        " fill=%27none%27 stroke=%27%2300f0ff%27 stroke-width=%272%27"
+                        " stroke-linecap=%27round%27 stroke-linejoin=%27round%27/></svg>")
+            html = html.replace('<link rel="icon" type="image/svg+xml" href="/favicon.svg" />',
+                                 f'<link rel="icon" href="{key_icon}">')
             html = html.replace("</head>", f"<script>window.__API_TOKEN__ = '{api_token}';</script></head>")
             return HTMLResponse(html)
         # Fallback: if static_tauri missing, serve Jinja2 template
