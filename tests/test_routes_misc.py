@@ -432,6 +432,9 @@ class TestWebUI:
         assert "window.__API_TOKEN__" in html
         # React bundle loaded
         assert "/assets/index-" in html
+        # Favicon matches web UI (cyan key icon)
+        assert "data:image/svg+xml" in html
+        assert "%2300f0ff" in html
 
     def test_desktop_mode_fallback_when_static_tauri_missing(self, client, monkeypatch):
         """When KEYHUB_DESKTOP=1 but static_tauri/ missing, fallback to Jinja2."""
