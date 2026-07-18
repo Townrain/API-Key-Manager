@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-17T09:05:29.412419+00:00",
+  "updated_at": "2026-07-18T04:49:31.330911+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "step-3.7-flash": {
@@ -58,6 +58,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "xiaomi/mimo-v2.5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "stepfun/step-3.7-flash": {
       "vision": true,
       "tooluse": true,
@@ -80,6 +85,11 @@
     },
     "moonshotai/kimi-k2.6": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek/deepseek-v4-flash": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -797,11 +807,6 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
-    },
-    "deepseek/deepseek-v4-flash": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
     },
     "deepseek/deepseek-chat": {
       "vision": false,
@@ -2068,11 +2073,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "xiaomi/mimo-v2.5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "xiaomi/mimo-v2-flash-thinking": {
       "vision": false,
       "tooluse": false,
@@ -3153,18 +3153,8 @@
       "tooluse": true,
       "reasoning": true
     },
-    "k2p5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "k2p7": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "kimi-k2-thinking": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -3174,11 +3164,6 @@
       "reasoning": true
     },
     "k3": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "k2p6": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -5033,6 +5018,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "kimi-k2-thinking": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen3-next-80b-a3b-thinking": {
       "vision": false,
       "tooluse": true,
@@ -6174,6 +6164,11 @@
       "reasoning": false
     },
     "openai-gpt-56-luna": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "inkling": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -7697,11 +7692,6 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
-    },
-    "inkling": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "Qwen/Qwen3-Next-80B-A3B-Thinking-fast": {
       "vision": false,
@@ -9573,6 +9563,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "thinkingmachines/inkling": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "tencent/hy3": {
       "vision": false,
       "tooluse": true,
@@ -9775,11 +9770,6 @@
     },
     "nvidia/Nemotron-120B-A12B": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "thinkingmachines/inkling": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -10086,6 +10076,11 @@
     "deepcogito/cogito-v2-1-671b": {
       "vision": false,
       "tooluse": false,
+      "reasoning": true
+    },
+    "thinkingmachines/Inkling": {
+      "vision": true,
+      "tooluse": true,
       "reasoning": true
     },
     "xai/grok-4.20-reasoning-beta": {
