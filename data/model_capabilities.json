@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-18T04:49:31.330911+00:00",
+  "updated_at": "2026-07-19T05:23:02.582484+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "step-3.7-flash": {
@@ -3229,6 +3229,11 @@
       "reasoning": true
     },
     "moonshot/kimi-k2.7-code": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "moonshot/kimi-k3": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -10230,16 +10235,6 @@
     },
     "meta/llama-3.1-70b": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "meta/llama-3.2-11b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "meta/llama-3.2-90b": {
-      "vision": true,
       "tooluse": true,
       "reasoning": false
     },
