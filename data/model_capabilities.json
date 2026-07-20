@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-19T05:23:02.582484+00:00",
+  "updated_at": "2026-07-20T05:40:38.439486+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "step-3.7-flash": {
@@ -3153,7 +3153,7 @@
       "tooluse": true,
       "reasoning": true
     },
-    "k2p7": {
+    "kimi-for-coding": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -9543,11 +9543,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "meta-llama/llama-3.3-70b-instruct:free": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "aion-labs/aion-3.0": {
       "vision": false,
       "tooluse": true,
@@ -9592,16 +9587,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "qwen/qwen3-next-80b-a3b-instruct:free": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "qwen/qwen3-coder:free": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
     },
     "google/gemini-3.1-flash-lite-image": {
       "vision": true,
