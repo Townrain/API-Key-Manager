@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-20T05:40:38.439486+00:00",
+  "updated_at": "2026-07-21T05:21:23.928794+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "step-3.7-flash": {
@@ -7128,6 +7128,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen3.8-max-preview": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "mistral-large-3:675b": {
       "vision": true,
       "tooluse": true,
@@ -9568,6 +9573,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "meituan/longcat-2.0": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "tencent/hy3": {
       "vision": false,
       "tooluse": true,
@@ -11399,6 +11409,11 @@
       "reasoning": true
     },
     "moonshotai/kimi-k2.7-code-free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "moonshotai/kimi-k3-free": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
