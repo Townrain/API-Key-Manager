@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-21T05:21:23.928794+00:00",
+  "updated_at": "2026-07-22T05:20:31.766289+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "step-3.7-flash": {
@@ -4958,6 +4958,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "gemini-3.6-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "glm-4.5": {
       "vision": false,
       "tooluse": true,
@@ -5035,6 +5040,11 @@
     },
     "glm-4.5-air": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemini-3.5-flash-lite": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -6173,6 +6183,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen3-6-35b-a3b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "inkling": {
       "vision": true,
       "tooluse": true,
@@ -6184,6 +6199,11 @@
       "reasoning": true
     },
     "claude-opus-4-8-fast": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemini-3-5-flash-lite": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -6309,6 +6329,11 @@
       "reasoning": true
     },
     "openai-gpt-53-codex": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemini-3-6-flash": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -6803,6 +6828,56 @@
       "tooluse": true,
       "reasoning": true
     },
+    "cline-pass/mimo-v2.5-pro": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "cline-pass/kimi-k2.7-code": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "cline-pass/mimo-v2.5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "cline-pass/deepseek-v4-flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "cline-pass/kimi-k2.6": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "cline-pass/qwen3.7-plus": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "cline-pass/deepseek-v4-pro": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "cline-pass/qwen3.7-max": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "cline-pass/glm-5.2": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "cline-pass/minimax-m3": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "gemma-4-31b": {
       "vision": true,
       "tooluse": true,
@@ -7285,6 +7360,11 @@
     },
     "gemini-3-pro": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "laguna-s-2.1-free": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -8608,6 +8688,31 @@
       "tooluse": true,
       "reasoning": true
     },
+    "minimax-m2.5-230b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemma4-26b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "qwen3.6-35b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "mistral4-119b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "kimi-k2.7-code-1100b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "z-ai/glm-4.5": {
       "vision": false,
       "tooluse": true,
@@ -9583,11 +9688,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "tencent/hy3:free": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "anthropic/claude-opus-4.8-fast": {
       "vision": true,
       "tooluse": true,
@@ -9616,6 +9716,16 @@
     "google/gemini-3.1-flash-image": {
       "vision": true,
       "tooluse": false,
+      "reasoning": true
+    },
+    "google/gemini-3.6-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "google/gemini-3.5-flash-lite": {
+      "vision": true,
+      "tooluse": true,
       "reasoning": true
     },
     "google/gemma-4-26b-a4b-it:free": {
@@ -9658,7 +9768,17 @@
       "tooluse": true,
       "reasoning": true
     },
+    "poolside/laguna-s-2.1:free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "poolside/laguna-xs-2.1": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "poolside/laguna-s-2.1": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -10638,6 +10758,16 @@
       "tooluse": false,
       "reasoning": true
     },
+    "qwen3-coder-next-fp8": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "qwen3-coder-next-fp8-1m": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
     "qwen/qwen3.6-27b-fp8": {
       "vision": true,
       "tooluse": true,
@@ -10652,16 +10782,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "qwen/qwen3-coder-next-fp8": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "qwen/qwen3-coder-next-fp8-1m": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
     },
     "google/gemma-4-31b-it-fp8": {
       "vision": true,
