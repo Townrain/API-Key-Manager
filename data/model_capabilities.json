@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-22T05:20:31.766289+00:00",
+  "updated_at": "2026-07-23T05:26:00.780715+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "step-3.7-flash": {
@@ -3478,6 +3478,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "bailian/qwen3.7-max": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "gemini-3-pro-image": {
       "vision": true,
       "tooluse": false,
@@ -3503,12 +3508,22 @@
       "tooluse": true,
       "reasoning": true
     },
+    "gemini-3.6-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "claude-opus-4-8@default": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
     },
     "claude-opus-4-1@20250805": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemini-3.5-flash-lite": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -4958,11 +4973,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "gemini-3.6-flash": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "glm-4.5": {
       "vision": false,
       "tooluse": true,
@@ -5040,11 +5050,6 @@
     },
     "glm-4.5-air": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "gemini-3.5-flash-lite": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -6184,7 +6189,7 @@
       "reasoning": true
     },
     "qwen3-6-35b-a3b": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -6843,6 +6848,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "cline-pass/kimi-k3": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "cline-pass/deepseek-v4-flash": {
       "vision": false,
       "tooluse": true,
@@ -6885,6 +6895,76 @@
     },
     "zai-glm-4.7": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nemotron-3-ultra-550b-a55b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "kimi-k2-7-code:free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nemotron-3-nano-30b-a3b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-5-6-luna": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nemotron-3-super-120b-a12b:free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "mimo-v2-5:free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-4-7-flash:free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemini-2-5-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-5-6-sol": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-5-6-terra": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemini-3-1-flash-lite": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemini-2-5-flash-lite": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nemotron-3-super-120b-a12b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "kimi-k2-6:free": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -6987,11 +7067,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "nemotron-3-super-120b-a12b": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
     },
     "claude-opus4-8": {
       "vision": true,
@@ -7728,20 +7803,10 @@
       "tooluse": true,
       "reasoning": true
     },
-    "gemini-2-5-flash": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "meta-llama-3-3-70b-instruct": {
       "vision": false,
       "tooluse": true,
       "reasoning": false
-    },
-    "gemini-3-1-flash-lite": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "gpt-5-1": {
       "vision": true,
@@ -10580,6 +10645,11 @@
     },
     "openai/gpt-5.1-instant": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "poolside/laguna-s-2.1-free": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
