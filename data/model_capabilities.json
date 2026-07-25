@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-24T05:21:13.501379+00:00",
+  "updated_at": "2026-07-25T05:15:59.835365+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -1563,6 +1563,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "zai-org/GLM-5.2-Fast": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "zai-org/GLM-4.7": {
       "vision": false,
       "tooluse": true,
@@ -2046,6 +2051,11 @@
     "deep-research-preview-04-2026": {
       "vision": true,
       "tooluse": true,
+      "reasoning": true
+    },
+    "gemini-3.1-flash-tts-preview": {
+      "vision": false,
+      "tooluse": false,
       "reasoning": true
     },
     "gemini-flash-latest": {
@@ -4145,8 +4155,8 @@
     },
     "gpt-5-chat-latest": {
       "vision": true,
-      "tooluse": false,
-      "reasoning": true
+      "tooluse": true,
+      "reasoning": false
     },
     "gpt-4o-search-preview": {
       "vision": true,
@@ -4393,6 +4403,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "claude-opus-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "gpt-4": {
       "vision": false,
       "tooluse": true,
@@ -4636,7 +4651,7 @@
     "gpt-5-codex": {
       "vision": true,
       "tooluse": true,
-      "reasoning": true
+      "reasoning": false
     },
     "minimax-m2.1-free": {
       "vision": false,
@@ -5693,6 +5708,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen/qwen3.6-27b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "mistral-medium-3.5": {
       "vision": true,
       "tooluse": true,
@@ -6423,6 +6443,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "happyhorse-1.1-i2v": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": false
+    },
+    "happyhorse-1.1-r2v": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": false
+    },
     "gpt-chat-latest": {
       "vision": true,
       "tooluse": true,
@@ -6978,7 +7008,7 @@
       "tooluse": true,
       "reasoning": true
     },
-    "claude-opus-4-7-fast": {
+    "claude-opus-5-fast": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -7009,6 +7039,11 @@
       "reasoning": true
     },
     "openai-gpt-52-codex": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "seed-2-1-turbo": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -7493,6 +7528,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "claude-opus-5@default": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "claude-haiku-4-5@20251001": {
       "vision": true,
       "tooluse": true,
@@ -7512,11 +7552,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "claude-3-5-haiku@20241022": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
     },
     "claude-opus-4-5@20251101": {
       "vision": true,
@@ -8418,6 +8453,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "jp.anthropic.claude-opus-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "global.anthropic.claude-haiku-4-5-20251001-v1:0": {
       "vision": true,
       "tooluse": true,
@@ -8583,6 +8623,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "us.anthropic.claude-opus-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "anthropic.claude-opus-4-5-20251101-v1:0": {
       "vision": true,
       "tooluse": true,
@@ -8603,6 +8648,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "global.anthropic.claude-opus-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "minimax.minimax-m2.5": {
       "vision": false,
       "tooluse": true,
@@ -8614,6 +8664,11 @@
       "reasoning": false
     },
     "anthropic.claude-opus-4-8": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "eu.anthropic.claude-opus-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -8632,6 +8687,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "anthropic.claude-opus-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "xai.grok-4.3": {
       "vision": true,
@@ -8728,6 +8788,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "au.anthropic.claude-opus-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "amazon.nova-2-lite-v1:0": {
       "vision": true,
       "tooluse": true,
@@ -8784,6 +8849,11 @@
       "reasoning": true
     },
     "kimi-for-coding-highspeed": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "k3-256k": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -8985,11 +9055,6 @@
     },
     "qwen/qwen3-next-80b-a3b-thinking": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "qwen/qwen3.6-27b": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -10463,6 +10528,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "anthropic/claude-opus-5-fast": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "anthropic/claude-opus-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "openai/gpt-realtime-2.1": {
       "vision": false,
       "tooluse": false,
@@ -11438,17 +11513,7 @@
       "tooluse": false,
       "reasoning": false
     },
-    "o4-mini-deep-research": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "gpt-realtime-2.1": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "o3-deep-research": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
