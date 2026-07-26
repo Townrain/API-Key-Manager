@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-25T05:15:59.835365+00:00",
+  "updated_at": "2026-07-26T05:33:03.124155+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -614,6 +614,11 @@
       "reasoning": true
     },
     "anthropic/claude-sonnet-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "anthropic/claude-opus-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -6463,53 +6468,18 @@
       "tooluse": true,
       "reasoning": false
     },
-    "llama-3.2-11b-vision-instruct": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "o1-mini": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "cohere-command-a": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
-    },
-    "meta-llama-3.1-70b-instruct": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "meta-llama-3.1-405b-instruct": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
     },
     "codestral-2501": {
       "vision": false,
       "tooluse": true,
       "reasoning": false
     },
-    "cohere-command-r-plus-08-2024": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "phi-4-mini": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "meta-llama-3.1-8b-instruct": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "llama-3.2-90b-vision-instruct": {
-      "vision": true,
       "tooluse": true,
       "reasoning": false
     },
@@ -6523,20 +6493,10 @@
       "tooluse": true,
       "reasoning": false
     },
-    "gpt-4-32k": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "cohere-embed-v-4-0": {
       "vision": true,
       "tooluse": false,
       "reasoning": false
-    },
-    "gpt-5.2-chat": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "phi-4-mini-reasoning": {
       "vision": false,
@@ -6547,16 +6507,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "deepseek-r1-0528": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "gpt-5.1-chat": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "phi-4-reasoning": {
       "vision": false,
@@ -6578,11 +6528,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "cohere-command-r-08-2024": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "model-router": {
       "vision": true,
       "tooluse": true,
@@ -6598,17 +6543,7 @@
       "tooluse": false,
       "reasoning": false
     },
-    "gpt-5-chat": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": true
-    },
     "codex-mini": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "deepseek-v3.1": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -7497,11 +7432,6 @@
       "vision": true,
       "tooluse": false,
       "reasoning": false
-    },
-    "gpt-5.3-chat": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "gpt-image-1": {
       "vision": true,
@@ -10533,11 +10463,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "anthropic/claude-opus-5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "openai/gpt-realtime-2.1": {
       "vision": false,
       "tooluse": false,
@@ -10609,6 +10534,11 @@
       "reasoning": false
     },
     "deepseek-r1-distill-qwen-1-5b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek-r1-0528": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -11292,6 +11222,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "deepseek-v3.1": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
     },
     "doubao-1.5-vision-pro": {
       "vision": true,
