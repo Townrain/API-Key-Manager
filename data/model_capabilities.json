@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-26T05:33:03.124155+00:00",
+  "updated_at": "2026-07-27T05:51:23.073005+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -268,11 +268,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "accounts/fireworks/routers/glm-5p1-fast": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "accounts/fireworks/routers/kimi-k2p6-turbo": {
       "vision": true,
       "tooluse": true,
@@ -310,11 +305,6 @@
     },
     "accounts/fireworks/models/minimax-m3": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "accounts/fireworks/models/glm-5p1": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
