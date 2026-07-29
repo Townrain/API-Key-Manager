@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-28T05:15:24.701951+00:00",
+  "updated_at": "2026-07-29T05:22:27.277270+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -6863,11 +6863,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "nvidia-nemotron-cascade-2-30b-a3b": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "openai-gpt-54-pro": {
       "vision": true,
       "tooluse": true,
@@ -7525,6 +7520,11 @@
     },
     "GLM-4.7": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "thinkingmachines/Inkling-NVFP4": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
