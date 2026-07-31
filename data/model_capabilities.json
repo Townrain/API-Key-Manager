@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-30T05:09:34.889392+00:00",
+  "updated_at": "2026-07-31T05:36:42.328028+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -391,7 +391,7 @@
     "gemma-3-27b-it": {
       "vision": true,
       "tooluse": true,
-      "reasoning": true
+      "reasoning": false
     },
     "qwen3-235b-a22b-instruct-2507": {
       "vision": false,
@@ -1039,6 +1039,11 @@
       "reasoning": true
     },
     "mimo-v2.5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-5.6-luna": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -2174,11 +2179,6 @@
       "reasoning": true
     },
     "gpt-5.4-mini": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "gpt-5.6-luna": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -4023,10 +4023,40 @@
       "tooluse": true,
       "reasoning": true
     },
+    "kimi-k3-eco": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "kimi-k2.5-lightning": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
+    },
+    "gemma4-31b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-oss-20b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "qwen3.5-4b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "qwen3.5-0.8b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "qwen3.5-2b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
     },
     "abliterated-model-large": {
       "vision": false,
@@ -4086,7 +4116,7 @@
     "qwen3.7-flash": {
       "vision": true,
       "tooluse": true,
-      "reasoning": true
+      "reasoning": false
     },
     "minimax-m2.7-highspeed": {
       "vision": false,
@@ -4202,11 +4232,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "gpt-oss-20b": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
     },
     "ministral-8b-2512": {
       "vision": true,
@@ -6513,6 +6538,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen3-6-35b-a3b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "step-3-7-flash": {
       "vision": true,
       "tooluse": true,
@@ -7004,11 +7034,6 @@
       "reasoning": true
     },
     "gemini-3-5-flash-lite": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "qwen3-6-35b-a3b": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -7737,6 +7762,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "gemma-4-31b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "kimi-k2.7-code-flex": {
       "vision": true,
@@ -11098,6 +11128,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "tencent/Hy3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "Qwen/Qwen3-235B-A22B": {
       "vision": false,
       "tooluse": true,
@@ -11192,11 +11227,6 @@
       "vision": true,
       "tooluse": false,
       "reasoning": false
-    },
-    "gemma4-31b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "gpt-oss-safeguard-120b": {
       "vision": false,
@@ -11384,11 +11414,6 @@
       "reasoning": true
     },
     "moonshotai/Kimi-K3-TEE": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "gemma-4-31b": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -11612,6 +11637,16 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "moonshot-ai/kimi-k2.7-code": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "moonshot-ai/kimi-k3": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "xai/grok-4-1-fast-non-reasoning": {
       "vision": true,
