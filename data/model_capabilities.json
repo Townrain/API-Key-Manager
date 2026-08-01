@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-07-31T05:36:42.328028+00:00",
+  "updated_at": "2026-08-01T05:28:01.009491+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -614,6 +614,11 @@
       "reasoning": true
     },
     "gemini/gemini-3-flash-preview": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemini/gemini-3.6-flash": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -2419,6 +2424,11 @@
       "reasoning": true
     },
     "glm-5-turbo": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.2-highspeed[1m]": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -10333,6 +10343,11 @@
       "tooluse": false,
       "reasoning": true
     },
+    "thinkingmachines/inkling-small": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": true
+    },
     "inception/mercury-coder-small": {
       "vision": false,
       "tooluse": true,
@@ -10492,6 +10507,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": true
+    },
+    "minimax/minimax-h3": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": false
     },
     "deepseek/deepseek-v3.2-thinking": {
       "vision": false,
@@ -11069,6 +11089,11 @@
       "reasoning": true
     },
     "poolside/laguna-xs-2.1:free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek/deepseek-v4-flash-0731": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
