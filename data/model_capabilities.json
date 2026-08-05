@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-08-04T05:15:42.674578+00:00",
+  "updated_at": "2026-08-05T05:15:33.803696+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -618,6 +618,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "glm-5.2-ponytail": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen3.6-35b-a3b": {
       "vision": true,
       "tooluse": true,
@@ -625,6 +630,16 @@
     },
     "holo2-30b-a3b": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.2-caveman": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.2-ponytail-ultra": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -653,6 +668,16 @@
       "tooluse": true,
       "reasoning": false
     },
+    "glm-5.2-caveman-ultra": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.2-ponytail-lite": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "llama-3.3-70b-instruct": {
       "vision": false,
       "tooluse": true,
@@ -668,7 +693,22 @@
       "tooluse": true,
       "reasoning": false
     },
+    "deepseek-v4-flash-0731": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.2-honey-ultra": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen3-235b-a22b-instruct-2507": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.2-honey": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -713,7 +753,22 @@
       "tooluse": true,
       "reasoning": false
     },
+    "kimi-k3": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen3.5-397b-a17b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.2-honey-lite": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.2-caveman-lite": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -722,11 +777,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "microsoft/Phi-4-mini-instruct": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
     },
     "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8": {
       "vision": false,
@@ -758,16 +808,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "Qwen/Qwen3.5-27B": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "Qwen/Qwen3-235B-A22B-Instruct-2507": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "Qwen/Qwen3.5-35B-A3B": {
       "vision": true,
       "tooluse": true,
@@ -793,11 +833,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "Qwen/Qwen3-235B-A22B-Thinking-2507": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "MiniMaxAI/MiniMax-M2.5": {
       "vision": false,
       "tooluse": true,
@@ -812,6 +847,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "deepseek-ai/DeepSeek-V4-Flash-0731": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
     },
     "deepseek-ai/DeepSeek-V3.1": {
       "vision": false,
@@ -834,11 +874,6 @@
       "reasoning": false
     },
     "moonshotai/Kimi-K2.6": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "moonshotai/Kimi-K2.5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -1278,11 +1313,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "kimi-k3": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "mimo-v2.5-pro": {
       "vision": false,
       "tooluse": true,
@@ -1620,8 +1650,8 @@
     },
     "openai/gpt-5-chat": {
       "vision": true,
-      "tooluse": false,
-      "reasoning": true
+      "tooluse": true,
+      "reasoning": false
     },
     "openai/gpt-5.3-codex-spark": {
       "vision": false,
@@ -1838,8 +1868,8 @@
       "tooluse": true,
       "reasoning": true
     },
-    "deepseek-ai/DeepSeek-V4-Flash-0731": {
-      "vision": false,
+    "moonshotai/Kimi-K2.5": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -2226,6 +2256,11 @@
     "google/gemma-3-27b-it": {
       "vision": true,
       "tooluse": false,
+      "reasoning": false
+    },
+    "Qwen/Qwen3-235B-A22B-Instruct-2507": {
+      "vision": false,
+      "tooluse": true,
       "reasoning": false
     },
     "Qwen/Qwen3-Next-80B-A3B-Thinking-fast": {
@@ -5363,6 +5398,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "Qwen/Qwen3-235B-A22B-Thinking-2507": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "ZhipuAI/GLM-4.5": {
       "vision": false,
       "tooluse": true,
@@ -5848,6 +5888,36 @@
       "tooluse": true,
       "reasoning": false
     },
+    "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "mistralai/Mistral-Small-4-119B-2603": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "mistralai/Ministral-3-14B-Instruct-2512": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "swiss-ai/Apertus-v1.5-70B": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "Qwen/Qwen3.5-397B-A17B-FP8": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Qwen/Qwen3.5-122B-A10B-FP8": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "zai-org/GLM-5.2-FP8": {
       "vision": false,
       "tooluse": true,
@@ -6253,11 +6323,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "mistralai/Mistral-Small-4-119B-2603": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "mistralai/Mistral-7B-Instruct-v0.3": {
       "vision": false,
       "tooluse": true,
@@ -6345,6 +6410,11 @@
     },
     "tencent/Hy3-preview": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Qwen/Qwen3.5-27B": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -6646,7 +6716,7 @@
     "openai/gpt-5.1-chat": {
       "vision": true,
       "tooluse": true,
-      "reasoning": true
+      "reasoning": false
     },
     "openai/gpt-5.3-chat": {
       "vision": true,
@@ -6855,11 +6925,6 @@
     },
     "muse-spark-1-1": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "deepseek-v4-flash-0731": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -8103,11 +8168,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "Qwen/Qwen3.5-397B-A17B-FP8": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "mistral4-119b": {
       "vision": true,
       "tooluse": true,
@@ -9238,16 +9298,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "qwen/qwen3-32b": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "meta-llama/llama-4-scout-17b-16e-instruct": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": false
-    },
     "k3": {
       "vision": true,
       "tooluse": true,
@@ -9268,29 +9318,154 @@
       "tooluse": true,
       "reasoning": true
     },
-    "xai/grok-4-fast": {
+    "claude-opus-5@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek-v4-flash-0731@eu": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
     },
-    "anthropic/claude-opus-4-1": {
+    "gemini-3.5-flash@eu": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
     },
-    "anthropic/claude-3-7-sonnet": {
+    "claude-sonnet-4-6@eu": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
     },
-    "openai/gpt-5.2-chat": {
+    "gpt-4.1-mini@eu": {
       "vision": true,
       "tooluse": true,
       "reasoning": false
     },
-    "openai/gpt-5-image": {
+    "claude-opus-4-7@eu": {
       "vision": true,
-      "tooluse": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-sonnet-4-5@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "kimi-k3@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.2@eu": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-sonnet-4@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-opus-4-6@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-5.5@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-5.6-sol@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-5.1@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-5@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-5.4@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-5-nano@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-4.1-nano@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "gemini-2.5-flash@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-5-mini@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-opus-4-8@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-4o-mini@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "gpt-5.6-luna@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "o4-mini@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-sonnet-5@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-opus-4-5@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemini-3.1-flash-lite@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-haiku-4-5@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-4.1@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "gpt-5.6-terra@eu": {
+      "vision": true,
+      "tooluse": true,
       "reasoning": true
     },
     "qwen/qwen3-coder-30b-a3b-instruct": {
@@ -9450,6 +9625,11 @@
     },
     "qwen/qwen3.5-flash-02-23": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "qwen/qwen3-32b": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -9928,10 +10108,20 @@
       "tooluse": true,
       "reasoning": false
     },
+    "openai/gpt-5.2-chat": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
     "openai/gpt-3.5-turbo-16k": {
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "openai/gpt-5-image": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": true
     },
     "openai/gpt-4-turbo-preview": {
       "vision": false,
@@ -11003,6 +11193,11 @@
       "tooluse": false,
       "reasoning": false
     },
+    "meta-llama/llama-4-scout-17b-16e-instruct": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": false
+    },
     "minimaxai/minimax-m1-80k": {
       "vision": false,
       "tooluse": true,
@@ -11247,6 +11442,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "anthropic/claude-opus-4-1": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "anthropic/claude-3-sonnet": {
       "vision": true,
