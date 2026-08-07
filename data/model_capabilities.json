@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-08-06T05:17:28.478498+00:00",
+  "updated_at": "2026-08-07T04:26:04.854232+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -6178,6 +6178,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "solar-pro4": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "cline-pass/qwen3.7-plus": {
       "vision": true,
       "tooluse": true,
@@ -11265,6 +11270,11 @@
     },
     "google/gemma-4-31b-it:free": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "inclusionai/ling-3.0-tiny:free": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
