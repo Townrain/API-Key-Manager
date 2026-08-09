@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-08-08T03:25:55.527023+00:00",
+  "updated_at": "2026-08-09T03:42:45.404336+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -1681,7 +1681,7 @@
     "openai/gpt-5.1-instant": {
       "vision": true,
       "tooluse": true,
-      "reasoning": false
+      "reasoning": true
     },
     "openai/gpt-4-classic": {
       "vision": true,
@@ -4343,6 +4343,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "greg-1-mini": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": false
+    },
     "qwen3.5-9b": {
       "vision": true,
       "tooluse": true,
@@ -5826,6 +5831,26 @@
     "llama-guard-4": {
       "vision": true,
       "tooluse": false,
+      "reasoning": false
+    },
+    "mistralai/mistral-small-3-1-24b-instruct-2503": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "ibm/granite-4-h-small": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "meta-llama/llama-4-maverick-17b-128e-instruct-fp8": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": false
+    },
+    "meta-llama/llama-3-3-70b-instruct": {
+      "vision": false,
+      "tooluse": true,
       "reasoning": false
     },
     "zai-org/GLM-4.5-FP8": {
@@ -8038,8 +8063,8 @@
       "tooluse": false,
       "reasoning": true
     },
-    "z-code": {
-      "vision": false,
+    "zdev": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -11367,11 +11392,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "meta-llama/llama-4-maverick-17b-128e-instruct-fp8": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": false
     },
     "meta-llama/llama-4-scout-17b-16e-instruct": {
       "vision": true,
