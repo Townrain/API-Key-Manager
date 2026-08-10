@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-08-09T03:42:45.404336+00:00",
+  "updated_at": "2026-08-10T03:55:45.359167+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -3768,6 +3768,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "inclusionai/ling-3.0-tiny:thinking": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "inclusionai/ling-3.0-flash": {
       "vision": false,
       "tooluse": true,
@@ -3779,6 +3784,11 @@
       "reasoning": true
     },
     "inclusionai/ling-2.6-1t": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "inclusionai/ling-3.0-tiny": {
       "vision": false,
       "tooluse": true,
       "reasoning": false
@@ -4588,11 +4598,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "gpt-5.2-chat-latest": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "o3-mini": {
       "vision": false,
       "tooluse": true,
@@ -4681,11 +4686,6 @@
     "llama-4-maverick-17b-instruct": {
       "vision": true,
       "tooluse": false,
-      "reasoning": false
-    },
-    "gpt-5.3-chat-latest": {
-      "vision": true,
-      "tooluse": true,
       "reasoning": false
     },
     "minimax-m2.5-highspeed": {
@@ -5517,6 +5517,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "gpt-5.2-chat-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "grok-4.1": {
       "vision": true,
@@ -6619,9 +6624,9 @@
       "reasoning": true
     },
     "qwen/qwen3.5-flash": {
-      "vision": true,
+      "vision": false,
       "tooluse": true,
-      "reasoning": false
+      "reasoning": true
     },
     "qwen/qwen3-max": {
       "vision": false,
@@ -6909,6 +6914,11 @@
       "reasoning": true
     },
     "gpt-4o-2024-11-20": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "gpt-5.3-chat-latest": {
       "vision": true,
       "tooluse": true,
       "reasoning": false
@@ -10438,6 +10448,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen/qwen3-235b-a22b-instruct-2507": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
     "qwen/qwen-flash": {
       "vision": false,
       "tooluse": true,
@@ -10520,6 +10535,11 @@
     },
     "mistral/mistral-large-2512": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "deepseek/deepseek-v3": {
+      "vision": false,
       "tooluse": true,
       "reasoning": false
     },
@@ -10918,11 +10938,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "deepseek/deepseek-v3": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "amazon/nova-2-lite": {
       "vision": true,
       "tooluse": false,
@@ -11277,11 +11292,6 @@
       "vision": false,
       "tooluse": false,
       "reasoning": true
-    },
-    "qwen/qwen3-235b-a22b-instruct-2507": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
     },
     "qwen/qwen3-omni-30b-a3b-instruct": {
       "vision": true,
