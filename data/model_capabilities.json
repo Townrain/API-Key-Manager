@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-08-10T03:55:45.359167+00:00",
+  "updated_at": "2026-08-11T03:44:14.903346+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -788,6 +788,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "google/gemma-4-31B-it": {
       "vision": true,
       "tooluse": true,
@@ -973,11 +978,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "tencent/hy3-preview": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "moonshot/kimi-k2.5": {
       "vision": true,
       "tooluse": true,
@@ -1078,6 +1078,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "glm-5.2-fp4": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "claude-sonnet-4-6": {
       "vision": true,
       "tooluse": true,
@@ -1094,6 +1099,11 @@
       "reasoning": false
     },
     "claude-haiku-4-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-opus-4-6": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -1173,7 +1183,22 @@
       "tooluse": true,
       "reasoning": true
     },
+    "claude-opus-4-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-sonnet-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "openai-gpt-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-opus-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -2513,11 +2538,6 @@
       "tooluse": false,
       "reasoning": false
     },
-    "gemini-2.0-flash": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "gemini-3.6-flash": {
       "vision": true,
       "tooluse": true,
@@ -2563,17 +2583,7 @@
       "tooluse": true,
       "reasoning": true
     },
-    "gemini-3-pro-preview": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "gemini-2.5-flash-lite": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "gemini-2.0-flash-lite": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -3322,16 +3332,6 @@
       "vision": false,
       "tooluse": false,
       "reasoning": true
-    },
-    "TEE/kimi-k2.5-thinking": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": true
-    },
-    "TEE/kimi-k2.5": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": false
     },
     "TEE/qwen3.5-27b": {
       "vision": true,
@@ -4568,11 +4568,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "claude-opus-4-6": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "gpt-4.1-nano": {
       "vision": true,
       "tooluse": true,
@@ -4798,11 +4793,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "claude-haiku-4-5-free": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "qwen3-30b-a3b-instruct-2507": {
       "vision": false,
       "tooluse": true,
@@ -4863,11 +4853,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "claude-sonnet-5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "nemotron-3-ultra-550b": {
       "vision": false,
       "tooluse": true,
@@ -4917,11 +4902,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "claude-opus-5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "gpt-4": {
       "vision": false,
@@ -5242,11 +5222,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "claude-opus-4-5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "nemotron-3-ultra-free": {
       "vision": false,
@@ -5623,6 +5598,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "gemini-3-pro-preview": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "gemini-2.0-flash-lite": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "grok-4.20-beta-0309-non-reasoning": {
       "vision": true,
       "tooluse": true,
@@ -5993,6 +5978,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek-ocr-2": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": false
+    },
     "step-3.7-flash:free": {
       "vision": true,
       "tooluse": true,
@@ -6311,11 +6301,6 @@
     "brick-v1-beta": {
       "vision": true,
       "tooluse": true,
-      "reasoning": false
-    },
-    "deepseek-ocr-2": {
-      "vision": true,
-      "tooluse": false,
       "reasoning": false
     },
     "mistral-small-4-119b": {
@@ -6638,6 +6623,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "tencent/hy3-preview": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "sapiens-ai/agnes-1.5-pro": {
       "vision": false,
       "tooluse": true,
@@ -6834,7 +6824,7 @@
       "reasoning": false
     },
     "openai/gpt-5.3-chat": {
-      "vision": true,
+      "vision": false,
       "tooluse": true,
       "reasoning": false
     },
@@ -11438,6 +11428,21 @@
       "tooluse": true,
       "reasoning": true
     },
+    "sakana/namazu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "upstage/solar-pro4": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "meta/muse-glimmer-30b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "openai/gpt-oss-20b:free": {
       "vision": false,
       "tooluse": true,
@@ -11817,6 +11822,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
+    },
+    "gemini-2.0-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
     },
     "doubao-seed-2.0-mini": {
       "vision": true,
