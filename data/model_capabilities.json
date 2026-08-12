@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-08-11T03:44:14.903346+00:00",
+  "updated_at": "2026-08-12T04:08:42.589404+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "glm-5": {
@@ -2023,6 +2023,11 @@
       "tooluse": false,
       "reasoning": false
     },
+    "nvidia/nemotron-3.5-lightning-30b-a3b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "nvidia/cosmos-predict1-5b": {
       "vision": true,
       "tooluse": false,
@@ -3633,6 +3638,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "sakana/sakana-namazu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen/Qwen3-235B-A22B-Instruct-2507": {
       "vision": false,
       "tooluse": true,
@@ -3703,6 +3713,16 @@
       "tooluse": false,
       "reasoning": true
     },
+    "upstage/solar-pro4": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "upstage/solar-pro4:thinking": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "mistralai/mistral-small-4-119b-2603:thinking": {
       "vision": true,
       "tooluse": true,
@@ -3724,6 +3744,11 @@
       "reasoning": true
     },
     "nex-agi/nex-n2-pro": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "meta/muse-glimmer-30b": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -4713,11 +4738,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "qwen2-5-vl-32b-instruct": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "gemma-3-27b": {
       "vision": true,
       "tooluse": true,
@@ -4917,11 +4937,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "qwen-max-latest": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
     },
     "qwen3-next-80b-a3b-instruct": {
       "vision": false,
@@ -5222,6 +5237,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "nemotron-3.5-lightning-free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
     },
     "nemotron-3-ultra-free": {
       "vision": false,
@@ -5643,6 +5663,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen-max-latest": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
     "kimi-k2-0711": {
       "vision": false,
       "tooluse": true,
@@ -5974,6 +5999,11 @@
       "reasoning": true
     },
     "stepfun/step-3.7-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "kimi-latest": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -7023,6 +7053,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "seed-2-0-code": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen3-7-max": {
       "vision": false,
       "tooluse": true,
@@ -7129,6 +7164,11 @@
       "reasoning": true
     },
     "gpt-chat-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-mythos-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -7464,6 +7504,11 @@
       "reasoning": true
     },
     "minimax-m25": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek-v4-flash-0731-fast": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -8332,6 +8377,21 @@
       "vision": true,
       "tooluse": false,
       "reasoning": false
+    },
+    "DeepSeek-V4-Flash-0731": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "GLM-5.2-NVFP4": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Kimi-K2.7-Code": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "alibaba/qwen3.6-35b-a3b": {
       "vision": false,
@@ -9748,9 +9808,19 @@
       "tooluse": true,
       "reasoning": true
     },
+    "nvidia/nemotron-3.5-lightning": {
+      "vision": false,
+      "tooluse": false,
+      "reasoning": true
+    },
     "nvidia/nemotron-3.5-content-safety:free": {
       "vision": true,
       "tooluse": false,
+      "reasoning": true
+    },
+    "nvidia/nemotron-3.5-lightning:free": {
+      "vision": false,
+      "tooluse": true,
       "reasoning": true
     },
     "nvidia/nemotron-3-super-120b-a12b:free": {
@@ -10248,6 +10318,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "liquid/lfm-2.5-2.6b:free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "~anthropic/claude-sonnet-latest": {
       "vision": true,
       "tooluse": true,
@@ -10379,6 +10454,11 @@
       "reasoning": true
     },
     "bytedance-seed/seed-2.0-lite": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "bytedance-seed/seed-2.0-code": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -10756,6 +10836,11 @@
     "google/gemini-omni-flash-preview": {
       "vision": true,
       "tooluse": false,
+      "reasoning": true
+    },
+    "sakana/namazu": {
+      "vision": true,
+      "tooluse": true,
       "reasoning": true
     },
     "inception/mercury-coder-small": {
@@ -11428,21 +11513,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "sakana/namazu": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "upstage/solar-pro4": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "meta/muse-glimmer-30b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "openai/gpt-oss-20b:free": {
       "vision": false,
       "tooluse": true,
@@ -11622,6 +11692,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "ByteDance/Seed-2.0-code": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
       "vision": true,
