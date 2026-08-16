@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-08-15T02:51:52.164987+00:00",
+  "updated_at": "2026-08-16T02:59:52.599120+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "deepseek/deepseek-v4-flash": {
@@ -3288,11 +3288,6 @@
       "tooluse": false,
       "reasoning": false
     },
-    "qwen/Qwen3-235B-A22B-Instruct-2507-TEE": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "qwen/qwen3-32b": {
       "vision": false,
       "tooluse": true,
@@ -3408,6 +3403,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "zai-org/glm-5.3:thinking": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "zai-org/glm-5-original:thinking": {
       "vision": false,
       "tooluse": true,
@@ -3469,6 +3469,11 @@
       "reasoning": true
     },
     "zai-org/glm-latest": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "zai-org/glm-5.3": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -3658,6 +3663,11 @@
       "tooluse": false,
       "reasoning": false
     },
+    "TEE/kimi-k2.7-code": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "TEE/kimi-k3": {
       "vision": true,
       "tooluse": true,
@@ -3737,6 +3747,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "dots-studio/dots-3-note-preview:free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "minimax/minimax-m3": {
       "vision": true,
@@ -5440,7 +5455,7 @@
     },
     "qwen/qwen3.8-27b": {
       "vision": true,
-      "tooluse": false,
+      "tooluse": true,
       "reasoning": true
     },
     "qwen/qwen3-30b-a3b-thinking-2507": {
