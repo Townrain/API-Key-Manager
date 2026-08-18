@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-08-17T03:00:06.890288+00:00",
+  "updated_at": "2026-08-18T02:55:52.121056+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "deepseek/deepseek-v4-flash": {
@@ -1983,6 +1983,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen3.8-27b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "gpt-oss-safeguard-120b": {
       "vision": false,
       "tooluse": true,
@@ -2398,11 +2403,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "mirothinker-1-7-deepresearch": {
-      "vision": false,
-      "tooluse": false,
-      "reasoning": true
-    },
     "claude-sonnet-4-thinking:64000": {
       "vision": true,
       "tooluse": true,
@@ -2523,11 +2523,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "step-3": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": false
-    },
     "mistral-code-agent-latest": {
       "vision": false,
       "tooluse": true,
@@ -2559,11 +2554,6 @@
       "reasoning": true
     },
     "Gemma-4-31B-Cognitive-Unshackled": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "qwen3.8-27b": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -2621,11 +2611,6 @@
     "claude-sonnet-4-thinking:32768": {
       "vision": true,
       "tooluse": true,
-      "reasoning": true
-    },
-    "mirothinker-1-7-deepresearch-mini": {
-      "vision": false,
-      "tooluse": false,
       "reasoning": true
     },
     "qwen3.5-omni-plus": {
@@ -3848,6 +3833,91 @@
       "tooluse": true,
       "reasoning": true
     },
+    "DeepSeek-V4-Pro": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Kimi-K2.5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Qwen3-VL-235B-A22B-Thinking": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Qwen3-VL-235B-A22B-Instruct": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "Qwen3.5-122B-A10B": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "MiniMax-M3": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "GLM-5.1": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Kimi-K2.7-Code": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Qwen3.5-27B": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Qwen3.5-35B-A3B": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Qwen3-Next-80B-A3B-Thinking": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Qwen3.5-397B-A17B": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Kimi-K3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Hy3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "GLM-5.2": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "DeepSeek-V4-Flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Qwen3-Next-80B-A3B-Instruct": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
     "abliterated-model-large": {
       "vision": false,
       "tooluse": true,
@@ -4463,6 +4533,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "Qwen/Qwen3-VL-235B-A22B-Instruct": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
     "Qwen/Qwen3.6-27B": {
       "vision": true,
       "tooluse": true,
@@ -4600,6 +4675,11 @@
     },
     "stepfun-ai/Step-3.5-Flash": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "Qwen/Qwen3-VL-235B-A22B-Thinking": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -5743,11 +5823,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "Kimi-K2.7-Code": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "GLM-5.2-NVFP4": {
       "vision": false,
       "tooluse": true,
@@ -6735,11 +6810,6 @@
     },
     "MiniMax-M2.5-highspeed": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "MiniMax-M3": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -8498,6 +8568,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "sakana-namazu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "fugu-ultra": {
       "vision": true,
       "tooluse": true,
@@ -8867,6 +8942,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "trinity-large-thinking": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
     },
     "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8": {
       "vision": false,
@@ -9893,16 +9973,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "Qwen/Qwen3-VL-235B-A22B-Thinking": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "Qwen/Qwen3-VL-235B-A22B-Instruct": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "Qwen/Qwen3-14B": {
       "vision": false,
       "tooluse": true,
@@ -10069,7 +10139,7 @@
       "reasoning": true
     },
     "zai-org/GLM-5.2-Fast": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -11058,22 +11128,7 @@
       "tooluse": true,
       "reasoning": false
     },
-    "Kimi-K2.5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "GLM-5.1": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "DeepSeek-V3.2": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "Kimi-K3": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -11083,17 +11138,7 @@
       "tooluse": true,
       "reasoning": true
     },
-    "GLM-5.2": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "Kimi-K2.6": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "DeepSeek-V4-Flash": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -11107,11 +11152,6 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
-    },
-    "zai-glm-4.7": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
     },
     "Ling-1T": {
       "vision": false,
@@ -11382,6 +11422,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "alibaba/qwen3.8-27b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "alibaba/qwen3.6-plus": {
       "vision": true,
@@ -11818,6 +11863,11 @@
       "tooluse": false,
       "reasoning": false
     },
+    "qwen/deepseek-v4-pro-0813": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen/qwq-plus": {
       "vision": false,
       "tooluse": false,
@@ -12000,6 +12050,21 @@
     },
     "groq/openai/gpt-oss-20b": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tensorx/deepseek/deepseek-v4-flash-0731": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tensorx/moonshotai/kimi-k2.5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tensorx/qwen/qwen3.8-27b": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -12638,11 +12703,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "DeepSeek-V4-Pro": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "tencent/hy3:free": {
       "vision": false,
       "tooluse": true,
@@ -13117,6 +13177,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "qwen-3-8-27b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "llama-3.3-70b": {
       "vision": false,
