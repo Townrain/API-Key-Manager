@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-08-19T02:57:01.944418+00:00",
+  "updated_at": "2026-08-20T02:56:55.928642+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "deepseek/deepseek-v4-flash": {
@@ -659,11 +659,6 @@
       "reasoning": true
     },
     "umans-kimi-k3": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "umans-glm-5.1": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -3673,11 +3668,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "TEE/deepseek-v4-pro-0813": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "TEE/gemma-4-31b-it": {
       "vision": false,
       "tooluse": true,
@@ -3737,11 +3727,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "TEE/deepseek-v4-pro-0813:thinking": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
     },
     "dots-studio/dots-3-note-preview": {
       "vision": true,
@@ -4718,6 +4703,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "zai-org/GLM-4.6V-Flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "zai-org/GLM-4.5V": {
       "vision": true,
       "tooluse": true,
@@ -5308,11 +5298,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "ai21/jamba-large-1.7": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "moonshotai/kimi-k2": {
       "vision": false,
       "tooluse": true,
@@ -5608,6 +5593,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "liquid/lfm-2.5-2.6b:free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "allenai/olmo-3-32b-think": {
       "vision": false,
       "tooluse": false,
@@ -5782,6 +5772,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "~z-ai/glm-latest": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
     },
     "upstage/solar-pro-3": {
       "vision": false,
@@ -7059,6 +7054,11 @@
       "reasoning": true
     },
     "us.anthropic.claude-opus-4-8": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "xai.grok-4.6": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -11188,6 +11188,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "glm-4-6v-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen3-5-27b": {
       "vision": true,
       "tooluse": true,
@@ -11215,6 +11220,11 @@
     },
     "fugu-ultra-v1-1": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5-3": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -11470,16 +11480,6 @@
     },
     "zai/glm-5.2-fast": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "zai/glm-4.6v-flash": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "zai/glm-4.6v": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -11948,11 +11948,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "deepinfra/Qwen/Qwen3.8-27B": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": true
-    },
     "deepinfra/zai-org/GLM-4.7-Flash": {
       "vision": false,
       "tooluse": true,
@@ -11979,6 +11974,11 @@
       "reasoning": false
     },
     "deepinfra/meta-models/Muse-Glimmer-30B": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "zai/glm-4.6v": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -12303,11 +12303,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "cloudflare/@cf/qwen/qwen3.8-27b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "cloudflare/@cf/zai-org/glm-4.7-flash": {
       "vision": false,
       "tooluse": true,
@@ -12384,11 +12379,6 @@
       "reasoning": true
     },
     "tensorx/moonshotai/kimi-k2.5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "tensorx/qwen/qwen3.8-27b": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -12706,11 +12696,6 @@
     "gpt-4o-mini-search-preview": {
       "vision": true,
       "tooluse": false,
-      "reasoning": false
-    },
-    "claude-3-opus": {
-      "vision": true,
-      "tooluse": true,
       "reasoning": false
     },
     "llama-4-maverick-17b-instruct": {
@@ -13033,6 +13018,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "openai/gpt-5.6-sol-discounted": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "kilo-auto/small": {
       "vision": true,
       "tooluse": true,
@@ -13064,11 +13054,6 @@
       "reasoning": true
     },
     "stealth/claude-opus-4.8": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "stealth/gpt-5.6-sol": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
