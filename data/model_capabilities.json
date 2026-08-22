@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-08-21T03:02:42.702119+00:00",
+  "updated_at": "2026-08-22T02:53:47.590992+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "deepseek/deepseek-v4-flash": {
@@ -2823,6 +2823,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek/deepseek-v4-flash-vision-exp": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "deepseek/deepseek-v4-pro-0813:thinking": {
       "vision": false,
       "tooluse": true,
@@ -3298,6 +3303,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen/qwen3.8-27b-uncensored": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
     "qwen/qwen3.5-plus-thinking": {
       "vision": true,
       "tooluse": false,
@@ -3315,6 +3325,11 @@
     },
     "qwen/Qwen3-235B-A22B-Thinking-2507": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "qwen/qwen3.6-35b-a3b-uncensored": {
+      "vision": true,
       "tooluse": true,
       "reasoning": false
     },
@@ -3389,6 +3404,11 @@
       "reasoning": true
     },
     "sakana/fugu-ultra-v1.1": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "stealth/ox-alpha": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -3930,6 +3950,11 @@
     },
     "deepseek-reasoner": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek-v4-flash-vision-exp": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -5063,11 +5088,6 @@
       "tooluse": false,
       "reasoning": true
     },
-    "deepcogito/cogito-v2.1-671b": {
-      "vision": false,
-      "tooluse": false,
-      "reasoning": true
-    },
     "tencent/hy3-preview": {
       "vision": false,
       "tooluse": true,
@@ -5393,11 +5413,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "openai/gpt-oss-20b:free": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "openai/gpt-5-image-mini": {
       "vision": true,
       "tooluse": false,
@@ -5658,12 +5673,17 @@
       "tooluse": false,
       "reasoning": true
     },
-    "stealth/ox-alpha": {
+    "thinkingmachines/inkling-small": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
     },
-    "thinkingmachines/inkling-small": {
+    "thinkingmachines/inkling:free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "thinkingmachines/inkling-small:free": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -7588,6 +7608,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "ox-alpha-free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "glm-5.3": {
       "vision": false,
       "tooluse": true,
@@ -8328,6 +8353,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "ranoai/deepseek-v4-flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "google-ai-studio/gemini-3.5-flash-lite": {
       "vision": true,
       "tooluse": true,
@@ -8903,6 +8933,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "vertex-openai/grok-4-6": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "vertex-openai/glm-5": {
       "vision": false,
       "tooluse": true,
@@ -9287,6 +9322,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "deepseek/deepseek-v4-pro-0423": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
     },
     "google/gemini-2.5-computer-use-preview-10-2025": {
       "vision": true,
@@ -10504,6 +10544,11 @@
       "reasoning": true
     },
     "bailian/qwen3.6-27b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "bailian/qwen3.8-27b": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -14373,6 +14418,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "meituan/longcat-2.0-free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "stepfun/step-3.7-flash:free": {
       "vision": true,
       "tooluse": true,
@@ -14582,6 +14632,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "stealth-ox-alpha": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "qwen3-next-80b": {
       "vision": false,
