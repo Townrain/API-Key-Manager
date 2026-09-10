@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-09T07:07:33.649346+00:00",
+  "updated_at": "2026-09-10T07:03:49.153666+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "subconscious/glm-5.2": {
@@ -223,6 +223,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "glm-5.3-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "glm-5.2-caveman-lite": {
       "vision": false,
       "tooluse": true,
@@ -287,6 +292,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "glm-5.3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
     },
     "kimi-k2.6-fast": {
       "vision": true,
@@ -943,6 +953,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "k2-horizon-7b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "claude-opus-4-1-20250805": {
       "vision": true,
       "tooluse": true,
@@ -987,11 +1002,6 @@
       "vision": false,
       "tooluse": true,
       "reasoning": true
-    },
-    "azure-gpt-4o": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
     },
     "gemini-2.5-flash-lite-preview-06-17": {
       "vision": true,
@@ -1085,11 +1095,6 @@
     },
     "qwen3.5-0.8b": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "azure-gpt-4o-mini": {
-      "vision": true,
       "tooluse": true,
       "reasoning": false
     },
@@ -1288,6 +1293,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "agnes-3.0-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen3-vl-235b-a22b-instruct-original": {
       "vision": true,
       "tooluse": false,
@@ -1353,6 +1363,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "gemma-4-12b-it-semancer": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "Gemma-4-31B-MeroMero-v2": {
       "vision": true,
       "tooluse": true,
@@ -1380,6 +1395,11 @@
     },
     "hermes-low": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemma-4-12b-it-station-keeper": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -1449,6 +1469,11 @@
       "reasoning": true
     },
     "qwen/qwen3.8-27b-obliterated": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "qwen/qwen3.8-27b-queen": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -2258,6 +2283,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek/deepseek-v4.1-flash:thinking": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "deepseek/deepseek-v4-pro:thinking": {
       "vision": false,
       "tooluse": true,
@@ -2285,6 +2315,11 @@
     },
     "inclusionai/ling-3.0-flash:thinking": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "inclusionai/ling-3.0-flash-vl": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -3038,11 +3073,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "glm-5.3-flash": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "deepseek-r1-distill-llama-70b": {
       "vision": false,
       "tooluse": true,
@@ -3147,11 +3177,6 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
-    },
-    "glm-5.3": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
     },
     "anthropic-claude-opus-5": {
       "vision": true,
@@ -10693,6 +10718,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen-3-8-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen3-coder-480b-a35b-instruct-turbo": {
       "vision": false,
       "tooluse": true,
@@ -12259,7 +12289,7 @@
       "reasoning": false
     },
     "nex-agi/nex-n2.5-mini:free": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -12429,11 +12459,6 @@
       "reasoning": false
     },
     "nousresearch/hermes-4-405b": {
-      "vision": false,
-      "tooluse": false,
-      "reasoning": true
-    },
-    "nousresearch/hermes-4-70b": {
       "vision": false,
       "tooluse": false,
       "reasoning": true
@@ -13736,11 +13761,6 @@
     "step-router-v1": {
       "vision": false,
       "tooluse": true,
-      "reasoning": false
-    },
-    "black-forest-labs/FLUX.2-klein-4B": {
-      "vision": true,
-      "tooluse": false,
       "reasoning": false
     },
     "google/gemma-4-31b-it:free": {
@@ -15133,6 +15153,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "duo-chat-gpt-5-6-luna": {
       "vision": true,
       "tooluse": true,
@@ -15344,6 +15369,11 @@
       "reasoning": false
     },
     "nebius/deepseek-ai/DeepSeek-V4-Flash-0731": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nebius/deepseek-ai/DeepSeek-V4-Pro-0813": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
