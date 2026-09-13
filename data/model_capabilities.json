@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-12T06:55:48.140226+00:00",
+  "updated_at": "2026-09-13T07:13:34.635772+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "subconscious/glm-5.2": {
@@ -3673,6 +3673,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek-v4-pro:0813": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "nemotron-3-nano:30b": {
       "vision": false,
       "tooluse": true,
@@ -4033,6 +4038,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "aws-mantle/gpt-6-astra": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "aws-mantle/gpt-5.6-luna": {
       "vision": true,
       "tooluse": true,
@@ -4293,6 +4303,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "alibaba/kimi-k3": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "alibaba/qwen3.6-35b-a3b": {
       "vision": false,
       "tooluse": true,
@@ -4352,6 +4367,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "runpod/kimi-k3": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "scx-ai-gp/glm-5.2": {
       "vision": false,
@@ -5215,6 +5235,76 @@
     },
     "meta-contributor/muse-spark-1.3-contributor": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/kimi-k2.7-code-highspeed": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/minimax-m2.7": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/kimi-k2.6": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/glm-5.2": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/minimax-m3": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/deepseek-v4-flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/kimi-k2.7-code": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/kimi-k3": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/glm-5": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/glm-5.1": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/deepseek-v4-pro": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/glm-5-turbo": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/glm-5v-turbo": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/mimo-v2.5-pro": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -8718,6 +8808,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek-v4.1-flash@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "gpt-5.4@eu": {
       "vision": true,
       "tooluse": true,
@@ -8793,11 +8888,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "thinkingcap-qwen3.6-27b": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "nemotron-3-ultra-nvfp4": {
       "vision": false,
       "tooluse": true,
@@ -8870,11 +8960,6 @@
     },
     "gpt-5@eu": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "thinkingcap-qwen3.6-27b@eu": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -11043,6 +11128,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "hy4-preview": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "ernie-4.5-vl-424b-a47b": {
       "vision": true,
       "tooluse": false,
@@ -11059,6 +11149,11 @@
       "reasoning": true
     },
     "glm-4.5-airx": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "hy-mt2-plus": {
       "vision": false,
       "tooluse": true,
       "reasoning": false
@@ -14708,11 +14803,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "hy4-preview": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "ornith-ai/Ornith-1.5-35B-A3B": {
       "vision": true,
       "tooluse": true,
@@ -16030,6 +16120,11 @@
     },
     "together_ai/deepseek-ai/DeepSeek-V4-Flash-0731": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "together_ai/deepseek-ai/DeepSeek-V4.1-Flash": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
