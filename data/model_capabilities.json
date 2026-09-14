@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-13T07:13:34.635772+00:00",
+  "updated_at": "2026-09-14T07:37:22.459421+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "subconscious/glm-5.2": {
@@ -4573,6 +4573,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "together-ai/deepseek-v4.1-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "together-ai/kimi-k3": {
       "vision": true,
       "tooluse": true,
@@ -4793,6 +4798,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "novita/deepseek-v4.1-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "novita/hy3": {
       "vision": false,
       "tooluse": true,
@@ -4945,6 +4955,11 @@
     },
     "deepinfra/deepseek-v4-flash": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepinfra/deepseek-v4.1-flash": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -5420,6 +5435,11 @@
     },
     "fireworks/deepseek-v4-flash": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "fireworks/deepseek-v4.1-flash": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -15628,6 +15648,11 @@
       "tooluse": false,
       "reasoning": true
     },
+    "qwen/deepseek-v4.1-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen/qwen3-coder-next@eu": {
       "vision": false,
       "tooluse": true,
@@ -15770,6 +15795,11 @@
     },
     "tensorx/deepseek/deepseek-v4-flash-0731": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tensorx/deepseek/deepseek-v4.1-flash": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
