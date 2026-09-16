@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-15T07:16:34.624179+00:00",
+  "updated_at": "2026-09-16T07:19:16.496153+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "subconscious/glm-5.2": {
@@ -908,11 +908,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "gemma-4-e4b-it": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "GLM-4.6-Derestricted-v5": {
       "vision": false,
       "tooluse": true,
@@ -1178,11 +1173,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "gemma-4-e2b-it": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "gemini-exp-1206": {
       "vision": true,
       "tooluse": false,
@@ -1318,11 +1308,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "qwen/qwen3.5-0.8b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "qwen/qwen3.7-flash": {
       "vision": true,
       "tooluse": true,
@@ -1383,11 +1368,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "qwen/qwen3.5-4b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "qwen/qwen3.6-flash": {
       "vision": true,
       "tooluse": true,
@@ -1432,11 +1412,6 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
-    },
-    "qwen/qwen3.5-2b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "qwen/qwen3.6-35b-a3b:thinking": {
       "vision": true,
@@ -4343,6 +4318,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "alibaba/glm-5.3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "alibaba/qwen-plus-latest": {
       "vision": false,
       "tooluse": true,
@@ -5038,6 +5018,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "consensusprotocol/deepseek-v4.1-flash": {
+      "vision": false,
+      "tooluse": false,
+      "reasoning": true
+    },
     "consensusprotocol/glm-5.3-flash": {
       "vision": true,
       "tooluse": true,
@@ -5475,6 +5460,11 @@
     },
     "runware/kimi-k2.6": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "runware/deepseek-v4-1-flash": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -10493,28 +10483,13 @@
       "tooluse": true,
       "reasoning": true
     },
-    "mistral/devstral-2": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "mistral/mistral-medium": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "mistral/devstral-small-2": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "mistral/mistral-large-3": {
       "vision": true,
       "tooluse": false,
       "reasoning": false
     },
     "mistral/mistral-nemo": {
-      "vision": true,
+      "vision": false,
       "tooluse": true,
       "reasoning": false
     },
@@ -10545,11 +10520,6 @@
     },
     "mistral/ministral-3b": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "mistral/pixtral-12b": {
-      "vision": true,
       "tooluse": true,
       "reasoning": false
     },
@@ -10710,11 +10680,6 @@
     },
     "aion-labs-aion-3-0-mini": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "openai-gpt-52-codex": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -11508,8 +11473,38 @@
       "tooluse": true,
       "reasoning": false
     },
+    "accounts/fireworks/routers/kimi-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "accounts/fireworks/routers/qwen-max-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "accounts/fireworks/routers/kimi-k3-fast": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "accounts/fireworks/routers/glm-flash-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "accounts/fireworks/routers/minimax-latest": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "accounts/fireworks/routers/glm-fast-latest": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "accounts/fireworks/routers/deepseek-pro-latest": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -11518,8 +11513,23 @@
       "tooluse": true,
       "reasoning": true
     },
+    "accounts/fireworks/routers/glm-latest": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "accounts/fireworks/routers/kimi-fast-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "accounts/fireworks/routers/glm-5p2-fast": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "accounts/fireworks/routers/deepseek-flash-latest": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -11583,6 +11593,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "accounts/fireworks/models/minimax-m2p7": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "accounts/fireworks/models/qwen3p8-2p4t-a95b": {
       "vision": false,
       "tooluse": true,
@@ -11595,6 +11610,11 @@
     },
     "accounts/fireworks/models/inkling": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "accounts/fireworks/models/deepseek-v4-pro": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -12813,6 +12833,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "z-ai/glm-5.2:free": {
+      "vision": false,
+      "tooluse": false,
+      "reasoning": true
+    },
     "perplexity/sonar-pro-search": {
       "vision": true,
       "tooluse": false,
@@ -13153,6 +13178,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "eu.anthropic.claude-sonnet-4-20250514-v1:0": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen.qwen3-32b-v1:0": {
       "vision": false,
       "tooluse": true,
@@ -13205,6 +13235,11 @@
     },
     "openai.gpt-oss-safeguard-20b": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "global.anthropic.claude-sonnet-4-20250514-v1:0": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -13344,6 +13379,11 @@
       "reasoning": false
     },
     "us.openai.gpt-5.6-luna": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "us.anthropic.claude-sonnet-4-20250514-v1:0": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -13599,6 +13639,11 @@
       "reasoning": true
     },
     "anthropic.claude-opus-4-1-20250805-v1:0": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "apac.anthropic.claude-sonnet-4-20250514-v1:0": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
