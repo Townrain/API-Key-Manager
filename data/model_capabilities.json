@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-16T07:19:16.496153+00:00",
+  "updated_at": "2026-09-17T07:14:47.804201+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "subconscious/glm-5.2": {
@@ -5019,8 +5019,8 @@
       "reasoning": true
     },
     "consensusprotocol/deepseek-v4.1-flash": {
-      "vision": false,
-      "tooluse": false,
+      "vision": true,
+      "tooluse": true,
       "reasoning": true
     },
     "consensusprotocol/glm-5.3-flash": {
@@ -5463,11 +5463,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "runware/deepseek-v4-1-flash": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "runware/glm-5.2": {
       "vision": false,
       "tooluse": true,
@@ -5475,6 +5470,11 @@
     },
     "runware/deepseek-v4-flash": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "runware/deepseek-v4.1-flash": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -6089,6 +6089,11 @@
       "reasoning": true
     },
     "doubao-seed-2-1-turbo-260628": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5-3-flash-260828": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -6999,6 +7004,11 @@
       "reasoning": true
     },
     "deepseek-ai/deepseek-v3.2-maas": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "zai-org/glm-5.2-maas": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -8633,16 +8643,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "qwen3.6-max": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "qwen3-coder-480b-a35b-instruct-int4-mixed-ar": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "claude-opus-4-7@eu": {
       "vision": true,
       "tooluse": true,
@@ -9930,26 +9930,6 @@
     },
     "poolside/laguna-s-2.1-free": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "kwaipilot/kat-coder-pro-v1": {
-      "vision": false,
-      "tooluse": false,
-      "reasoning": true
-    },
-    "kwaipilot/kat-coder-pro-v2": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "kwaipilot/kat-coder-pro-v2.5": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "kwaipilot/kat-coder-air-v2.5": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -11273,11 +11253,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "mercury-edit-2": {
-      "vision": false,
-      "tooluse": false,
-      "reasoning": true
-    },
     "deepseek-ai/deepseek-r1-distill-llama-70b": {
       "vision": false,
       "tooluse": false,
@@ -11623,11 +11598,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "accounts/fireworks/models/mistral-large-3-fp8": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "accounts/fireworks/models/glm-5p2": {
       "vision": false,
       "tooluse": true,
@@ -11908,6 +11878,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "glm-flash-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "glm-latest": {
       "vision": false,
       "tooluse": true,
@@ -11968,23 +11943,18 @@
       "tooluse": true,
       "reasoning": true
     },
-    "umans-glm-5.2": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "umans-kimi-k3": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "umans-kimi-k2.7": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
     },
     "umans-deepseek-v4-flash-0731": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "umans-glm-5.3-flash": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -12413,6 +12383,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "kwaipilot/kat-coder-pro-v2": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "kwaipilot/kat-coder-pro-v2.5": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
     "stepfun/step-3.7-flash:free": {
       "vision": true,
       "tooluse": true,
@@ -12567,11 +12547,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "thedrummer/unslopnemo-12b": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
     },
     "bytedance/ui-tars-1.5-7b": {
       "vision": true,
@@ -12877,6 +12852,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
+    },
+    "stealth/union-alpha": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
     },
     "zai-org/GLM-4.5-FP8": {
       "vision": false,
@@ -14043,6 +14023,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "union-alpha": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "big-pickle": {
       "vision": false,
       "tooluse": true,
@@ -14194,16 +14179,6 @@
       "reasoning": true
     },
     "cline-pass/mimo-v2.5-pro": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "iteracompute/qwen3.8-27b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "iteracompute/ornith-1.5-35b-a3b": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -14590,7 +14565,7 @@
     },
     "motif-technologies/motif-3": {
       "vision": false,
-      "tooluse": false,
+      "tooluse": true,
       "reasoning": true
     },
     "zai-org/glm-5.3": {
@@ -14818,6 +14793,31 @@
       "tooluse": true,
       "reasoning": true
     },
+    "kimi-k3:fast": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek-v4.1-flash:fast": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.3:fast": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "minimax-m3:fast": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.3-flash:fast": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "sarvam-30b": {
       "vision": false,
       "tooluse": true,
@@ -14992,6 +14992,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "hf:deepseek-ai/DeepSeek-V4.1-Flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "hf:openai/gpt-oss-120b": {
       "vision": false,
@@ -15478,6 +15483,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "jamba-large": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "jamba-mini": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
     "kimi-for-coding-highspeed": {
       "vision": true,
       "tooluse": true,
@@ -15497,6 +15512,26 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
+    },
+    "meta.llama-4-maverick-17b-128e-instruct-fp8": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": false
+    },
+    "meta.llama-4-scout-17b-16e-instruct": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": false
+    },
+    "xai.grok-4.20-reasoning": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "xai.grok-4.20-non-reasoning": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
     },
     "public/deepseek-v3": {
       "vision": false,
@@ -15761,6 +15796,11 @@
     "nebius/deepseek-ai/DeepSeek-V4-Flash-0731": {
       "vision": false,
       "tooluse": true,
+      "reasoning": true
+    },
+    "nebius/deepseek-ai/DeepSeek-V4.1-Flash": {
+      "vision": true,
+      "tooluse": false,
       "reasoning": true
     },
     "nebius/deepseek-ai/DeepSeek-V4-Pro-0813": {
