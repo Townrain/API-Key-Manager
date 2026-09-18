@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-17T07:14:47.804201+00:00",
+  "updated_at": "2026-09-18T07:07:23.298529+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "subconscious/glm-5.2": {
@@ -958,11 +958,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "gemma-4-26b-a4b-uncensored": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "gemma-4-26b-a4b-it-chimerax": {
       "vision": true,
       "tooluse": true,
@@ -1163,11 +1158,6 @@
       "tooluse": false,
       "reasoning": true
     },
-    "gemma-4-26b-a4b-uncensored:thinking": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "pokee-isaac": {
       "vision": false,
       "tooluse": true,
@@ -1314,6 +1304,11 @@
       "reasoning": true
     },
     "qwen/qwen3.8-27b-fable": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "qwen/qwen3.8-omni-flash": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -2133,11 +2128,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "TEE/qwen3.6-35b-a3b-uncensored": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "TEE/glm-5.1": {
       "vision": false,
       "tooluse": true,
@@ -2299,11 +2289,6 @@
       "reasoning": true
     },
     "meta-llama/llama-3.1-8b-instruct": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "meta-llama/llama-3.1-405b-instruct": {
       "vision": false,
       "tooluse": true,
       "reasoning": false
@@ -2802,6 +2787,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": true
+    },
+    "slowburn/gemma4-31b-splituntied": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
     },
     "mistralai/mistral-small-3-1-24b-instruct-2503": {
       "vision": true,
@@ -10028,6 +10018,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "alibaba/qwen3.8-omni-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "alibaba/qwen3-max-thinking": {
       "vision": false,
       "tooluse": true,
@@ -11318,6 +11313,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "unbiased/pareto": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
     "alibaba/qwen3.5-397b-a17b": {
       "vision": true,
       "tooluse": true,
@@ -11424,7 +11424,7 @@
       "reasoning": true
     },
     "Kimi-K3": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -11790,6 +11790,11 @@
     },
     "step-3-5-flash": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "qwen3-8-omni-flash": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -12293,6 +12298,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen/qwen3.8-27b:free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen/qwen3-30b-a3b-instruct-2507": {
       "vision": false,
       "tooluse": true,
@@ -12438,11 +12448,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "mistralai/mistral-large-2512": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "mistralai/ministral-3b-2512": {
       "vision": true,
       "tooluse": true,
@@ -12585,6 +12590,11 @@
     },
     "~moonshotai/kimi-latest": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek/deepseek-v4-flash-0731:free": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -12853,11 +12863,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "stealth/union-alpha": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "zai-org/GLM-4.5-FP8": {
       "vision": false,
       "tooluse": true,
@@ -12874,6 +12879,16 @@
       "reasoning": false
     },
     "gpt-image-1": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": false
+    },
+    "gpt-image-2.5-sunburst": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": false
+    },
+    "gpt-image-2.5-flare": {
       "vision": true,
       "tooluse": false,
       "reasoning": false
@@ -14023,11 +14038,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "union-alpha": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "big-pickle": {
       "vision": false,
       "tooluse": true,
@@ -14298,6 +14308,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "bailian/qwen3.8-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "bailian/qwen3.6-max-preview": {
       "vision": false,
       "tooluse": true,
@@ -14434,7 +14449,7 @@
       "reasoning": true
     },
     "DeepSeek-V4.1-Flash": {
-      "vision": true,
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -14848,16 +14863,6 @@
       "tooluse": false,
       "reasoning": false
     },
-    "grok-imagine-image-2.0": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": false
-    },
-    "grok-imagine-image-quality": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": false
-    },
     "grok-4.20-0309-non-reasoning": {
       "vision": true,
       "tooluse": true,
@@ -14914,6 +14919,11 @@
       "reasoning": false
     },
     "magistral-medium-latest": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "zai-glm-5-3": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -15353,11 +15363,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "llama-3.1-405b-instruct": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "mistral-large-2402": {
       "vision": false,
       "tooluse": true,
@@ -15547,6 +15552,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": true
+    },
+    "mistralai/mistral-large-2512": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
     },
     "ox-alpha-free": {
       "vision": true,
@@ -15823,11 +15833,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "nebius/meta-llama/Llama-3.3-70B-Instruct": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "nebius/openai/gpt-oss-120b": {
       "vision": false,
       "tooluse": true,
@@ -15911,11 +15916,6 @@
     "tensorx/moonshotai/kimi-k2.5": {
       "vision": true,
       "tooluse": true,
-      "reasoning": true
-    },
-    "flexai/Nemotron-3-Super-120B-A12B": {
-      "vision": false,
-      "tooluse": false,
       "reasoning": true
     },
     "flexai/Step-3.7-Flash": {
@@ -16273,18 +16273,8 @@
       "tooluse": true,
       "reasoning": true
     },
-    "together_ai/thinkingmachines/Inkling-Small": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "together_ai/thinkingmachines/Inkling": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "together_ai/openai/gpt-oss-20b": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
