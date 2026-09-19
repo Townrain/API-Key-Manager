@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-18T07:07:23.298529+00:00",
+  "updated_at": "2026-09-19T07:05:30.105449+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "subconscious/glm-5.2": {
@@ -1428,6 +1428,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "unbiased/pareto": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
     "aion-labs/aion-2.0": {
       "vision": false,
       "tooluse": true,
@@ -1483,6 +1488,11 @@
       "tooluse": false,
       "reasoning": true
     },
+    "prism-ml/ternary-bonsai-2-27b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "pamanseau/OpenReasoning-Nemotron-32B": {
       "vision": false,
       "tooluse": false,
@@ -1532,11 +1542,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "mistralai/mistral-large-3-675b-instruct-2512": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
     },
     "mistralai/ministral-14b-instruct-2512": {
       "vision": true,
@@ -3239,6 +3244,11 @@
       "reasoning": true
     },
     "gpt-5.6-terra": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-sonnet-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -5733,6 +5743,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek-v4-flash-vision-exp": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "doubao-seed-2-0-lite-260428": {
       "vision": true,
       "tooluse": true,
@@ -5903,6 +5918,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "ox-alpha": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "gpt-5.2": {
       "vision": true,
       "tooluse": true,
@@ -5910,11 +5930,6 @@
     },
     "xiaomi-mimo-v2.5-pro": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "claude-sonnet-5": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -7115,11 +7130,6 @@
     },
     "glm-4.7-flash": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "deepseek-v4-flash-vision-exp": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -9488,6 +9498,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "mistralai/mistral-large-3-675b-instruct-2512": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
     "mistralai/mistral-nemotron": {
       "vision": false,
       "tooluse": true,
@@ -10438,6 +10453,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "zai/glm-5.3-flashx": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "zai/glm-5.3-fast": {
       "vision": false,
       "tooluse": true,
@@ -11313,11 +11333,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "unbiased/pareto": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "alibaba/qwen3.5-397b-a17b": {
       "vision": true,
       "tooluse": true,
@@ -11349,6 +11364,11 @@
       "reasoning": true
     },
     "mai-code-1.1-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "glm-5.3-flashx": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -11890,6 +11910,26 @@
     },
     "glm-latest": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "kimi-for-coding-highspeed": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "k3-256k": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "kimi-for-coding": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "k3": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -12768,11 +12808,6 @@
       "tooluse": false,
       "reasoning": true
     },
-    "openai/gpt-5.6-sol-discounted": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "~z-ai/glm-flash-latest": {
       "vision": true,
       "tooluse": true,
@@ -12815,6 +12850,11 @@
     },
     "liquid/lfm-2.5-2.6b:free": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "z-ai/glm-5.3-flashx": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -15497,26 +15537,6 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
-    },
-    "kimi-for-coding-highspeed": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "k3-256k": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "kimi-for-coding": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "k3": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "meta.llama-4-maverick-17b-128e-instruct-fp8": {
       "vision": true,
