@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-25T07:11:56.949684+00:00",
+  "updated_at": "2026-09-26T07:07:45.872778+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
@@ -2513,6 +2513,11 @@
       "tooluse": false,
       "reasoning": true
     },
+    "perceptron/perceptron-mk1.5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "z-ai/glm-4.6v": {
       "vision": true,
       "tooluse": true,
@@ -2967,6 +2972,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "TEE/qwen3.8-27b-uncensored": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "TEE/gemma-4-26b-a4b-uncensored": {
       "vision": false,
@@ -6398,21 +6408,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "anthropic/claude-3-haiku": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "nex-agi/nex-n2.5-mini:free": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "nex-agi/nex-n2.5-pro:free": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "cohere/command-r-08-2024": {
       "vision": false,
       "tooluse": true,
@@ -6516,11 +6511,6 @@
     "z-ai/glm-5.3-flashx": {
       "vision": true,
       "tooluse": true,
-      "reasoning": true
-    },
-    "z-ai/glm-5.2:free": {
-      "vision": false,
-      "tooluse": false,
       "reasoning": true
     },
     "z-ai/glm-4.5-air": {
@@ -10798,6 +10788,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "anthropic/claude-3-haiku": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
     "anthropic/claude-opus-5.5-fast": {
       "vision": true,
       "tooluse": true,
@@ -11629,11 +11624,6 @@
       "reasoning": true
     },
     "accounts/fireworks/routers/glm-5p2-fast": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "accounts/fireworks/routers/deepseek-pro-latest": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -13211,6 +13201,11 @@
     "deepinfra/tencent/Hy3": {
       "vision": false,
       "tooluse": true,
+      "reasoning": true
+    },
+    "deepinfra/tencent/Hy4-preview": {
+      "vision": false,
+      "tooluse": false,
       "reasoning": true
     },
     "deepinfra/meta-llama/Llama-3.2-11B-Vision-Instruct": {
