@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-26T07:07:45.872778+00:00",
+  "updated_at": "2026-09-27T07:40:02.018327+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
@@ -2623,6 +2623,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "z-ai/glm-5.3-uncensored": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "z-ai/glm-5:thinking": {
       "vision": false,
       "tooluse": true,
@@ -3265,6 +3270,11 @@
     },
     "xiaomi/mimo-v2.5": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "xiaomi/mimo-v2.6-flash-uncensored:thinking": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -11468,23 +11478,8 @@
       "tooluse": true,
       "reasoning": true
     },
-    "accounts/fireworks/models/kimi-k2p6": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "accounts/fireworks/models/nemotron-3-ultra-nvfp4": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "accounts/fireworks/models/deepseek-v4-flash-0731": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "accounts/fireworks/models/muse-glimmer-30b": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -11503,17 +11498,7 @@
       "tooluse": true,
       "reasoning": true
     },
-    "accounts/fireworks/models/deepseek-v4-flash-vision-exp": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "accounts/fireworks/models/deepseek-v4p1-flash": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "accounts/fireworks/models/qwen3p7-plus": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -11523,17 +11508,7 @@
       "tooluse": true,
       "reasoning": true
     },
-    "accounts/fireworks/models/minimax-m2p7": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "accounts/fireworks/models/deepseek-v4-pro-0813": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -11543,28 +11518,13 @@
       "tooluse": true,
       "reasoning": true
     },
-    "accounts/fireworks/models/glm-5p2": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "accounts/fireworks/models/minimax-m3": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
     },
-    "accounts/fireworks/models/kimi-k2p7-code": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "accounts/fireworks/models/glm-5p3-flash": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "accounts/fireworks/models/deepseek-v4-pro": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -11620,11 +11580,6 @@
     },
     "accounts/fireworks/routers/deepseek-flash-latest": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "accounts/fireworks/routers/glm-5p2-fast": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -13069,6 +13024,11 @@
       "reasoning": true
     },
     "Agents-A1": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "longcat-2.5-preview-free": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
