@@ -1,9 +1,14 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-27T07:40:02.018327+00:00",
+  "updated_at": "2026-09-28T08:18:52.940547+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/Hy4-preview": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -2123,6 +2128,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "longcat-2.5-preview": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "doubao-1.5-vision-pro-32k": {
       "vision": true,
       "tooluse": false,
@@ -2808,6 +2818,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "heabsy/cyberheabsy": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "upstage/solar-pro4": {
       "vision": false,
       "tooluse": true,
@@ -3274,7 +3289,7 @@
       "reasoning": true
     },
     "xiaomi/mimo-v2.6-flash-uncensored:thinking": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -3298,8 +3313,13 @@
       "tooluse": true,
       "reasoning": true
     },
+    "xiaomi/mimo-v2.6-flash-abliterated": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "xiaomi/mimo-v2.6-flash-uncensored": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -4093,11 +4113,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "mimo-v2.5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "glm5.3-flash": {
       "vision": true,
       "tooluse": true,
@@ -4109,6 +4124,11 @@
       "reasoning": true
     },
     "qwen3.6": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "mimo-v2.6-flash": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -4343,6 +4363,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "umans-deepseek-v4.1-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "umans-glm-5.3-flash": {
       "vision": true,
       "tooluse": true,
@@ -4350,11 +4375,6 @@
     },
     "umans-flash": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "umans-deepseek-v4-pro-0813": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -4498,6 +4518,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "MiniMax-M3.1-Flash-Preview": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "MiniMax-M2.7": {
       "vision": false,
       "tooluse": true,
@@ -4578,13 +4603,13 @@
       "tooluse": true,
       "reasoning": true
     },
-    "mimo-v2-pro": {
-      "vision": false,
+    "mimo-v2.5": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
-    "mimo-v2.6-flash": {
-      "vision": true,
+    "mimo-v2-pro": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -4638,6 +4663,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepinfra/mimo-v2.6-pro": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "deepinfra/gemma-4-31b-it": {
       "vision": false,
       "tooluse": true,
@@ -4650,16 +4680,6 @@
     },
     "deepinfra/mimo-v2.5": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "deepinfra/qwen3.8-27b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "deepinfra/nemotron-3.5-lightning": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -4693,15 +4713,20 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepinfra/ling-3.0-flash-vl": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepinfra/granite-4.2-8b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "deepinfra/nemotron-3-ultra-550b": {
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "deepinfra/inkling-small": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "deepinfra/mimo-v2.5-pro": {
       "vision": false,
@@ -4716,6 +4741,11 @@
     "deepinfra/inkling": {
       "vision": true,
       "tooluse": false,
+      "reasoning": true
+    },
+    "deepinfra/mimo-v2.6-flash": {
+      "vision": true,
+      "tooluse": true,
       "reasoning": true
     },
     "deepinfra/hy3": {
@@ -4742,11 +4772,6 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
-    },
-    "deepinfra/glm-5.3": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
     },
     "deepinfra/deepseek-v4-flash": {
       "vision": false,
@@ -5333,6 +5358,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "novita/qwen3.5-122b-a10b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "novita/llama-3.3-70b-instruct": {
       "vision": false,
       "tooluse": true,
@@ -5653,6 +5683,11 @@
       "tooluse": false,
       "reasoning": false
     },
+    "alibaba/qwen3.5-27b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "alibaba/qwen-max": {
       "vision": false,
       "tooluse": true,
@@ -5698,6 +5733,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "alibaba/qwen3.5-122b-a10b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "alibaba/kimi-k2.5": {
       "vision": true,
       "tooluse": true,
@@ -5729,6 +5769,11 @@
       "reasoning": true
     },
     "alibaba/qwen35-397b-a17b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "alibaba/qwen3.5-35b-a3b": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -5838,7 +5883,22 @@
       "tooluse": true,
       "reasoning": true
     },
+    "bytedance/seed-2-0-code-preview-260328": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "bytedance/seed-1-6-250915": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "bytedance/seed-2-0-mini-260428": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "bytedance/seed-2-0-pro-260328": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -5860,6 +5920,11 @@
     },
     "bytedance/glm-5.2": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "bytedance/seed-2-0-lite-260428": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -5948,6 +6013,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "fireworks/glm-5.3-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "fireworks/kimi-k3": {
       "vision": true,
       "tooluse": true,
@@ -5964,6 +6034,11 @@
       "reasoning": true
     },
     "fireworks/deepseek-v4-pro": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "fireworks/glm-5.3": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -6028,11 +6103,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "together-ai/inkling": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "together-ai/glm-4.7": {
       "vision": false,
       "tooluse": false,
@@ -6088,6 +6158,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "inference.net/glm-5.3-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "inference.net/glm-5.3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "azure-anthropic/claude-opus-5": {
       "vision": true,
       "tooluse": true,
@@ -6128,6 +6208,16 @@
       "tooluse": false,
       "reasoning": false
     },
+    "mistral/mistral-medium-3-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "mistral/mistral-small-2603": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "mistral/mistral-large-2512": {
       "vision": true,
       "tooluse": true,
@@ -6147,6 +6237,11 @@
       "vision": true,
       "tooluse": false,
       "reasoning": false
+    },
+    "mistral/glm-5.3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
     },
     "vertex-anthropic/claude-haiku-4-5": {
       "vision": true,
@@ -8293,6 +8388,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "grok-4.7": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "gemini-3.5-flash-thinking": {
       "vision": true,
       "tooluse": true,
@@ -8453,6 +8553,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "gpt-6-luna": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "grok-4.1": {
       "vision": true,
       "tooluse": true,
@@ -8467,6 +8572,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "gpt-6-sol": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "thinkingmachines/inkling:free": {
       "vision": true,
@@ -8659,7 +8769,7 @@
       "reasoning": true
     },
     "deepseek-v4.1-flash-fast-fp4": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -9053,11 +9163,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "gpt-6-luna": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "llama-4-scout-17b-16e-instruct": {
       "vision": true,
       "tooluse": true,
@@ -9087,11 +9192,6 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
-    },
-    "gpt-6-sol": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "llama3.3:70b": {
       "vision": false,
@@ -9203,6 +9303,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen3.5-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen2-5-32b-instruct": {
       "vision": false,
       "tooluse": true,
@@ -9253,6 +9358,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen3.7-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen-omni-turbo-realtime": {
       "vision": true,
       "tooluse": true,
@@ -9267,6 +9377,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "qwen3.8-omni-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "qwen2-5-7b-instruct": {
       "vision": false,
@@ -9729,11 +9844,6 @@
       "reasoning": true
     },
     "nvidia/Nemotron-Cascade-2-30B-A3B": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "tencent/Hy4-preview": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -10623,11 +10733,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "grok-4.7": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "grok-imagine-image": {
       "vision": true,
       "tooluse": false,
@@ -10699,6 +10804,11 @@
       "reasoning": false
     },
     "interfaze/interfaze-beta": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": true
+    },
+    "stealth/pixel-canary": {
       "vision": true,
       "tooluse": false,
       "reasoning": true
@@ -10834,6 +10944,11 @@
       "reasoning": true
     },
     "quiverai/arrow-2-telos": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "meituan/longcat-2.5-preview": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -11040,11 +11155,6 @@
     },
     "sakana/namazu": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "inclusionai/ling-3.0-flash-fin-free": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -11385,11 +11495,6 @@
     },
     "qwen3.8-2.4t-a95b": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "qwen3.7-flash": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -11908,6 +12013,36 @@
       "tooluse": true,
       "reasoning": true
     },
+    "bee-buzz": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "bee-swarm": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": true
+    },
+    "bee-comb": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "bee-hive": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "bee-brood": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "bee-cell": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
     "DeepSeek-V4-Flash-0731": {
       "vision": false,
       "tooluse": true,
@@ -12223,6 +12358,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "gpt-5.5-pro": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "claude-sonnet-4-6-think": {
       "vision": true,
       "tooluse": true,
@@ -12259,11 +12399,6 @@
       "reasoning": true
     },
     "doubao-seed-2-0-code-preview": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "qwen3.8-omni-flash": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -12482,11 +12617,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "gpt-5.5-pro": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "devstral-2512": {
       "vision": false,
@@ -13033,17 +13163,7 @@
       "tooluse": true,
       "reasoning": true
     },
-    "ox-alpha-free": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "space-bunny-free": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "omen-alpha": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -13391,16 +13511,6 @@
     "flexai/gpt-oss-120b": {
       "vision": false,
       "tooluse": true,
-      "reasoning": true
-    },
-    "google/deep-research-preview-04-2026": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": true
-    },
-    "google/deep-research-max-preview-04-2026": {
-      "vision": true,
-      "tooluse": false,
       "reasoning": true
     },
     "xai/grok-latest": {
@@ -13803,27 +13913,7 @@
       "tooluse": true,
       "reasoning": true
     },
-    "fireworks_ai/accounts/fireworks/models/deepseek-v4-flash-0731": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "fireworks_ai/accounts/fireworks/models/muse-glimmer-30b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "fireworks_ai/accounts/fireworks/models/deepseek-v4-pro-0813": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "fireworks_ai/accounts/fireworks/models/inkling": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "mistral/mistral-small-2603": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -13914,6 +14004,16 @@
       "reasoning": false
     },
     "hunyuan-t1": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "zai/glm-4.6v-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "zai/glm-4.5-flash": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -14436,7 +14536,7 @@
     "mistral-medium-3-5": {
       "vision": true,
       "tooluse": true,
-      "reasoning": true
+      "reasoning": false
     },
     "nemotron-3-nano-omni-30b-a3b-reasoning": {
       "vision": true,
@@ -15773,8 +15873,8 @@
       "tooluse": true,
       "reasoning": false
     },
-    "nemotron-3.5-lightning": {
-      "vision": false,
+    "seed-2-0-code-preview-260328": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -15863,10 +15963,25 @@
       "tooluse": true,
       "reasoning": true
     },
+    "seed-2-0-mini-260428": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen3-vl-flash": {
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "seed-2-0-pro-260328": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "ling-3.0-flash-vl": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "minimax-text-01": {
       "vision": false,
@@ -15883,15 +15998,15 @@
       "tooluse": true,
       "reasoning": false
     },
+    "granite-4.2-8b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "nemotron-3-ultra-550b": {
       "vision": false,
       "tooluse": true,
       "reasoning": false
-    },
-    "inkling-small": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "seed-1-8-251228": {
       "vision": true,
@@ -15911,6 +16026,11 @@
     "ernie-4.5-vl-424b-a47b": {
       "vision": true,
       "tooluse": false,
+      "reasoning": true
+    },
+    "seed-2-0-lite-260428": {
+      "vision": true,
+      "tooluse": true,
       "reasoning": true
     },
     "hy-mt2-plus": {
@@ -16453,10 +16573,20 @@
       "tooluse": true,
       "reasoning": false
     },
+    "gpt-daybreak-blue-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "gpt-image-1-mini": {
       "vision": true,
       "tooluse": false,
       "reasoning": false
+    },
+    "gpt-daybreak-red-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "o1-pro": {
       "vision": true,
@@ -16864,11 +16994,6 @@
       "reasoning": true
     },
     "anthropic-claude-sonnet-4": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "qwen3.5-flash": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
