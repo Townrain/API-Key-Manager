@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-28T08:18:52.940547+00:00",
+  "updated_at": "2026-09-29T07:56:56.543166+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
@@ -269,7 +269,7 @@
       "reasoning": true
     },
     "moonshotai/Kimi-K2.7-Code": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -2278,6 +2278,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "anthropic/claude-sonnet-5.5:thinking": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "anthropic/claude-sonnet-4:thinking:8192": {
       "vision": true,
       "tooluse": true,
@@ -2309,6 +2314,11 @@
       "reasoning": true
     },
     "anthropic/claude-fable-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "anthropic/claude-sonnet-5.5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -3968,6 +3978,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "claude-sonnet-5-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "claude-opus-4-7": {
       "vision": true,
       "tooluse": true,
@@ -4678,11 +4693,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "deepinfra/mimo-v2.5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "deepinfra/qwen3.8-2.4t-a95b": {
       "vision": false,
       "tooluse": true,
@@ -4727,11 +4737,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "deepinfra/mimo-v2.5-pro": {
-      "vision": false,
-      "tooluse": false,
-      "reasoning": true
     },
     "deepinfra/qwen3.5-9b": {
       "vision": false,
@@ -5104,6 +5109,11 @@
       "reasoning": true
     },
     "anthropic/claude-haiku-4-5-20251001": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "anthropic/claude-sonnet-5-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -6513,6 +6523,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "nex-agi/nex-n2.5-mini": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": true
+    },
+    "nex-agi/nex-n2.5-pro": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "cohere/command-r-08-2024": {
       "vision": false,
       "tooluse": true,
@@ -6536,11 +6556,6 @@
     "deepseek/deepseek-chat-v3.1": {
       "vision": false,
       "tooluse": true,
-      "reasoning": true
-    },
-    "deepseek/deepseek-r1-distill-llama-70b": {
-      "vision": false,
-      "tooluse": false,
       "reasoning": true
     },
     "deepseek/deepseek-v3.1-terminus": {
@@ -6645,7 +6660,7 @@
     },
     "perplexity/sonar-pro": {
       "vision": true,
-      "tooluse": true,
+      "tooluse": false,
       "reasoning": false
     },
     "perplexity/sonar-deep-research": {
@@ -6905,11 +6920,6 @@
     },
     "sakana/sakana-namazu": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "inclusionai/ling-3.0-flash-fin:free": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -7263,6 +7273,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "claude-opus-5-5-fast": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "google-gemma-3-27b-it": {
       "vision": true,
       "tooluse": true,
@@ -7310,6 +7325,11 @@
     },
     "olafangensan-glm-4.7-flash-heretic": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "xiaomi-mimo-v2-6-flash": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -8177,6 +8197,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "deepseek/deepseek-r1-distill-llama-70b": {
+      "vision": false,
+      "tooluse": false,
+      "reasoning": true
     },
     "deepseek/deepseek-v3-turbo": {
       "vision": false,
@@ -11958,6 +11983,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "claude-sonnet-5-5@default": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "claude-opus-5-5@default": {
       "vision": true,
       "tooluse": true,
@@ -12738,11 +12768,6 @@
       "tooluse": false,
       "reasoning": false
     },
-    "moonshotai/kimi-k2-instruct-0905": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "sarvamai/sarvam-m": {
       "vision": false,
       "tooluse": true,
@@ -13033,6 +13058,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "fastino/gliner2.5-base-v1": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "fastino/gliner2-privacy-filter-PII-multi": {
       "vision": false,
       "tooluse": true,
@@ -13068,6 +13098,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "fastino/GLiNER-2.5-Decide": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
     "mimo-v2-omni": {
       "vision": true,
       "tooluse": true,
@@ -13089,6 +13124,11 @@
       "reasoning": true
     },
     "mai-code-1.1-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-sonnet-5.5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -13285,7 +13325,7 @@
     },
     "deepinfra/tencent/Hy4-preview": {
       "vision": false,
-      "tooluse": false,
+      "tooluse": true,
       "reasoning": true
     },
     "deepinfra/meta-llama/Llama-3.2-11B-Vision-Instruct": {
@@ -13503,6 +13543,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "flexai/DeepSeek-V4.1-Flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "flexai/gpt-oss-20b": {
       "vision": false,
       "tooluse": true,
@@ -13535,7 +13580,7 @@
     },
     "nebius/deepseek-ai/DeepSeek-V4.1-Flash": {
       "vision": true,
-      "tooluse": false,
+      "tooluse": true,
       "reasoning": true
     },
     "nebius/nvidia/nemotron-3-super-120b-a12b": {
@@ -14873,11 +14918,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "magistral-small": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "labs-devstral-small-2512": {
       "vision": true,
       "tooluse": true,
@@ -15014,6 +15054,11 @@
       "reasoning": false
     },
     "jp.anthropic.claude-opus-5-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "global.anthropic.claude-sonnet-5-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -16809,6 +16854,11 @@
       "reasoning": true
     },
     "anthropic-claude-4.1-opus": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "anthropic-claude-sonnet-5.5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
