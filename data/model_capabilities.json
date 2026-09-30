@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-29T07:56:56.543166+00:00",
+  "updated_at": "2026-09-30T08:06:11.262096+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
@@ -2348,11 +2348,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "anthropic/claude-opus-4:thinking:1024": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "anthropic/claude-opus-4.8:thinking": {
       "vision": true,
       "tooluse": true,
@@ -2364,11 +2359,6 @@
       "reasoning": true
     },
     "anthropic/claude-sonnet-4.6:thinking": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "anthropic/claude-opus-4:thinking:32768": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -2399,16 +2389,6 @@
       "reasoning": true
     },
     "anthropic/claude-sonnet-4:thinking": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "anthropic/claude-opus-4:thinking": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "anthropic/claude-opus-4:thinking:8192": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -3733,6 +3713,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "openai/gpt-6.1-sol": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "openai/gpt-4o-2024-08-06": {
       "vision": true,
       "tooluse": true,
@@ -3789,6 +3774,11 @@
       "reasoning": true
     },
     "openai/gpt-6-luna": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "openai/gpt-6.1-sol-pro": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -4105,6 +4095,11 @@
     },
     "thinkingmachines/inkling-small": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek-ai/DeepSeek-V4.1-Flash-Fast": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -5523,11 +5518,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "azure/gpt-3.5-turbo": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "azure/gpt-5.4-nano": {
       "vision": true,
       "tooluse": true,
@@ -5553,21 +5543,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "azure/gpt-5.2-pro": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "azure/o4-mini": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "azure/gpt-4": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "azure/gpt-5.3-codex": {
       "vision": true,
       "tooluse": true,
@@ -5581,11 +5556,6 @@
     "azure/gpt-5-nano": {
       "vision": false,
       "tooluse": true,
-      "reasoning": true
-    },
-    "azure/o1": {
-      "vision": true,
-      "tooluse": false,
       "reasoning": true
     },
     "azure/gpt-6-astra": {
@@ -5638,11 +5608,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "azure/gpt-4-turbo": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "azure/gpt-oss-120b": {
       "vision": false,
       "tooluse": true,
@@ -5652,11 +5617,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "azure/o3": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": false
     },
     "azure/gpt-5": {
       "vision": true,
@@ -6429,8 +6389,8 @@
       "reasoning": true
     },
     "moonshot/kimi-k2.7-code-highspeed": {
-      "vision": false,
-      "tooluse": false,
+      "vision": true,
+      "tooluse": true,
       "reasoning": true
     },
     "moonshot/kimi-k2.6": {
@@ -7405,6 +7365,11 @@
     },
     "qwen3-235b-a22b-thinking-2507": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "openai-gpt-61-sol": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -9129,6 +9094,11 @@
       "reasoning": true
     },
     "claude-mythos-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gpt-6.1-sol": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -11183,6 +11153,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "inclusionai/ling-3.1-flash-free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "inclusionai/ling-3.1-flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "inclusionai/ling-3.0-flash-sante": {
       "vision": false,
       "tooluse": true,
@@ -11312,6 +11292,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "openai/gpt-6.1-sol-fast": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "openai/gpt-4.1-nano-fast": {
       "vision": true,
@@ -13101,7 +13086,7 @@
     "fastino/GLiNER-2.5-Decide": {
       "vision": false,
       "tooluse": true,
-      "reasoning": false
+      "reasoning": true
     },
     "mimo-v2-omni": {
       "vision": true,
@@ -13543,11 +13528,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "flexai/DeepSeek-V4.1-Flash": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "flexai/gpt-oss-20b": {
       "vision": false,
       "tooluse": true,
@@ -13963,6 +13943,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "fireworks_ai/accounts/fireworks/models/gpt-oss-120b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "mistral/mistral-medium-2604": {
       "vision": true,
       "tooluse": true,
@@ -14053,12 +14038,47 @@
       "tooluse": true,
       "reasoning": true
     },
+    "xiaomi-mimo/mimo-v2.6-pro": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "xiaomi-mimo/mimo-v2.6-pro-ultraspeed": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "xiaomi-mimo/mimo-v2.6-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "cerebras/qwen-3.8-27b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "groq/qwen/qwen3.8-27b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "zai/glm-4.6v-flash": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
     },
     "zai/glm-4.5-flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek/deepseek-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "minimax/MiniMax-M2.7-highspeed": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -14423,6 +14443,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "gpt-6.1-sol@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "claude-opus-5@eu": {
       "vision": true,
       "tooluse": true,
@@ -14552,6 +14577,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": false
+    },
+    "claude-sonnet-5-5@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "claude-sonnet-4-6@eu": {
       "vision": true,
@@ -15058,6 +15088,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "anthropic.claude-sonnet-5-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "global.anthropic.claude-sonnet-5-5": {
       "vision": true,
       "tooluse": true,
@@ -15378,6 +15413,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "global.xai.grok-4.7": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "us.openai.gpt-5.6-sol": {
       "vision": true,
       "tooluse": true,
@@ -15442,6 +15482,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "us.xai.grok-4.7": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "us.openai.gpt-6-luna": {
       "vision": true,
