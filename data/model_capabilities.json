@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-09-30T08:06:11.262096+00:00",
+  "updated_at": "2026-10-01T08:23:58.162029+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
@@ -111,7 +111,7 @@
     "Qwen/Qwen3.8-Max": {
       "vision": true,
       "tooluse": true,
-      "reasoning": false
+      "reasoning": true
     },
     "Qwen/Qwen3.5-27B": {
       "vision": true,
@@ -141,7 +141,7 @@
     "Qwen/Qwen3.8-Flash": {
       "vision": true,
       "tooluse": true,
-      "reasoning": false
+      "reasoning": true
     },
     "Qwen/Qwen3-32B": {
       "vision": false,
@@ -3163,6 +3163,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "inclusionai/ling-3.1-flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "inclusionai/ling-3.0-flash-vl": {
       "vision": true,
       "tooluse": true,
@@ -4668,11 +4673,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "consensusprotocol/deepseek-v4-flash": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "deepinfra/mimo-v2.6-pro": {
       "vision": true,
       "tooluse": true,
@@ -4753,18 +4753,8 @@
       "tooluse": true,
       "reasoning": true
     },
-    "deepinfra/glm-5.1": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "deepinfra/deepseek-v4-pro": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "deepinfra/step-3.7-flash": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -8893,6 +8883,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "duo-chat-gpt-6-1-sol": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "duo-chat-sonnet-5-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "duo-chat-gpt-6-astra": {
       "vision": true,
       "tooluse": true,
@@ -9823,24 +9823,39 @@
       "tooluse": true,
       "reasoning": true
     },
-    "zai-org/GLM-5.2-FP8": {
+    "mimo-v2.6-pro-rl": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "laguna-s-2.1": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
     },
-    "nvidia/DeepSeek-V3.2-NVFP4": {
+    "glm-5.x-menthol": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
     },
-    "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-BF16": {
-      "vision": false,
+    "nemotron-3-nano-omni-30b-a3b-reasoning": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
-    "nvidia/Nemotron-Cascade-2-30B-A3B": {
-      "vision": false,
+    "mimo-v2.6-flash-rl": {
+      "vision": true,
       "tooluse": true,
+      "reasoning": true
+    },
+    "qwen3.8-flash-next": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nemotron-3.5-content-safety": {
+      "vision": true,
+      "tooluse": false,
       "reasoning": true
     },
     "XiaomiMiMo/MiMo-V2-Flash": {
@@ -10405,6 +10420,11 @@
     },
     "lucidquery-agi-01-swift": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "zai-org/GLM-5.2-FP8": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -11154,11 +11174,6 @@
       "reasoning": true
     },
     "inclusionai/ling-3.1-flash-free": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "inclusionai/ling-3.1-flash": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -14613,11 +14628,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "nemotron-3-nano-omni-30b-a3b-reasoning": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "gpt-5.4@eu": {
       "vision": true,
       "tooluse": true,
@@ -14695,11 +14705,6 @@
     },
     "qwen3.8-2.4T-A95B@eu": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "qwen3.8-flash-next": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -14796,11 +14801,6 @@
     "gemini-3.5-flash@eu": {
       "vision": true,
       "tooluse": true,
-      "reasoning": true
-    },
-    "nemotron-3.5-content-safety": {
-      "vision": true,
-      "tooluse": false,
       "reasoning": true
     },
     "nvidia-nemotron-3-ultra": {
@@ -15043,6 +15043,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "us.openai.gpt-6.1-sol": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "eu.amazon.nova-lite-v1:0": {
       "vision": true,
       "tooluse": true,
@@ -15263,6 +15268,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "openai.gpt-6.1-sol": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "us.amazon.nova-2-lite-v1:0": {
       "vision": true,
       "tooluse": true,
@@ -15274,6 +15284,11 @@
       "reasoning": true
     },
     "openai.gpt-5.6-terra": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "global.openai.gpt-6.1-sol": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -16893,6 +16908,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "openai-gpt-6-1-sol": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "openai-o3-mini": {
       "vision": true,
       "tooluse": true,
@@ -16912,11 +16932,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "anthropic-claude-4.5-haiku": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "anthropic-claude-fable-5.1": {
       "vision": true,
