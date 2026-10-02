@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-01T08:23:58.162029+00:00",
+  "updated_at": "2026-10-02T08:00:00.419646+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
@@ -2468,6 +2468,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "unbiased/pareto-26.10-preview": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
     "unbiased/pareto": {
       "vision": true,
       "tooluse": true,
@@ -2982,11 +2987,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "TEE/qwen3.8-27b-uncensored": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "TEE/gemma-4-26b-a4b-uncensored": {
       "vision": false,
@@ -4048,7 +4048,17 @@
       "tooluse": true,
       "reasoning": false
     },
+    "tiny-aya-fire": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
     "command-r7b-arabic-02-2025": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "tiny-aya-earth": {
       "vision": false,
       "tooluse": true,
       "reasoning": false
@@ -4073,6 +4083,11 @@
       "tooluse": false,
       "reasoning": false
     },
+    "tiny-aya-global": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
     "command-r7b-12-2024": {
       "vision": false,
       "tooluse": true,
@@ -4086,6 +4101,11 @@
     "command-a-vision-07-2025": {
       "vision": true,
       "tooluse": false,
+      "reasoning": false
+    },
+    "tiny-aya-water": {
+      "vision": false,
+      "tooluse": true,
       "reasoning": false
     },
     "command-a-reasoning-08-2025": {
@@ -4669,6 +4689,11 @@
       "reasoning": true
     },
     "consensusprotocol/gpt-oss-20b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "consensusprotocol/deepseek-v4-flash": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -6928,6 +6953,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "apodex/apodex-1.1-mini:free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "nvidia/nemotron-3-nano-30b-a3b": {
       "vision": false,
       "tooluse": true,
@@ -7457,6 +7487,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "abliteration-abliterated-model-large-v2": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
     },
     "minimax-m3-preview": {
       "vision": true,
@@ -10548,6 +10583,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek-ai/deepseek-v4.1-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "deepseek-ai/deepseek-v4-pro": {
       "vision": false,
       "tooluse": true,
@@ -10555,6 +10595,11 @@
     },
     "deepseek-ai/deepseek-v4-flash": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "zai-org/glm-5.3-flash": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -10819,11 +10864,6 @@
       "reasoning": false
     },
     "interfaze/interfaze-beta": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": true
-    },
-    "stealth/pixel-canary": {
       "vision": true,
       "tooluse": false,
       "reasoning": true
@@ -12698,6 +12738,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "google/diffusiongemma-26b-a4b-it": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "google/gemma-2-2b-it": {
       "vision": false,
       "tooluse": true,
@@ -13493,6 +13538,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "tencent/deepseek-v4-pro-0813": {
+      "vision": false,
+      "tooluse": false,
+      "reasoning": true
+    },
     "together_ai/meta-models/Muse-Glimmer-30B": {
       "vision": true,
       "tooluse": true,
@@ -14115,6 +14165,11 @@
     },
     "ling-3.0-flash-fin-free": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "fledge-alpha-free": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -16406,16 +16461,6 @@
     "zai-org/GLM-4.5-FP8": {
       "vision": false,
       "tooluse": true,
-      "reasoning": true
-    },
-    "pearl-ai/gemma-4-31b-it": {
-      "vision": false,
-      "tooluse": false,
-      "reasoning": true
-    },
-    "deepcogito/cogito-v2-1-671b": {
-      "vision": false,
-      "tooluse": false,
       "reasoning": true
     },
     "essentialai/Rnj-1-Instruct": {
