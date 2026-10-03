@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-02T08:00:00.419646+00:00",
+  "updated_at": "2026-10-03T07:41:17.093473+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
@@ -1773,6 +1773,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "qwen3.8-27b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "qwen3.6-35b-a3b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "poolside/laguna-s-2.1": {
       "vision": false,
       "tooluse": true,
@@ -3358,11 +3368,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "kitani/clover-1-150b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "stepfun/step-5-preview": {
       "vision": true,
       "tooluse": false,
@@ -3843,11 +3848,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "qwen3.8-27b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "kimi-k3-eco": {
       "vision": true,
       "tooluse": true,
@@ -4071,11 +4071,6 @@
     "command-a-03-2025": {
       "vision": false,
       "tooluse": true,
-      "reasoning": false
-    },
-    "c4ai-aya-vision-8b": {
-      "vision": true,
-      "tooluse": false,
       "reasoning": false
     },
     "c4ai-aya-vision-32b": {
@@ -4948,12 +4943,22 @@
       "tooluse": true,
       "reasoning": true
     },
+    "aws-bedrock/kimi-k3": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "aws-bedrock/llama-4-maverick-17b-instruct": {
       "vision": true,
       "tooluse": false,
       "reasoning": false
     },
     "aws-bedrock/claude-sonnet-4-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "aws-bedrock/claude-opus-5-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -5024,6 +5029,16 @@
       "reasoning": true
     },
     "aws-bedrock/claude-sonnet-4-6": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "aws-bedrock/claude-sonnet-5-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "aws-bedrock/grok-4-7": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -5570,6 +5585,11 @@
     },
     "azure/gpt-5-nano": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "azure/gpt-6.1-sol": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -6153,6 +6173,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "azure-anthropic/claude-opus-5-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "azure-anthropic/claude-fable-5-1": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "azure-anthropic/claude-opus-5": {
       "vision": true,
       "tooluse": true,
@@ -6174,6 +6204,11 @@
       "reasoning": true
     },
     "azure-anthropic/claude-opus-4-6": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "azure-anthropic/claude-sonnet-5-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -8493,11 +8528,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "qwen3.6-35b-a3b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "kimi-k2-0905-preview": {
       "vision": false,
       "tooluse": true,
@@ -10791,6 +10821,11 @@
     "auto": {
       "vision": true,
       "tooluse": true,
+      "reasoning": false
+    },
+    "grok-imagine-video-1.5-lite": {
+      "vision": true,
+      "tooluse": false,
       "reasoning": false
     },
     "grok-imagine-image": {
@@ -13538,6 +13573,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "tencent/step-5-preview": {
+      "vision": false,
+      "tooluse": false,
+      "reasoning": true
+    },
     "tencent/deepseek-v4-pro-0813": {
       "vision": false,
       "tooluse": false,
@@ -13578,18 +13618,13 @@
       "tooluse": true,
       "reasoning": true
     },
-    "flexai/Step-3.7-Flash": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "flexai/DeepSeek-V4-Flash-0731": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
     },
-    "flexai/Muse-Glimmer-30B": {
-      "vision": true,
+    "flexai/DeepSeek-V4.1-Flash": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -13796,6 +13831,11 @@
     "vertex/gemini-3.1-flash-lite": {
       "vision": true,
       "tooluse": true,
+      "reasoning": true
+    },
+    "greenference/gpt-oss-20b": {
+      "vision": false,
+      "tooluse": false,
       "reasoning": true
     },
     "perplexityai/sonar-pro": {
@@ -14185,6 +14225,11 @@
     },
     "muse-spark-1.2-contributor-free": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "ling-3.1-flash-free": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -15308,6 +15353,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "in.anthropic.claude-opus-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "us.anthropic.claude-sonnet-4-5-20250929-v1:0": {
       "vision": true,
       "tooluse": true,
@@ -15713,6 +15763,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "in.anthropic.claude-sonnet-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "us.anthropic.claude-opus-4-8": {
       "vision": true,
       "tooluse": true,
@@ -15963,6 +16018,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "in.anthropic.claude-haiku-4-5-20251001-v1:0": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "hf:moonshotai/Kimi-K3": {
       "vision": true,
       "tooluse": true,
@@ -15989,6 +16049,11 @@
       "reasoning": true
     },
     "hf:zai-org/GLM-4.7-Flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "hf:zai-org/GLM-5.3": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
