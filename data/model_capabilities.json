@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-03T07:41:17.093473+00:00",
+  "updated_at": "2026-10-04T07:50:12.486263+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
@@ -3163,6 +3163,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "sakana/sakana-namazu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "sakana/fugu-ultra-v1.1": {
       "vision": true,
       "tooluse": true,
@@ -4415,6 +4420,11 @@
     },
     "umans-kimi-k3": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "umans-glm-5.3": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -6924,11 +6934,6 @@
       "reasoning": false
     },
     "sakana/fugu-ultra-v2": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "sakana/sakana-namazu": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -11028,6 +11033,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek/deepseek-v4.1-flash-fast": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "quiverai/arrow-2": {
       "vision": true,
       "tooluse": true,
@@ -13618,13 +13628,18 @@
       "tooluse": true,
       "reasoning": true
     },
+    "flexai/Step-3.7-Flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "flexai/DeepSeek-V4-Flash-0731": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
     },
     "flexai/DeepSeek-V4.1-Flash": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -15648,6 +15663,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "us.anthropic.claude-sonnet-5-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "qwen.qwen3-coder-next": {
       "vision": false,
       "tooluse": true,
@@ -16004,6 +16024,11 @@
       "reasoning": true
     },
     "amazon.nova-2-lite-v1:0": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "eu.anthropic.claude-sonnet-5-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
