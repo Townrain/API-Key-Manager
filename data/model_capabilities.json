@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-06T08:38:22.838255+00:00",
+  "updated_at": "2026-10-07T08:13:30.940436+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
@@ -2203,11 +2203,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "stealth/space-bunny-alpha": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "bytedance-seed/seed-2.0-lite": {
       "vision": true,
       "tooluse": true,
@@ -3115,6 +3110,11 @@
     },
     "stepfun-ai/step-3.5-flash": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "mistralai/mistral-large-4": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -4693,6 +4693,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "entrim/deepseek-v4.1-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "consensusprotocol/gemma-4-31b-it": {
       "vision": false,
       "tooluse": true,
@@ -5418,6 +5423,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "novita/ling-3.1-flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "novita/gemma-4-26b-a4b-it": {
       "vision": false,
       "tooluse": true,
@@ -5988,6 +5998,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "sciforium/deepseek-v4.1-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "xai/grok-4-5": {
       "vision": true,
       "tooluse": true,
@@ -6263,6 +6278,11 @@
       "tooluse": false,
       "reasoning": false
     },
+    "mistral/mistral-large-4": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "mistral/mistral-medium-3-5": {
       "vision": true,
       "tooluse": true,
@@ -6504,11 +6524,6 @@
       "reasoning": true
     },
     "sao10k/l3.1-euryale-70b": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "kwaipilot/kat-coder-pro-v2.5": {
       "vision": false,
       "tooluse": true,
       "reasoning": false
@@ -6873,6 +6888,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "google/gemini-nano-banana-2.1": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": true
+    },
     "fireworks/ember-1": {
       "vision": true,
       "tooluse": true,
@@ -6942,6 +6962,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "mistralai/mistral-large-4-0": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
     },
     "mistralai/ministral-3b-2512": {
       "vision": true,
@@ -7022,11 +7047,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "apodex/apodex-1.1-mini:free": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
     },
     "nvidia/nemotron-3-nano-30b-a3b": {
       "vision": false,
@@ -8668,6 +8688,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "apodex/apodex-1.1-mini:free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "sonar-pro": {
       "vision": true,
       "tooluse": false,
@@ -8683,8 +8708,23 @@
       "tooluse": false,
       "reasoning": true
     },
+    "bytedance-pro-latest": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "minimax-latest": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "agent-prime": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-opus-latest": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -8703,12 +8743,27 @@
       "tooluse": true,
       "reasoning": true
     },
+    "gpt-sol-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "code-prime": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
     },
     "text-prime": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "gemini-pro-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek-pro-latest": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -11384,12 +11439,12 @@
       "reasoning": false
     },
     "mistral/ministral-8b": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": false
     },
     "mistral/ministral-3b": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": false
     },
@@ -13688,6 +13743,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "google/deep-research-preview-04-2026": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": true
+    },
+    "google/deep-research-max-preview-04-2026": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": true
+    },
     "xai/grok-latest": {
       "vision": true,
       "tooluse": true,
@@ -14323,7 +14388,17 @@
       "tooluse": true,
       "reasoning": false
     },
+    "mistral-large-4": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "minimax-m3-free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "exo-free": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -15008,6 +15083,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "mistral-large-4@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
     "minimax-m3@eu": {
       "vision": true,
       "tooluse": true,
@@ -15069,7 +15149,7 @@
       "reasoning": true
     },
     "ministral-8b-latest": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": false
     },
@@ -15149,7 +15229,7 @@
       "reasoning": false
     },
     "ministral-3b-latest": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": false
     },
@@ -15313,10 +15393,20 @@
       "tooluse": true,
       "reasoning": true
     },
+    "us.zai.glm-5.3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "apac.amazon.nova-pro-v1:0": {
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "global.zai.glm-5.3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
     },
     "global.anthropic.claude-fable-5-1": {
       "vision": true,
@@ -16248,6 +16338,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "ling-3.1-flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "seed-2-0-mini-260428": {
       "vision": true,
       "tooluse": true,
@@ -16324,11 +16419,6 @@
       "reasoning": false
     },
     "grok-4-20-beta-0309-reasoning": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "gemini-pro-latest": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
