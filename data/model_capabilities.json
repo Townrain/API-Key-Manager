@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-11T08:21:43.077980+00:00",
+  "updated_at": "2026-10-12T08:43:16.927774+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
@@ -4243,12 +4243,27 @@
       "tooluse": true,
       "reasoning": true
     },
+    "anthropic/claude-opus-5-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "anthropic/claude-fable-5-1": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
     },
     "anthropic/claude-opus-4-8": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "anthropic/claude-haiku-5-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "anthropic/claude-sonnet-5-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -4768,11 +4783,6 @@
       "tooluse": true,
       "reasoning": false
     },
-    "deepinfra/qwen3.8-2.4t-a95b": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "deepinfra/muse-glimmer-30b": {
       "vision": true,
       "tooluse": true,
@@ -4814,7 +4824,7 @@
       "reasoning": false
     },
     "deepinfra/qwen3.5-9b": {
-      "vision": false,
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -5173,11 +5183,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "anthropic/claude-opus-5-5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "anthropic/claude-opus-4-5-20251101": {
       "vision": true,
       "tooluse": true,
@@ -5189,16 +5194,6 @@
       "reasoning": true
     },
     "anthropic/claude-haiku-4-5-20251001": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "anthropic/claude-haiku-5-5": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "anthropic/claude-sonnet-5-5": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -11243,17 +11238,7 @@
       "tooluse": true,
       "reasoning": true
     },
-    "alibaba/qwen3-vl-235b-a22b-instruct": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": false
-    },
     "alibaba/qwen3.8-27b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "alibaba/qwen3-vl-thinking": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -11288,11 +11273,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "alibaba/qwen-3.6-max-preview": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "alibaba/qwen-3-14b": {
       "vision": false,
       "tooluse": true,
@@ -11313,11 +11293,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "alibaba/qwen3-max-preview": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "alibaba/qwen3-next-80b-a3b-instruct": {
       "vision": false,
       "tooluse": true,
@@ -11328,17 +11303,7 @@
       "tooluse": true,
       "reasoning": true
     },
-    "alibaba/qwen3-coder-plus": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "alibaba/qwen3.8-max-prime": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "alibaba/qwen3-235b-a22b-thinking": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -13845,6 +13810,11 @@
     },
     "flexai/DeepSeek-V4-Flash-0731": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "flexai/Muse-Glimmer-30B": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
