@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-12T08:43:16.927774+00:00",
+  "updated_at": "2026-10-13T09:02:01.362726+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "tencent/Hy3": {
@@ -809,7 +809,7 @@
       "reasoning": true
     },
     "xai/grok-4-fast-non-reasoning": {
-      "vision": true,
+      "vision": false,
       "tooluse": true,
       "reasoning": false
     },
@@ -1279,6 +1279,11 @@
       "reasoning": true
     },
     "kimi-k2-7-code": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "fugu-max": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -3170,7 +3175,7 @@
     },
     "mistralai/mistral-small-3.1-24b-instruct": {
       "vision": true,
-      "tooluse": true,
+      "tooluse": false,
       "reasoning": false
     },
     "sakana/fugu-max": {
@@ -3944,11 +3949,6 @@
       "reasoning": true
     },
     "meta-llama/Llama-3.3-70B-Instruct": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "speakleash/Bielik-11B-v2.6-Instruct": {
       "vision": false,
       "tooluse": true,
       "reasoning": false
@@ -5598,6 +5598,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "meta/muse-wonder-1.0": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "azure/gpt-5.4": {
       "vision": true,
       "tooluse": true,
@@ -5776,7 +5781,7 @@
     "alibaba/qwen-plus": {
       "vision": false,
       "tooluse": true,
-      "reasoning": false
+      "reasoning": true
     },
     "alibaba/qwen3.7-flash": {
       "vision": true,
@@ -6290,7 +6295,7 @@
     },
     "mistral/ministral-8b-2512": {
       "vision": true,
-      "tooluse": false,
+      "tooluse": true,
       "reasoning": false
     },
     "mistral/mistral-large-4": {
@@ -6301,7 +6306,7 @@
     "mistral/mistral-medium-3-5": {
       "vision": true,
       "tooluse": true,
-      "reasoning": false
+      "reasoning": true
     },
     "mistral/mistral-small-2603": {
       "vision": true,
@@ -6315,7 +6320,7 @@
     },
     "mistral/ministral-14b-2512": {
       "vision": true,
-      "tooluse": false,
+      "tooluse": true,
       "reasoning": false
     },
     "mistral/mistral-small-2506": {
@@ -6325,7 +6330,7 @@
     },
     "mistral/ministral-3b-2512": {
       "vision": true,
-      "tooluse": false,
+      "tooluse": true,
       "reasoning": false
     },
     "mistral/glm-5.3": {
@@ -6571,7 +6576,7 @@
     "bytedance-seed/seed-1.6-flash": {
       "vision": true,
       "tooluse": true,
-      "reasoning": true
+      "reasoning": false
     },
     "bytedance-seed/seed-2.0-mini": {
       "vision": true,
@@ -6751,6 +6756,11 @@
     "perplexity/sonar-pro-search": {
       "vision": true,
       "tooluse": false,
+      "reasoning": true
+    },
+    "meta/muse-wonder": {
+      "vision": true,
+      "tooluse": true,
       "reasoning": true
     },
     "nousresearch/hermes-4-405b": {
@@ -7773,6 +7783,26 @@
       "tooluse": true,
       "reasoning": false
     },
+    "auto/openai/gpt-oss-safeguard-120b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "auto/openai/gpt-oss-20b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "auto/openai/gpt-oss-safeguard-20b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "auto/openai/gpt-oss-120b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "meta/llama-3.1-8b-instruct": {
       "vision": false,
       "tooluse": true,
@@ -8754,6 +8784,11 @@
       "reasoning": true
     },
     "muse-spark-1.2-contributor": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "muse-wonder-1.0": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -9963,6 +9998,111 @@
       "tooluse": true,
       "reasoning": true
     },
+    "sao10k/l3.1-euryale-70b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "cohere/command-r7b-12-2024": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "alibaba/qwen3.8-27b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "alibaba/qwen3.8-2.4t-a95b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "alibaba/qwen3-max": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "alibaba/qwen3-coder-480b-a35b-instruct": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "alibaba/qwen3-vl-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "alibaba/qwen3-max-preview": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "alibaba/qwen3-next-80b-a3b-instruct": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "alibaba/qwen3.8-max-prime": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "alibaba/qwen3.6-max-preview": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "x-ai/grok-4-fast-non-reasoning": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "x-ai/grok-4-20-0309-non-reasoning": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "google/gemini-3-8-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "ibm-granite/granite-4.0-h-micro": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "openai/gpt-5-4": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "openai/gpt-5-5": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "openai/gpt-5-2": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "openai/gpt-5-1": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "zhipu/glm-5.2": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "zhipu/glm-5.3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "solar-pro4": {
       "vision": false,
       "tooluse": true,
@@ -10433,11 +10573,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "x-ai/grok-4-fast-non-reasoning": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "x-ai/grok-code-fast-1": {
       "vision": false,
       "tooluse": true,
@@ -10647,11 +10782,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "alibaba/qwen3-max": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
     },
     "alibaba/qwen3.5-397b-a17b": {
       "vision": true,
@@ -11148,11 +11278,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "anthropic/claude-3-haiku": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
-    },
     "anthropic/claude-opus-5.5-fast": {
       "vision": true,
       "tooluse": true,
@@ -11175,6 +11300,11 @@
     },
     "deepseek/deepseek-v3.2-thinking": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek/deepseek-v4.1-flash-fast": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -11238,16 +11368,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "alibaba/qwen3.8-27b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "alibaba/qwen3.8-2.4t-a95b": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "alibaba/qwen3-next-80b-a3b-thinking": {
       "vision": false,
       "tooluse": true,
@@ -11293,18 +11413,8 @@
       "tooluse": true,
       "reasoning": true
     },
-    "alibaba/qwen3-next-80b-a3b-instruct": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
     "alibaba/qwen3-max-thinking": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "alibaba/qwen3.8-max-prime": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -12563,6 +12673,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "claude-opus-4-5-think": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "coding-minimax-m2.7-free": {
       "vision": false,
       "tooluse": true,
@@ -12576,6 +12691,11 @@
     "gpt-5.5-pro": {
       "vision": true,
       "tooluse": true,
+      "reasoning": true
+    },
+    "nemotron-3.5-content-safety-free": {
+      "vision": true,
+      "tooluse": false,
       "reasoning": true
     },
     "claude-sonnet-4-6-think": {
@@ -12628,6 +12748,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "nemotron-3-ultra-550b-a55b-free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "coding-minimax-m2.7": {
       "vision": false,
       "tooluse": true,
@@ -12653,6 +12778,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "nemotron-3-super-120b-a12b-free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "claude-sonnet-4-5-think": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "claude-opus-4-6-think": {
       "vision": true,
       "tooluse": true,
@@ -12668,12 +12803,37 @@
       "tooluse": true,
       "reasoning": true
     },
+    "glm-4.7-flash-free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "coding-glm-5.2-free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nemotron-3.5-lightning-free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nemotron-3-nano-omni-30b-a3b-reasoning-free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "claude-opus-4-7-think": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
     },
     "alicloud-deepseek-v4-flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "ling-3.0-flash-free": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
@@ -12719,11 +12879,6 @@
       "reasoning": true
     },
     "cohere/command-a-03-2025": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
-    },
-    "cohere/command-r7b-12-2024": {
       "vision": false,
       "tooluse": true,
       "reasoning": false
@@ -12837,6 +12992,16 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
+    },
+    "qwen/qwen3-vl-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "qwen/qwen3-max-preview": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
     },
     "openai/gpt-5.3-chat-latest": {
       "vision": true,
@@ -13658,6 +13823,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepinfra/mistralai/Mistral-Small-24B-Instruct-2501": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
     "deepinfra/moonshotai/Kimi-K2-Instruct": {
       "vision": false,
       "tooluse": true,
@@ -13702,6 +13872,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": true
+    },
+    "deepinfra/NousResearch/Hermes-3-Llama-3.1-405B": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
     },
     "groq/openai/gpt-oss-20b": {
       "vision": false,
@@ -13903,6 +14078,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "scaleway/deepseek-v4.1-flash": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "scaleway/qwen3-coder-30b-a3b-instruct": {
       "vision": false,
       "tooluse": true,
@@ -14058,6 +14238,31 @@
       "tooluse": true,
       "reasoning": true
     },
+    "greenpt/deepseek-v4-flash-0731": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "greenpt/qwen3-235b-a22b-instruct-2507": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "greenpt/deepseek-v4.1-flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "greenpt/llama-3.3-70b-instruct": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "greenpt/gpt-oss-120b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "greenference/deepseek-v4.1-flash": {
       "vision": false,
       "tooluse": true,
@@ -14097,6 +14302,11 @@
       "vision": false,
       "tooluse": true,
       "reasoning": true
+    },
+    "cloudflare/@cf/mistralai/mistral-small-3.1-24b-instruct": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
     },
     "cloudflare/@cf/zai-org/glm-4.7-flash": {
       "vision": false,
@@ -14292,6 +14502,16 @@
       "vision": false,
       "tooluse": true,
       "reasoning": true
+    },
+    "mistral/mistral-medium-3": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "mistral/mistral-large-2407": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": false
     },
     "mistral/mistral-medium-2604": {
       "vision": true,
@@ -14493,6 +14713,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "cat-jam-free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "gpt-5.3-codex-spark": {
       "vision": true,
       "tooluse": true,
@@ -14573,18 +14798,8 @@
       "tooluse": true,
       "reasoning": true
     },
-    "nemotron-3.5-lightning-free": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "mimo-v2-omni-free": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "ling-3.0-flash-free": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -14658,6 +14873,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "nano-banana-pro": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": true
+    },
+    "nano-banana-2": {
+      "vision": true,
+      "tooluse": false,
+      "reasoning": true
+    },
     "mistral-large:free": {
       "vision": true,
       "tooluse": true,
@@ -14674,6 +14899,11 @@
       "reasoning": true
     },
     "mistral-medium-3-5:free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nano-banana-2-lite": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -16409,11 +16639,6 @@
       "reasoning": true
     },
     "qwen3-vl-235b-a22b-thinking": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "fugu-max": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
