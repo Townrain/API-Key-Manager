@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-15T07:02:30.138820+00:00",
+  "updated_at": "2026-10-16T06:46:55.620299+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "anthropic/claude-fable-5": {
@@ -249,6 +249,11 @@
       "reasoning": true
     },
     "stepfun-ai/Step-3.7-Flash": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "stepfun-ai/Step-5-Preview": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -2238,6 +2243,16 @@
       "tooluse": true,
       "reasoning": false
     },
+    "reka/reka-edge-2603": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
+    "reka/reka-flash-3": {
+      "vision": false,
+      "tooluse": false,
+      "reasoning": true
+    },
     "bytedance-seed/seed-2.0-lite": {
       "vision": true,
       "tooluse": true,
@@ -2500,11 +2515,6 @@
     },
     "deepseek/deepseek-v4-flash-latest": {
       "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "deepseek/deepseek-v4-flash-vision-exp-cybersecurity": {
-      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -3153,6 +3163,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "fireworks/ember-1": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "mistralai/mistral-large-4": {
       "vision": true,
       "tooluse": true,
@@ -3295,6 +3310,11 @@
     },
     "nvidia/nemotron-3.5-lightning": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nvidia/nemotron-3.5-super-vl": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -4298,6 +4318,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B": {
       "vision": false,
       "tooluse": true,
@@ -5178,16 +5203,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "google-ai-studio/gemini-2.5-pro": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "google-ai-studio/gemini-2.5-flash": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "google-ai-studio/gemini-3.7-flash": {
       "vision": true,
       "tooluse": true,
@@ -5207,11 +5222,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "google-ai-studio/gemini-2.5-flash-lite": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
     },
     "google-ai-studio/gemini-4-argon": {
       "vision": true,
@@ -6438,16 +6448,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "google-vertex/gemini-2.5-pro": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "google-vertex/gemini-2.5-flash": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "google-vertex/gemini-3.7-flash": {
       "vision": true,
       "tooluse": true,
@@ -6462,11 +6462,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "google-vertex/gemini-2.5-flash-lite": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": false
     },
     "google-vertex/gemini-4-argon": {
       "vision": true,
@@ -6763,6 +6758,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "meta/muse-spark-open": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "nousresearch/hermes-4-405b": {
       "vision": false,
       "tooluse": false,
@@ -6923,9 +6923,14 @@
       "tooluse": true,
       "reasoning": true
     },
-    "fireworks/ember-1": {
+    "moondream/moondream3-preview": {
       "vision": true,
-      "tooluse": true,
+      "tooluse": false,
+      "reasoning": true
+    },
+    "moondream/moondream3.1-9b-a2b": {
+      "vision": true,
+      "tooluse": false,
       "reasoning": true
     },
     "mistralai/mistral-nemo": {
@@ -7068,6 +7073,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "nvidia/nemotron-3.5-super-vl:free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "nvidia/nemotron-3-nano-30b-a3b": {
       "vision": false,
       "tooluse": true,
@@ -7114,11 +7124,6 @@
       "reasoning": false
     },
     "stepfun/step-3.7-flash": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "stepfun/step-5-preview-free": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -7400,6 +7405,11 @@
     },
     "zai-org-glm-4.6": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "muse-wonder": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -7698,6 +7708,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "hy4-preview": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "gemini-3-5-flash": {
       "vision": true,
       "tooluse": true,
@@ -7713,6 +7728,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "nvidia-nemotron-3-5-super-vl-120b-a12b": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "llama-3.2-3b": {
       "vision": false,
       "tooluse": true,
@@ -7725,6 +7745,11 @@
     },
     "nvidia-nemotron-3-ultra-550b-a55b": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "muse-spark-open": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -10788,11 +10813,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "hy4-preview": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
-    },
     "glm-5.3-highspeed": {
       "vision": false,
       "tooluse": true,
@@ -11253,6 +11273,16 @@
       "tooluse": false,
       "reasoning": true
     },
+    "meta-models/muse-spark-open": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nvidia/Nemotron-3.5-Super-VL": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "nvidia/Nemotron-3_5-Lightning": {
       "vision": false,
       "tooluse": true,
@@ -11286,6 +11316,11 @@
     "interfaze/interfaze-beta": {
       "vision": true,
       "tooluse": false,
+      "reasoning": true
+    },
+    "stealth/cat-jam": {
+      "vision": false,
+      "tooluse": true,
       "reasoning": true
     },
     "zai/glm-5v-turbo": {
@@ -11928,6 +11963,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "prism": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
+    },
     "Qwen3-VL-235B-A22B-Instruct": {
       "vision": true,
       "tooluse": true,
@@ -12065,6 +12105,11 @@
     },
     "accounts/fireworks/models/gpt-oss-120b": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "accounts/fireworks/models/muse-spark-open": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -13708,11 +13753,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "space-bunny-free": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "step-5-preview-free": {
       "vision": true,
       "tooluse": true,
@@ -14164,6 +14204,11 @@
       "reasoning": true
     },
     "xai/grok-latest": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nebius/meta-models/muse-spark-open": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -14673,6 +14718,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "fireworks_ai/accounts/fireworks/models/muse-spark-open": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "mistral/mistral-medium-3": {
       "vision": true,
       "tooluse": true,
@@ -14933,6 +14983,16 @@
       "tooluse": true,
       "reasoning": true
     },
+    "space-bunny-free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "ll-alpha-free": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "nemotron-3-super-free": {
       "vision": false,
       "tooluse": true,
@@ -14978,6 +15038,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "glm-5.3-flash-free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "deepseek-v4-flash-free": {
       "vision": false,
       "tooluse": true,
@@ -14988,7 +15053,17 @@
       "tooluse": true,
       "reasoning": true
     },
+    "nemotron-3.5-super-vl-free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "mimo-v2-omni-free": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek-v4.1-flash-free": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -17772,6 +17847,11 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
+    },
+    "nemotron-3.5-super-vl": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": false
     },
     "anthropic-claude-5.5-haiku": {
       "vision": true,
