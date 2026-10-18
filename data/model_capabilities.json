@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-17T06:38:31.403650+00:00",
+  "updated_at": "2026-10-18T07:00:12.855424+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "anthropic/claude-fable-5": {
@@ -230,6 +230,11 @@
     },
     "deepseek-ai/DeepSeek-R1-0528": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek-ai/DeepSeek-V4.1-Flash-1017": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -1808,6 +1813,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek-v4.1-flash-1017": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "poolside/laguna-s-2.1": {
       "vision": false,
       "tooluse": true,
@@ -2478,6 +2488,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek/deepseek-v4.1-flash-1017:thinking": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "deepseek/deepseek-latest": {
       "vision": false,
       "tooluse": true,
@@ -2523,17 +2538,22 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek/deepseek-v4.1-flash-1017": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "deepseek/deepseek-v4-flash": {
       "vision": false,
       "tooluse": true,
       "reasoning": true
     },
-    "unbiased/pareto-26.10-preview": {
+    "unbiased/pareto-26.9": {
       "vision": true,
       "tooluse": true,
       "reasoning": false
     },
-    "unbiased/pareto-26.9": {
+    "unbiased/pareto-26.10": {
       "vision": true,
       "tooluse": true,
       "reasoning": false
@@ -2891,6 +2911,11 @@
     "x-ai/grok-4.6": {
       "vision": true,
       "tooluse": true,
+      "reasoning": true
+    },
+    "elorian/glimpse": {
+      "vision": true,
+      "tooluse": false,
       "reasoning": true
     },
     "heabsy/qwen3.8-27b-uncensored-fast": {
@@ -4014,6 +4039,11 @@
       "reasoning": false
     },
     "standardcompute": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "mistralai/mistral-large-4-0": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -6278,6 +6308,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "inference.net/deepseek-v4.1-flash-1017": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "azure-anthropic/claude-opus-5-5": {
       "vision": true,
       "tooluse": true,
@@ -6848,11 +6883,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "elorian/glimpse": {
-      "vision": true,
-      "tooluse": false,
-      "reasoning": true
-    },
     "~anthropic/claude-opus-latest": {
       "vision": true,
       "tooluse": true,
@@ -7027,11 +7057,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
-    },
-    "mistralai/mistral-large-4-0": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "mistralai/ministral-3b-2512": {
       "vision": true,
@@ -11238,6 +11263,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepseek-v4.1-flash:1017": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "nemotron-3-nano:30b": {
       "vision": false,
       "tooluse": true,
@@ -11370,6 +11400,11 @@
     },
     "meta-models/muse-spark-open": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "reflection/beam": {
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -11533,6 +11568,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "deepseek/deepseek-v4.1-flash-1017-fast": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "deepseek/deepseek-v3.2-thinking": {
       "vision": false,
       "tooluse": true,
@@ -11552,11 +11592,6 @@
       "vision": true,
       "tooluse": false,
       "reasoning": false
-    },
-    "reflection/beam": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": true
     },
     "meituan/longcat-2.5-preview": {
       "vision": true,
@@ -13963,6 +13998,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "deepinfra/nemotron-3-super-120b-a12b": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "deepinfra/nemotron-3-ultra-550b-a55b": {
       "vision": false,
       "tooluse": true,
@@ -14075,6 +14115,11 @@
     },
     "deepinfra/deepseek-ai/DeepSeek-R1-0528": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepinfra/deepseek-ai/DeepSeek-V4.1-Flash-1017": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -14685,6 +14730,11 @@
     },
     "tensorx/deepseek/deepseek-r1-0528": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tensorx/deepseek/deepseek-v4.1-flash-1017": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -15479,6 +15529,11 @@
       "reasoning": true
     },
     "gemini-3.5-flash-lite@eu": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek-v4.1-flash-1017@eu": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -17428,6 +17483,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "meta-models/Muse-Spark-Open-816B-A42B": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "essentialai/Rnj-1-Instruct": {
       "vision": false,
       "tooluse": true,
@@ -17455,6 +17515,11 @@
     },
     "deepseek-ai/DeepSeek-V3-1": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "nvidia/NVIDIA-Nemotron-3.5-Super-VL": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -17582,11 +17647,6 @@
       "vision": true,
       "tooluse": true,
       "reasoning": true
-    },
-    "mistral-7b-instruct-v0.3": {
-      "vision": false,
-      "tooluse": true,
-      "reasoning": false
     },
     "mixtral-8x7B-instruct-v0.1": {
       "vision": false,
@@ -17955,6 +18015,11 @@
     },
     "nemotron-3.5-super-vl": {
       "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "mistral-7b-instruct-v0.3": {
+      "vision": false,
       "tooluse": true,
       "reasoning": false
     },
