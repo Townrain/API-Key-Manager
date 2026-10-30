@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-10-29T08:06:46.017700+00:00",
+  "updated_at": "2026-10-30T08:09:27.482932+00:00",
   "source": "https://models.dev/api.json",
   "models": {
     "poolside/laguna-m.1": {
@@ -1135,11 +1135,6 @@
     },
     "dots-studio/dots-3-note-preview:free": {
       "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
-    "upstage/solar-pro-3": {
-      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -3418,6 +3413,11 @@
       "tooluse": true,
       "reasoning": false
     },
+    "upstage/solar-pro-3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
     "cohere/command-a": {
       "vision": false,
       "tooluse": true,
@@ -4598,6 +4598,11 @@
       "tooluse": false,
       "reasoning": false
     },
+    "deepseek-v4.1-flash-1017": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "deepseek-v3.2-thinking": {
       "vision": false,
       "tooluse": true,
@@ -5339,7 +5344,7 @@
       "reasoning": true
     },
     "deepseek-ai/DeepSeek-V4.1-Flash-1017": {
-      "vision": true,
+      "vision": false,
       "tooluse": true,
       "reasoning": true
     },
@@ -5877,11 +5882,6 @@
       "vision": true,
       "tooluse": false,
       "reasoning": false
-    },
-    "deepseek-v4.1-flash-1017": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
     },
     "devstral-2512": {
       "vision": false,
@@ -9558,6 +9558,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "mistral-large-4-0-8": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "voxtral-small-latest": {
       "vision": false,
       "tooluse": true,
@@ -10101,6 +10106,11 @@
     "scaleway/deepseek-v4-flash-0731": {
       "vision": false,
       "tooluse": true,
+      "reasoning": true
+    },
+    "scaleway/deepseek-v4.1-flash-1017": {
+      "vision": false,
+      "tooluse": false,
       "reasoning": true
     },
     "scaleway/deepseek-v4.1-flash": {
@@ -14663,11 +14673,6 @@
       "tooluse": true,
       "reasoning": true
     },
-    "entrim/deepseek-v4.1-flash": {
-      "vision": true,
-      "tooluse": true,
-      "reasoning": true
-    },
     "novita/qwen3.7-max": {
       "vision": false,
       "tooluse": true,
@@ -15238,6 +15243,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "tencent/glm-5.3-flashx": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "tencent/glm-5.2": {
       "vision": false,
       "tooluse": true,
@@ -15273,7 +15283,22 @@
       "tooluse": true,
       "reasoning": true
     },
+    "tencent/mimo-v2.6-pro": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "tencent/kimi-k2.7-code-highspeed": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/glm-5.3": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/mimo-v2.6-flash": {
       "vision": true,
       "tooluse": true,
       "reasoning": true
@@ -15293,8 +15318,18 @@
       "tooluse": true,
       "reasoning": true
     },
+    "tencent/kimi-k2.8-preview": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "tencent/minimax-m2.7": {
       "vision": false,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "tencent/glm-5.3-flash": {
+      "vision": true,
       "tooluse": true,
       "reasoning": true
     },
@@ -17208,6 +17243,11 @@
       "tooluse": true,
       "reasoning": true
     },
+    "kimi-k2.8-preview": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
     "gpt-4o-mini-transcribe": {
       "vision": false,
       "tooluse": true,
@@ -17222,6 +17262,16 @@
       "vision": true,
       "tooluse": true,
       "reasoning": false
+    },
+    "Qwen/Qwen3.8-27B-abliterated": {
+      "vision": true,
+      "tooluse": true,
+      "reasoning": true
+    },
+    "deepseek-ai/DeepSeek-V4.1-Flash-1017-abliterated": {
+      "vision": false,
+      "tooluse": true,
+      "reasoning": true
     },
     "black-forest-labs/FLUX.2-klein-4B": {
       "vision": true,
